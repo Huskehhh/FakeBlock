@@ -14,16 +14,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class FakeBlock extends JavaPlugin {
 
-	//Declare the variable for the config
 	YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/FakeBlock/config.yml"));
 
 	List<String> selecting = new ArrayList<String>();
 	boolean fakewall = false;
 
 	public void onEnable() {
-		//Register the events for the class 'FakeBlockListener'
 		getServer().getPluginManager().registerEvents(new FakeBlockListener(), this);
-		//Create the config
 		createConfig();
 	}
 
@@ -40,6 +37,7 @@ public class FakeBlock extends JavaPlugin {
 			config.set("Data.FakeWall.bounds.x-end", 0);
 			config.set("Data.FakeWall.bounds.y-end", 0);
 			config.set("Data.FakeWall.bounds.z-end", 0);
+			config.set("selecting", new ArrayList<String>());
 			try {
 				config.save("plugins/FakeBlock/config.yml");
 			} catch (IOException e) {
@@ -53,23 +51,26 @@ public class FakeBlock extends JavaPlugin {
 			if(sender == getServer().getConsoleSender()) {
 				sender.sendMessage(ChatColor.RED + "Only players can use these commands.");
 			} else {
-				Player p = (Player) sender;
-				String para = args[0];
-				if (para.equals("set")) {
-					selecting.add(p.getName()); // saving the name stops a memory leak.
+				if(args.length > 0 && args.length < 2) {
+					Player p = (Player) sender;
+					String para = args[0];
+					if (para.equals("set")) {
+						addToList(p.getName());
+						p.sendMessage(ChatColor.GREEN + "[FakeBlock] You can now select the blocks you want..");
+					}
 				}
+				return true;
 			}
-			return true;
 		}
 		return false;
 	}
 
-	public List<String> returnList() {
-		return selecting;
-	}
-
 	public boolean wallExists() {
-		return fakewall;
+		return config.getInt("Data.FakeWall.bounds.x-start") != 0;
 	}
 
+	public void addToList(String name) {
+		config.getStringList("selecting").add(name);
+	}
+	
 }

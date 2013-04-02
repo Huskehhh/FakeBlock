@@ -1,0 +1,12 @@
+name: FakeBlock
+version: 1.0
+main: code.husky.FakeBlock
+author: -_Husky_-
+description: Enables the creation of fake blocks, so only people with the a permission node can walk through.
+commands:
+  fakeblock:
+    description:
+    usage:
+  fb:
+    description:
+    usage:

@@ -16,25 +16,28 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class FakeBlockListener implements Listener {
 
 	YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/FakeBlock/config.yml"));
-	FakeBlock fb = new FakeBlock();
-	FakeBlockAPI api = new FakeBlockAPI();
 
-	List<String> select = fb.returnList();
+	FakeBlockAPI api = new FakeBlockAPI();
+	FakeBlock fb = new FakeBlock();
+
+	List<String> select = config.getStringList("selecting");
 	List<String> right = new ArrayList<String>();
-	boolean wallExists = fb.wallExists();
+
+	boolean wallExists = true;
 
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e) {
 		Player p = e.getPlayer();
 		Block b = e.getClickedBlock();
-		if(select.contains(p.getName())) {
+		if(select.contains(p.getName()) || right.contains(p.getName())) {
 			p.sendMessage(ChatColor.GREEN + "[FakeBlock] Please Left-Click the start of the Fake Wall.");
 			if(e.getAction() == Action.LEFT_CLICK_BLOCK) {
-				if(!select.contains(p.getName()) && right.contains(p.getName())) {
+				if(select.contains(p.getName()) && !right.contains(p.getName())) {
 					Location l = b.getLocation();
 					int lx = l.getBlockX();
 					int ly = l.getBlockY();
@@ -42,17 +45,21 @@ public class FakeBlockListener implements Listener {
 					config.set("Data.FakeWall.bounds.x-start", lx);
 					config.set("Data.FakeWall.bounds.y-start", ly);
 					config.set("Data.FakeWall.bounds.z-start", lz);
+					config.getStringList("selecting").remove(0);
 					try {
 						config.save("plugins/FakeBlock/config.yml");
+						right.add(p.getName());
 						p.sendMessage(ChatColor.GREEN + "[FakeBlock] Great! Now Please Right-Click and select the second point!");
+						e.setCancelled(true);
 					} catch (IOException eeee) {
 						eeee.printStackTrace();
 					}
 				} else {
 					p.sendMessage(ChatColor.RED + "[FakeBlock] You need to Right-Click, not Left-Click!");
+					e.setCancelled(true);
 				}
 			} else if(e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-				if(select.contains(p.getName()) && right.contains(p.getName())) {
+				if(!select.contains(p.getName()) && right.contains(p.getName())) {
 					Location rl = b.getLocation();
 					int rx = rl.getBlockX();
 					int ry = rl.getBlockY();
@@ -71,29 +78,33 @@ public class FakeBlockListener implements Listener {
 					api.sendFakeBlocks(p);
 				}
 			} else {
-				e.setCancelled(false); // housekeeping
+				e.setCancelled(false);
 			}
 		} else {
-			e.setCancelled(false); // housekeeping
+			e.setCancelled(false);
 		}
-	}
-
-	@EventHandler
-	public void blockBreak(BlockBreakEvent e) {
-		Player p = e.getPlayer();
-		Block b = e.getBlock();
-
 	}
 
 	@EventHandler
 	public void playerJoin(PlayerJoinEvent e) {
-		Player p = e.getPlayer();
+		final Player p = e.getPlayer();
 		if(wallExists) {
-			api.sendFakeBlocks(p);
-		} else {
-			// do nothing - housekeeping
+			new BukkitRunnable(){
+				public void run(){
+					api.sendFakeBlocks(p);
+				}
+			}.runTaskLater(fb, (5 * 20));
 		}
 	}
-
+	
+	@EventHandler
+	public void fakeBlockBreak(BlockBreakEvent e) {
+		Block b = e.getBlock();
+		Location l = b.getLocation();
+		List<Location> boop = api.blocks;
+		if(boop.contains(l)) {
+			e.setCancelled(true);
+		}
+	}
 
 }
