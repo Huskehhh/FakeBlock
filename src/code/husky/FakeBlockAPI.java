@@ -2,6 +2,7 @@ package code.husky;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ListIterator;
 
 import org.bukkit.Bukkit;
@@ -15,6 +16,7 @@ public class FakeBlockAPI {
 
 	YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/FakeBlock/config.yml"));
 	ArrayList<Location> blocks = new ArrayList<Location>();
+	List<String> right = new ArrayList<String>();
 
 	int x = config.getInt("Data.FakeWall.bounds.x-start");
 	int x1 = config.getInt("Data.FakeWall.bounds.x-end");
@@ -70,4 +72,6 @@ public class FakeBlockAPI {
 			}
 		}
 	}
+	
+	
 }
