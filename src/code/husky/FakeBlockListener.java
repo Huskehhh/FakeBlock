@@ -1,18 +1,15 @@
 package code.husky;
 
 import java.io.File;
-import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class FakeBlockListener implements Listener {
 
@@ -28,21 +25,11 @@ public class FakeBlockListener implements Listener {
 	public void playerJoin(PlayerJoinEvent e) {
 		final Player p = e.getPlayer();
 		if(wallExists) {
-			new BukkitRunnable(){
-				public void run() {
-					api.sendFakeBlocks(p);
-				}
-			}.runTaskLater(fb, (5 * 20));
-		}
-	}
-
-	@EventHandler
-	public void fakeBlockBreak(BlockBreakEvent e) {
-		Block b = e.getBlock();
-		Location l = b.getLocation();
-		List<Location> boop = api.blocks;
-		if(boop.contains(l)) {
-			e.setCancelled(true);
+			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(new FakeBlock(), new Runnable() {
+			     public void run() {
+			          api.sendFakeBlocks(p);
+			     }
+			}, (5 * 20));
 		}
 	}
 
