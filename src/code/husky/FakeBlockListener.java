@@ -23,7 +23,7 @@ public class FakeBlockListener implements Listener {
 
 	boolean wallExists = true;
 
-	
+
 	@EventHandler
 	public void playerJoin(PlayerJoinEvent e) {
 		final Player p = e.getPlayer();
@@ -53,6 +53,28 @@ public class FakeBlockListener implements Listener {
 		if(api.blocks.contains(l)) {
 			api.sendFakeBlocks(p);
 		}
+
+		Location newblock = l.add(1, 0, 0);
+		if(newblock.getBlock().getTypeId() == config.getInt("FakeBlock-ID")) {
+			api.sendFakeBlocks(p);
+		}
+
+		Location another = l.add(0, 0, 1);
+		if(another.getBlock().getTypeId() == config.getInt("FakeBlock-ID")) {
+			api.sendFakeBlocks(p);
+		}
+
+		Location a = l.add(0, -1, 0);
+		if(a.getBlock().getTypeId() == config.getInt("FakeBlock-ID")) {
+			api.sendFakeBlocks(p);
+		}
+
+		Location as = l.add(0, 1, 0);
+		if(as.getBlock().getTypeId() == config.getInt("FakeBlock-ID")) {
+			api.sendFakeBlocks(p);
+		}
+		
+		
 	}
 
 }
