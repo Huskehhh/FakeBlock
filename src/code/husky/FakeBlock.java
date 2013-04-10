@@ -46,6 +46,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
 			config.set("Data.FakeWall.bounds.x-end", 0);
 			config.set("Data.FakeWall.bounds.y-end", 0);
 			config.set("Data.FakeWall.bounds.z-end", 0);
+			config.set("Data.FakeWall.worldname", "world");
 			try {
 				config.save("plugins/FakeBlock/config.yml");
 			} catch (IOException e) {

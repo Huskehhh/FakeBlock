@@ -24,9 +24,10 @@ public class FakeBlockAPI {
 	int y1 = config.getInt("Data.FakeWall.bounds.y-end");
 	int z = config.getInt("Data.FakeWall.bounds.z-start");
 	int z1 = config.getInt("Data.FakeWall.bounds.z-end");
+	World w = Bukkit.getServer().getWorld(config.getString("Data.FakeWall.worldname"));
 
 	public void sendFakeBlocks(Player p) {
-		getBlocks(p.getWorld());
+		getBlocks();
 		for(Player s : Bukkit.getServer().getOnlinePlayers()) {
 			if(!s.hasPermission("fakeblock.user")) {
 				ListIterator<Location> li = blocks.listIterator();
@@ -63,11 +64,11 @@ public class FakeBlockAPI {
 		return Math.min(z,z1);
 	}
 
-	public void getBlocks(World w) {
+	public void getBlocks() {
 		for (int x = this.getMinX(); x <= this.getMaxX(); x++) {
 			for (int y = this.getMinY(); y <= this.getMaxY(); y++) {
 				for (int z = this.getMinZ(); z <= this.getMaxZ(); z++) {
-					this.blocks.add(new Location(w, x, y, z));
+					this.blocks.add(new Location(this.w, x, y, z));
 				}
 			}
 		}
