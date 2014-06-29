@@ -31,35 +31,4 @@ public class FakeBlockListener implements Listener {
         }
     }
 
-    @EventHandler
-    public void playerMove(PlayerMoveEvent e) {
-        Player p = e.getPlayer();
-        Location l = p.getLocation();
-        if (utility.blocks.contains(l)) {
-            utility.sendFakeBlocks(p);
-        }
-
-        Location newblock = l.add(1, 0, 0);
-        if (newblock.getBlock().getTypeId() == config.getInt("FakeBlock-ID")) {
-            utility.sendFakeBlocks(p);
-        }
-
-        Location another = l.add(0, 0, 1);
-        if (another.getBlock().getTypeId() == config.getInt("FakeBlock-ID")) {
-            utility.sendFakeBlocks(p);
-        }
-
-        Location a = l.add(0, -1, 0);
-        if (a.getBlock().getTypeId() == config.getInt("FakeBlock-ID")) {
-            utility.sendFakeBlocks(p);
-        }
-
-        Location as = l.add(0, 1, 0);
-        if (as.getBlock().getTypeId() == config.getInt("FakeBlock-ID")) {
-            utility.sendFakeBlocks(p);
-        }
-
-
-    }
-
 }
