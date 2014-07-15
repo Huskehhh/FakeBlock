@@ -18,9 +18,7 @@ public class Utility {
     private static YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/FakeBlock/config.yml"));
 
     public static List<String> getAllWalls() {
-        List<String> walls = new ArrayList<String>();
-        walls = config.getStringList("walls");
-        return walls;
+        return config.getStringList("walls");
     }
 
     public static List<Wall> getWalls() {
