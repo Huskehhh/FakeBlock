@@ -81,29 +81,42 @@ public class FakeBlock extends JavaPlugin implements Listener {
 
                     if (para.equalsIgnoreCase("set")) {
 
-                        map.put(p.getName(), args[1]);
-                        selecting.add(p.getName());
+                        if (args.length == 3) {
+                            map.put(p.getName(), args[1]);
+                            selecting.add(p.getName());
 
-                        Config conf = new Config();
+                            Config conf = new Config();
 
-                        conf.setName(args[1]);
-                        conf.setId(Integer.parseInt(args[2]));
+                            conf.setName(args[1]);
+                            conf.setId(Integer.parseInt(args[2]));
 
-                        if (args.length == 4) {
-                            String getData = args[3];
+                            String getData = args[2];
                             String[] splitForData = getData.split(":");
-                            conf.setData(Integer.parseInt(splitForData[1]));
+
+                            if (splitForData.length == 2) {
+                                conf.setData(Integer.parseInt(splitForData[1]));
+                            } else {
+                                conf.setData(0);
+                            }
+
+                            configObj.put(p.getName(), conf);
+
+                            p.sendMessage(ChatColor.GREEN + "[FakeBlock] You can now select the blocks you want..");
                         } else {
-                            conf.setData(0);
+                            p.sendMessage(ChatColor.RED + "[FakeBlock] Need more arguments!");
                         }
-
-                        configObj.put(p.getName(), conf);
-
-                        p.sendMessage(ChatColor.GREEN + "[FakeBlock] You can now select the blocks you want..");
-
                     } else if (para.equalsIgnoreCase("reload")) {
                         Wall.unloadWalls();
                         Wall.loadWalls();
+
+                        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+                            public void run() {
+                                for (Player server : Bukkit.getServer().getOnlinePlayers()) {
+                                    api.sendFakeBlocks(server);
+                                }
+                            }
+                        }, (2 * 20));
+
                     }
 
                 }
