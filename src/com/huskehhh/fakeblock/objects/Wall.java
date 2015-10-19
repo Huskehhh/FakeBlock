@@ -79,7 +79,12 @@ public class Wall {
         int y1 = convert(split[5]);
         int z1 = convert(split[6]);
         int id = convert(split[7]);
-        int dataID = convert(split[8]);
+
+        int dataID = 0;
+
+        if (split.length == 9) {
+            dataID = convert(split[8]);
+        }
 
         return new Wall(x, y, z, world, x1, y1, z1, name, id, dataID);
     }
@@ -124,7 +129,9 @@ public class Wall {
         return id;
     }
 
-    public int getData() { return data; }
+    public int getData() {
+        return data;
+    }
 
 
     public static Wall getByName(String name) {
