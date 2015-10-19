@@ -15,7 +15,7 @@ public class Utility {
 
     /**
      * Data will be stored like
-     * walls.data, 'x,y,z,world,x1,y1,z1,block-id'
+     * walls.data, 'x,y,z,world,x1,y1,z1,block-id,data'
      */
 
     public static YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/FakeBlock/config.yml"));
@@ -64,7 +64,7 @@ public class Utility {
 
                         while (locations.hasNext()) {
                             Location send = locations.next();
-                            p.sendBlockChange(send, m, (byte) 0);
+                            p.sendBlockChange(send, m, (byte) wall.getData());
                         }
 
                     }

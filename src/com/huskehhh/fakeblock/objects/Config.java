@@ -2,7 +2,7 @@ package com.huskehhh.fakeblock.objects;
 
 public class Config {
 
-    public int x, y, z, x1, y1, z1, id;
+    public int x, y, z, x1, y1, z1, id, data;
     public String worldname;
     public String name;
 
@@ -45,6 +45,8 @@ public class Config {
     public void setId(int id) {
         this.id = id;
     }
+
+    public void setData(int data) { this.data = data; }
 
 
 }

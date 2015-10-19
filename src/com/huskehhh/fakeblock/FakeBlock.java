@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
 
 public class FakeBlock extends JavaPlugin implements Listener {
 
@@ -53,7 +52,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
             config.options().header("FakeBlock, made by Husky!");
             List<String> walls = new ArrayList<String>();
             walls.add("default");
-            config.set("default.data", "1,2,3,world,1,2,3,46");
+            config.set("default.data", "1,2,3,world,1,2,3,46,0");
             config.set("walls.list", walls);
 
             try {
@@ -90,10 +89,21 @@ public class FakeBlock extends JavaPlugin implements Listener {
                         conf.setName(args[1]);
                         conf.setId(Integer.parseInt(args[2]));
 
+                        if (args.length == 3) {
+                            String getData = args[2];
+                            String[] splitForData = getData.split(":");
+                            conf.setData(Integer.parseInt(splitForData[1]));
+                        } else {
+                            conf.setData(0);
+                        }
+
                         configObj.put(p.getName(), conf);
 
                         p.sendMessage(ChatColor.GREEN + "[FakeBlock] You can now select the blocks you want..");
 
+                    } else if (para.equalsIgnoreCase("reload")) {
+                        Wall.unloadWalls();
+                        Wall.loadWalls();
                     }
 
                 }

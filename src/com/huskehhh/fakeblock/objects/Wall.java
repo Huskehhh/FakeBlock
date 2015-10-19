@@ -15,11 +15,11 @@ public class Wall {
 
     public static HashMap<String, Wall> wallObjects = new HashMap<String, Wall>();
 
-    public int x, y, z, x1, y1, z1, id;
+    public int x, y, z, x1, y1, z1, id, data;
     public String worldname;
     public String name;
 
-    public Wall(int x, int y, int z, String worldname, int x1, int y1, int z1, String name, int id) {
+    public Wall(int x, int y, int z, String worldname, int x1, int y1, int z1, String name, int id, int data) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -29,6 +29,7 @@ public class Wall {
         this.z1 = z1;
         this.name = name;
         this.id = id;
+        this.data = data;
 
         wallObjects.put(name, this);
         writeToConfig(name);
@@ -78,8 +79,9 @@ public class Wall {
         int y1 = convert(split[5]);
         int z1 = convert(split[6]);
         int id = convert(split[7]);
+        int dataID = convert(split[8]);
 
-        return new Wall(x, y, z, world, x1, y1, z1, name, id);
+        return new Wall(x, y, z, world, x1, y1, z1, name, id, dataID);
     }
 
     public static int convert(String num) {
@@ -121,6 +123,8 @@ public class Wall {
     public int getId() {
         return id;
     }
+
+    public int getData() { return data; }
 
 
     public static Wall getByName(String name) {
