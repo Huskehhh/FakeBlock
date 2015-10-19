@@ -39,7 +39,7 @@ public class Config {
     }
 
     public Wall createObject() {
-        return new Wall(x, y, z, worldname, x1, y1, z1, name, id);
+        return new Wall(x, y, z, worldname, x1, y1, z1, name, id, data);
     }
 
     public void setId(int id) {
