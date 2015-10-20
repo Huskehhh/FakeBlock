@@ -87,30 +87,37 @@ public class FakeBlock extends JavaPlugin implements Listener {
                          * /fb set <name> <id>:<materialdata>
                          */
 
-                        if (args.length == 3) {
-                            map.put(p.getName(), args[1]);
-                            selecting.add(p.getName());
+                        if (p.hasPermission("fakeblock.admin")) {
 
-                            Config conf = new Config();
+                            if (args.length == 3) {
+                                map.put(p.getName(), args[1]);
+                                selecting.add(p.getName());
 
-                            conf.setName(args[1]);
-                            conf.setId(Integer.parseInt(args[2]));
+                                Config conf = new Config();
 
-                            String getData = args[2];
-                            if (getData.contains(":")) {
-                                String[] splitForData = getData.split(":");
-                                if (splitForData.length == 2) {
-                                    conf.setData(Integer.parseInt(splitForData[1]));
+                                conf.setName(args[1]);
+
+                                String getData = args[2];
+                                if (getData.contains(":")) {
+                                    String[] splitForData = getData.split(":");
+                                    if (splitForData.length == 2) {
+                                        conf.setData(Integer.parseInt(splitForData[1]));
+                                    } else {
+                                        conf.setData(0);
+                                        conf.setId(Integer.parseInt(args[2]));
+                                    }
                                 } else {
-                                    conf.setData(0);
+                                    conf.setId(Integer.parseInt(args[2]));
                                 }
+
+                                configObj.put(p.getName(), conf);
+
+                                p.sendMessage(ChatColor.GREEN + "[FakeBlock] You can now select the blocks you want..");
+                            } else {
+                                p.sendMessage(ChatColor.RED + "[FakeBlock] Need more arguments!");
                             }
-
-                            configObj.put(p.getName(), conf);
-
-                            p.sendMessage(ChatColor.GREEN + "[FakeBlock] You can now select the blocks you want..");
                         } else {
-                            p.sendMessage(ChatColor.RED + "[FakeBlock] Need more arguments!");
+                            p.sendMessage(ChatColor.RED + "[FakeBlock] You don't have permission for this command.");
                         }
                     } else if (para.equalsIgnoreCase("reload")) {
 

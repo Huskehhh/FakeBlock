@@ -65,7 +65,7 @@ public class Wall {
 
     public String convertToString() {
         String sep = ",";
-        return x + sep + y + sep + z + sep + worldname + sep + x1 + sep + y1 + sep + z1 + sep + id;
+        return x + sep + y + sep + z + sep + worldname + sep + x1 + sep + y1 + sep + z1 + sep + id + sep + data;
     }
 
     public static Wall objectFromString(String data, String name) {
