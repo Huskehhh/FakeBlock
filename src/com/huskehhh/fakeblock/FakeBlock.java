@@ -102,6 +102,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
                                     String[] splitForData = getData.split(":");
                                     if (splitForData.length == 2) {
                                         conf.setData(Integer.parseInt(splitForData[1]));
+                                        conf.setId(Integer.parseInt(splitForData[0]));
                                     }
                                 } else {
                                     conf.setId(Integer.parseInt(args[2]));
