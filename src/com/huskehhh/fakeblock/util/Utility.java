@@ -1,4 +1,4 @@
-package com.huskehhh.fakeblock;
+package com.huskehhh.fakeblock.util;
 
 import com.huskehhh.fakeblock.objects.Wall;
 import org.bukkit.*;

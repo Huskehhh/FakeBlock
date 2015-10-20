@@ -1,5 +1,7 @@
-package com.huskehhh.fakeblock;
+package com.huskehhh.fakeblock.listeners;
 
+import com.huskehhh.fakeblock.FakeBlock;
+import com.huskehhh.fakeblock.util.Utility;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;

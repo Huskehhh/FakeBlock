@@ -1,6 +1,6 @@
 package com.huskehhh.fakeblock.objects;
 
-import com.huskehhh.fakeblock.Utility;
+import com.huskehhh.fakeblock.util.Utility;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
