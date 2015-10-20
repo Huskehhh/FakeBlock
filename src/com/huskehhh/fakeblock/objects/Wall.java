@@ -43,13 +43,11 @@ public class Wall {
 
         while (li.hasNext()) {
             String name = li.next();
-
             String data = Utility.config.getString(name + ".data");
-
             Wall create = objectFromString(data, name);
-
             wallObjects.put(name, create);
         }
+
         System.out.println("[FakeBlock] Walls loaded successfully");
     }
 
@@ -148,7 +146,7 @@ public class Wall {
 
         if (Utility.config.getString(nme + ".data") == null) {
             String converted = convertToString();
-            YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/FakeBlock/config.yml"));
+            YamlConfiguration config = Utility.config;
 
             config.set(nme + ".data", converted);
             List<String> ls = config.getStringList("walls.list");
