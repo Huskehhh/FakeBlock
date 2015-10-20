@@ -22,7 +22,9 @@ public class Config {
         this.y1 = y1;
     }
 
-    public void setZ(int z) { this.z = z; }
+    public void setZ(int z) {
+        this.z = z;
+    }
 
     public void setZ1(int z1) {
         this.z1 = z1;
@@ -32,13 +34,17 @@ public class Config {
         this.name = name;
     }
 
-    public void setWorldname(String worldname) { this.worldname = worldname; }
+    public void setWorldname(String worldname) {
+        this.worldname = worldname;
+    }
 
     public void setId(int id) {
         this.id = id;
     }
 
-    public void setData(int data) { this.data = data; }
+    public void setData(int data) {
+        this.data = data;
+    }
 
     public Wall createObject() {
         return new Wall(x, y, z, worldname, x1, y1, z1, name, id, data);
