@@ -2,7 +2,7 @@ package com.huskehhh.fakeblock.objects;
 
 public class Config {
 
-    public int x, y, z, x1, y1, z1, id, data;
+    public int x, y, z, x1, y1, z1, id, data = 0;
     public String worldname;
     public String name;
 
@@ -32,19 +32,17 @@ public class Config {
         this.name = name;
     }
 
-    public void setWorldname(String worldname) {
-        this.worldname = worldname;
-    }
-
-    public Wall createObject() {
-        return new Wall(x, y, z, worldname, x1, y1, z1, name, id, data);
-    }
+    public void setWorldname(String worldname) { this.worldname = worldname; }
 
     public void setId(int id) {
         this.id = id;
     }
 
     public void setData(int data) { this.data = data; }
+
+    public Wall createObject() {
+        return new Wall(x, y, z, worldname, x1, y1, z1, name, id, data);
+    }
 
 
 }
