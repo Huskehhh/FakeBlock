@@ -1,7 +1,10 @@
 package com.huskehhh.fakeblock.util;
 
 import com.huskehhh.fakeblock.objects.Wall;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
@@ -52,7 +55,7 @@ public class Utility {
 
             if (wall != null) {
 
-                if (!p.hasPermission("fakeblock." + wall.getName())) {
+                if (!p.hasPermission("fakeblock." + wall.getName()) && p.getLocation().getWorld() == Bukkit.getServer().getWorld(wall.getWorldname())) {
 
                     int j = Bukkit.getServer().getOnlinePlayers().size();
 
