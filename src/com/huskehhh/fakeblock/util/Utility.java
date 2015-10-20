@@ -25,6 +25,7 @@ public class Utility {
     }
 
     public static List<Wall> getWalls() {
+        config = YamlConfiguration.loadConfiguration(new File("plugins/FakeBlock/config.yml"));
 
         List<Wall> allWalls = new ArrayList<Wall>();
 
@@ -73,27 +74,27 @@ public class Utility {
         }
     }
 
-    public static int getMaxX(int x, int x1) {
+    private int getMaxX(int x, int x1) {
         return Math.max(x, x1);
     }
 
-    public static int getMinX(int x, int x1) {
+    private int getMinX(int x, int x1) {
         return Math.min(x, x1);
     }
 
-    public static int getMaxY(int y, int y1) {
+    private int getMaxY(int y, int y1) {
         return Math.max(y, y1);
     }
 
-    public static int getMinY(int y, int y1) {
+    private int getMinY(int y, int y1) {
         return Math.min(y, y1);
     }
 
-    public static int getMaxZ(int z, int z1) {
+    private int getMaxZ(int z, int z1) {
         return Math.max(z, z1);
     }
 
-    public static int getMinZ(int z, int z1) {
+    private int getMinZ(int z, int z1) {
         return Math.min(z, z1);
     }
 

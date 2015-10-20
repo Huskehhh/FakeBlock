@@ -83,6 +83,10 @@ public class FakeBlock extends JavaPlugin implements Listener {
 
                     if (para.equalsIgnoreCase("set")) {
 
+                        /*
+                         * /fb set <name> <id>:<materialdata>
+                         */
+
                         if (args.length == 3) {
                             map.put(p.getName(), args[1]);
                             selecting.add(p.getName());
@@ -93,12 +97,13 @@ public class FakeBlock extends JavaPlugin implements Listener {
                             conf.setId(Integer.parseInt(args[2]));
 
                             String getData = args[2];
-                            String[] splitForData = getData.split(":");
-
-                            if (splitForData.length == 2) {
-                                conf.setData(Integer.parseInt(splitForData[1]));
-                            } else {
-                                conf.setData(0);
+                            if (getData.contains(":")) {
+                                String[] splitForData = getData.split(":");
+                                if (splitForData.length == 2) {
+                                    conf.setData(Integer.parseInt(splitForData[1]));
+                                } else {
+                                    conf.setData(0);
+                                }
                             }
 
                             configObj.put(p.getName(), conf);
@@ -108,23 +113,25 @@ public class FakeBlock extends JavaPlugin implements Listener {
                             p.sendMessage(ChatColor.RED + "[FakeBlock] Need more arguments!");
                         }
                     } else if (para.equalsIgnoreCase("reload")) {
-                        Wall.unloadWalls();
-                        Wall.loadWalls();
 
-                        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-                            public void run() {
-                                for (Player server : Bukkit.getServer().getOnlinePlayers()) {
-                                    api.sendFakeBlocks(server);
+                        if (p.hasPermission("fakeblock.admin")) {
+                            Wall.unloadWalls();
+                            Wall.loadWalls();
+
+                            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+                                public void run() {
+                                    for (Player server : Bukkit.getServer().getOnlinePlayers()) {
+                                        api.sendFakeBlocks(server);
+                                    }
                                 }
-                            }
-                        }, (2 * 20));
-
+                            }, (2 * 20));
+                        } else {
+                            p.sendMessage(ChatColor.RED + "[FakeBlock] You don't have permission for this command.");
+                        }
+                        return true;
                     }
-
                 }
-
                 return true;
-
             }
         }
         return false;
