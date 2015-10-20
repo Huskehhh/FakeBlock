@@ -3,15 +3,20 @@ package com.huskehhh.fakeblock;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.EnderPearl;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.ItemStack;
 
-import java.io.File;
+import java.util.HashMap;
 
 public class FakeBlockListener implements Listener {
 
@@ -22,6 +27,8 @@ public class FakeBlockListener implements Listener {
     }
 
     Utility utility = new Utility();
+
+    HashMap<String, Location> tracking = new HashMap<String, Location>();
 
     boolean wallExists = true;
 
@@ -96,7 +103,7 @@ public class FakeBlockListener implements Listener {
             int py = p.getLocation().getBlockY();
             int pz = p.getLocation().getBlockZ();
 
-            if (utility.isNear(x, y, z, px, py, pz)) {
+            if (utility.isNear(x, y, z, px, py, pz, 10)) {
                 for (Player server : Bukkit.getServer().getOnlinePlayers()) {
                     utility.sendFakeBlocks(server);
                 }
@@ -117,9 +124,36 @@ public class FakeBlockListener implements Listener {
         int py = p.getLocation().getBlockY();
         int pz = p.getLocation().getBlockZ();
 
-        if (utility.isNear(x, y, z, px, py, pz)) {
+        if (utility.isNear(x, y, z, px, py, pz, 10)) {
             for (Player server : Bukkit.getServer().getOnlinePlayers()) {
                 utility.sendFakeBlocks(server);
+            }
+        }
+
+    }
+
+    @EventHandler
+    public void onEnderPearl(ProjectileHitEvent e) {
+        if (e.getEntity() instanceof Player) {
+            Player p = (Player) e.getEntity();
+            if (tracking.containsKey(p.getName())) {
+                if (utility.isNearWall(p)) {
+                    p.teleport(tracking.get(p.getName()));
+                    tracking.remove(p.getName());
+                    p.sendMessage(ChatColor.RED + "[FakeBlock] Unable to teleport through the wall");
+                    p.getInventory().addItem(new ItemStack(Material.ENDER_PEARL, 1)); // Refund them their wasted item.
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onEnderPearl(ProjectileLaunchEvent e) {
+        if (e.getEntity().getType() == EntityType.ENDER_PEARL) {
+            EnderPearl ep = (EnderPearl) e.getEntity();
+            if (ep.getShooter() instanceof Player) {
+                Player p = (Player) ep.getShooter();
+                tracking.put(p.getName(), p.getLocation());
             }
         }
     }

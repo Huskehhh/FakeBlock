@@ -142,8 +142,8 @@ public class Utility {
             int wz1 = wall.getZ1();
 
 
-            boolean isNear1 = isNear(px, py, pz, wx, wy, wz);
-            boolean isNear2 = isNear(px, py, pz, wx1, wy1, wz1);
+            boolean isNear1 = isNear(px, py, pz, wx, wy, wz, 10);
+            boolean isNear2 = isNear(px, py, pz, wx1, wy1, wz1, 10);
 
             if (isNear1 || isNear2) {
                 return true;
@@ -173,8 +173,8 @@ public class Utility {
             int wz1 = wall.getZ1();
 
 
-            boolean isNear1 = isSuperNear(px, py, pz, wx, wy, wz);
-            boolean isNear2 = isSuperNear(px, py, pz, wx1, wy1, wz1);
+            boolean isNear1 = isNear(px, py, pz, wx, wy, wz, 2);
+            boolean isNear2 = isNear(px, py, pz, wx1, wy1, wz1, 2);
 
             if (isNear1 || isNear2) {
                 return true;
@@ -184,23 +184,12 @@ public class Utility {
         return false;
     }
 
-    public static boolean isNear(int x, int y, int z, int x1, int y1, int z1) {
-        if ((x - 10) < x1 || (x + 10) < x1 || (x - 10) > x1 || (x + 10) > x1) {
+    public static boolean isNear(int x, int y, int z, int x1, int y1, int z1, int distance) {
+        if ((x - distance) < x1 || (x + distance) < x1 || (x - distance) > x1 || (x + distance) > x1) {
             return true;
-        } else if ((y - 10) < y1 || (y + 10) < y1 || (y - 10) > y1 || (y + 10) > y1) {
+        } else if ((y - distance) < y1 || (y + distance) < y1 || (y - distance) > y1 || (y + distance) > y1) {
             return true;
-        } else if ((z - 10) < z1 || (z + 10) < z1 || (z - 10) > z1 || (z + 10) > z1) {
-            return true;
-        }
-        return false;
-    }
-
-    public static boolean isSuperNear(int x, int y, int z, int x1, int y1, int z1) {
-        if ((x - 2) < x1 || (x + 2) < x1 || (x - 2) > x1 || (x + 2) > x1) {
-            return true;
-        } else if ((y - 2) < y1 || (y + 2) < y1 || (y - 2) > y1 || (y + 2) > y1) {
-            return true;
-        } else if ((z - 2) < z1 || (z + 2) < z1 || (z - 2) > z1 || (z + 2) > z1) {
+        } else if ((z - distance) < z1 || (z + distance) < z1 || (z - distance) > z1 || (z + distance) > z1) {
             return true;
         }
         return false;

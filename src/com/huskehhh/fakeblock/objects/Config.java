@@ -22,9 +22,7 @@ public class Config {
         this.y1 = y1;
     }
 
-    public void setZ(int z) {
-        this.z = z;
-    }
+    public void setZ(int z) { this.z = z; }
 
     public void setZ1(int z1) {
         this.z1 = z1;
