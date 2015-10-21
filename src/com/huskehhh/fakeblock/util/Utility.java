@@ -23,9 +23,21 @@ public class Utility {
 
     public static YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/FakeBlock/config.yml"));
 
+    /**
+     * Get StringList of Walls in config
+     *
+     * @return StringList of Walls
+     */
+
     public static List<String> getAllWalls() {
         return config.getStringList("walls.list");
     }
+
+    /**
+     * Get all Walls from config
+     *
+     * @return Walls from config
+     */
 
     public static List<Wall> getWalls() {
         List<Wall> allWalls = new ArrayList<Wall>();
@@ -43,6 +55,11 @@ public class Utility {
         return allWalls;
     }
 
+    /**
+     * Send Wall to the Player
+     *
+     * @param p - Player to send the Wall to
+     */
 
     public void sendFakeBlocks(Player p) {
         List<Wall> walls = getWalls();
@@ -99,6 +116,13 @@ public class Utility {
         return Math.min(z, z1);
     }
 
+    /**
+     * Get all blocks in a Wall
+     *
+     * @param wall - Wall object to check for blocks
+     * @return ArrayList of locations that contains all block locations
+     */
+
     public ArrayList<Location> getBlocks(Wall wall) {
 
         World w = Bukkit.getServer().getWorld(wall.getWorldname());
@@ -123,6 +147,13 @@ public class Utility {
 
         return blocks;
     }
+
+    /**
+     * Check whether a Player is close to a Wall
+     *
+     * @param p - Player to check
+     * @return whether or not the Player is close to a Wall
+     */
 
     public static boolean isNearWall(Player p) {
         int px = p.getLocation().getBlockX();
@@ -155,6 +186,13 @@ public class Utility {
         return false;
     }
 
+    /**
+     * Check whether a Player is super close to a Wall
+     *
+     * @param p - Player to check
+     * @return whether or not the Player is close to a Wall
+     */
+
     public static boolean isSuperNearWall(Player p) {
         int px = p.getLocation().getBlockX();
         int py = p.getLocation().getBlockX();
@@ -185,6 +223,17 @@ public class Utility {
 
         return false;
     }
+
+    /**
+     * @param x        - First x value
+     * @param y        - First y value
+     * @param z        - First z value
+     * @param x1       - Second x value
+     * @param y1       - Second y value
+     * @param z1       - Second z value
+     * @param distance - How many blocks between to check
+     * @return whether or not coordinates are close
+     */
 
     public static boolean isNear(int x, int y, int z, int x1, int y1, int z1, int distance) {
         if ((x - distance) < x1 || (x + distance) < x1 || (x - distance) > x1 || (x + distance) > x1) {
