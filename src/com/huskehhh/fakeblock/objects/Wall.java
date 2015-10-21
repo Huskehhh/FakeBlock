@@ -12,11 +12,30 @@ import java.util.ListIterator;
 
 public class Wall {
 
+    /**
+     * Stores all Wall objects while runtime is active
+     */
+
     public static HashMap<String, Wall> wallObjects = new HashMap<String, Wall>();
 
     public int x, y, z, x1, y1, z1, id, data;
     public String worldname;
     public String name;
+
+    /**
+     * Constructor
+     *
+     * @param x         - First x coordinate
+     * @param y         - First y coordinate
+     * @param z         - First z coordinate
+     * @param worldname - Name of the world where the Wall was created
+     * @param x1        - Second x coordinate
+     * @param y1        - Second y coordinate
+     * @param z1        - Second z coordinate
+     * @param name      - Name of the Wall
+     * @param id        - Block ID of the Wall
+     * @param data      - Material data of the wall
+     */
 
     public Wall(int x, int y, int z, String worldname, int x1, int y1, int z1, String name, int id, int data) {
         this.x = x;
@@ -34,6 +53,10 @@ public class Wall {
         writeToConfig(name);
     }
 
+    /**
+     * Loads all the Walls in the config file
+     */
+
     public static void loadWalls() {
 
         List<String> configWalls = Utility.getAllWalls();
@@ -50,6 +73,10 @@ public class Wall {
         System.out.println("[FakeBlock] Walls loaded successfully");
     }
 
+    /**
+     * Unloads all the Walls currently loaded.
+     */
+
     public static void unloadWalls() {
         List<Wall> allWalls = Utility.getWalls();
         ListIterator<Wall> wallIterator = allWalls.listIterator();
@@ -60,10 +87,25 @@ public class Wall {
         }
     }
 
+    /**
+     * Converts a Wall object to String
+     *
+     * @return String of the current Wall object
+     */
+
     public String convertToString() {
         String sep = ",";
         return x + sep + y + sep + z + sep + worldname + sep + x1 + sep + y1 + sep + z1 + sep + id + sep + data;
     }
+
+    /**
+     * Creates an object from a string containing all the information a wall contains
+     * Used for loading from config.
+     *
+     * @param data - Data in String form
+     * @param name - Name of the Wall
+     * @return new Wall object containing given data.
+     */
 
     public static Wall objectFromString(String data, String name) {
 
@@ -86,60 +128,145 @@ public class Wall {
         return new Wall(x, y, z, world, x1, y1, z1, name, id, dataID);
     }
 
+    /**
+     * Returns the Integer value of a string
+     *
+     * @param num - Number in String form
+     * @return Integer value of num
+     */
+
     public static int convert(String num) {
         return Integer.parseInt(num);
     }
+
+    /**
+     * Returns the World name of the Wall
+     *
+     * @return World name of the Wall
+     */
 
     public String getWorldname() {
         return worldname;
     }
 
+    /**
+     * Returns the first 'x' coordinate
+     *
+     * @return First x coordinate
+     */
+
     public int getX() {
         return x;
     }
+
+    /**
+     * Returns the second 'x' coordinate
+     *
+     * @return Second x coordinate
+     */
 
     public int getX1() {
         return x1;
     }
 
+    /**
+     * Returns the first 'y' coordinate
+     *
+     * @return First y coordinate
+     */
+
     public int getY() {
         return y;
     }
+
+    /**
+     * Returns the second 'y' coordinate
+     *
+     * @return Second y coordinate
+     */
 
     public int getY1() {
         return y1;
     }
 
+    /**
+     * Returns the first 'z' coordinate
+     *
+     * @return First z coordinate
+     */
+
     public int getZ() {
         return z;
     }
+
+    /**
+     * Returns the second 'z' coordinate
+     *
+     * @return Second z coordinate
+     */
 
     public int getZ1() {
         return z1;
     }
 
+    /**
+     * Returns the name of the Wall
+     *
+     * @return Name of the Wall
+     */
+
     public String getName() {
         return name;
     }
+
+    /**
+     * Returns ID of the Wall
+     *
+     * @return Block ID of the Wall
+     */
 
     public int getId() {
         return id;
     }
 
+    /**
+     * Returns material data of Wall
+     *
+     * @return material data
+     */
+
     public int getData() {
         return data;
     }
 
+    /**
+     * Retrieves wall by name
+     *
+     * @param name - Name of the wall to be retrieved
+     * @return Wall object from Name
+     */
 
     public static Wall getByName(String name) {
         return wallObjects.get(name);
     }
+
+    /**
+     * Removes wall by name
+     *
+     * @param name - Name of the wall
+     */
 
     public static void removeByName(String name) {
         Wall wall = getByName(name);
         wallObjects.remove(name);
         wall = null;
     }
+
+    /**
+     * Writes object in string form to config.
+     *
+     * @param nme - Object that's converted to string to be written to config.
+     */
 
     public void writeToConfig(String nme) {
 
