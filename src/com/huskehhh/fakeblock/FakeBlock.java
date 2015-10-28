@@ -101,10 +101,10 @@ public class FakeBlock extends JavaPlugin implements Listener {
     /**
      * Command handler
      *
-     * @param sender - Command Sender
-     * @param cmd - Command sent
+     * @param sender       - Command Sender
+     * @param cmd          - Command sent
      * @param commandLabel - Command sent converted to String
-     * @param args - Arguments of the Command
+     * @param args         - Arguments of the Command
      * @return whether or not the command worked
      */
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
@@ -150,7 +150,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
 
                                 configObj.put(p.getName(), conf);
 
-                                p.sendMessage(ChatColor.GREEN + "[FakeBlock] You can now select the blocks you want..");
+                                p.sendMessage(ChatColor.GREEN + "[FakeBlock] You can now select the blocks you want.");
                             } else {
                                 p.sendMessage(ChatColor.RED + "[FakeBlock] Need more arguments!");
                             }
@@ -184,6 +184,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
 
     /**
      * Listening event to handle the selection paramaters of Walls
+     *
      * @param e - PlayerInteractEvent
      */
     @EventHandler
