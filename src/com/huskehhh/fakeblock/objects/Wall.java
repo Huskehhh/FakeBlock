@@ -78,13 +78,7 @@ public class Wall {
      */
 
     public static void unloadWalls() {
-        List<Wall> allWalls = Utility.getWalls();
-        ListIterator<Wall> wallIterator = allWalls.listIterator();
-
-        while (wallIterator.hasNext()) {
-            Wall next = wallIterator.next();
-            next.removeByName(next.getName());
-        }
+        Utility.getWalls().clear();
     }
 
     /**

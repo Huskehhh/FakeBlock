@@ -26,26 +26,56 @@ import java.util.List;
 
 public class FakeBlock extends JavaPlugin implements Listener {
 
+    // Config object
     YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/FakeBlock/config.yml"));
 
+    // Selection List / Mapping
     List<String> right = new ArrayList<String>();
     List<String> selecting = new ArrayList<String>();
     HashMap<String, String> map = new HashMap<String, String>();
+
+    // HashMap used to contain the Configuration of a Wall mid creation
     HashMap<String, Config> configObj = new HashMap<String, Config>();
 
+    // Hook for Utility class
     Utility api = new Utility();
 
+
+    /**
+     * Method to handle Plugin startup.
+     */
     public void onEnable() {
+        // Register events
         getServer().getPluginManager().registerEvents(new FakeBlockListener(this), this);
         getServer().getPluginManager().registerEvents(this, this);
+
+        // Create Config if not already created
         createConfig();
+
+        // Load all Walls from Config
         Wall.loadWalls();
     }
 
+
+    /**
+     * Method to handle Plugin shutdown.
+     */
     public void onDisable() {
+        // Unload all Walls
         Wall.unloadWalls();
+        unloadConfigObjects();
     }
 
+    /**
+     * Unloads all Configuration objects containing partial Walls in the making.
+     */
+    private void unloadConfigObjects() {
+        configObj.clear();
+    }
+
+    /**
+     * Method to handle the creation of configuration file if not currently present.
+     */
     private void createConfig() {
         boolean exists = new File("plugins/FakeBlock/config.yml").exists();
 
@@ -67,6 +97,15 @@ public class FakeBlock extends JavaPlugin implements Listener {
 
     }
 
+    /**
+     * Command handler
+     *
+     * @param sender - Command Sender
+     * @param cmd - Command sent
+     * @param commandLabel - Command sent converted to String
+     * @param args - Arguments of the Command
+     * @return whether or not the command worked
+     */
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 
         if (commandLabel.equalsIgnoreCase("fakeblock") || commandLabel.equalsIgnoreCase("fb")) {
@@ -142,6 +181,10 @@ public class FakeBlock extends JavaPlugin implements Listener {
         return false;
     }
 
+    /**
+     * Listening event to handle the selection paramaters of Walls
+     * @param e - PlayerInteractEvent
+     */
     @EventHandler
     public void wallSelection(PlayerInteractEvent e) {
 

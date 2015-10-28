@@ -115,5 +115,4 @@ public class Config {
         return new Wall(x, y, z, worldname, x1, y1, z1, name, id, data);
     }
 
-
 }
