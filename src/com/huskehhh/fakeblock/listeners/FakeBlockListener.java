@@ -22,58 +22,89 @@ import java.util.HashMap;
 
 public class FakeBlockListener implements Listener {
 
+    // FakeBlock hook
     private FakeBlock plugin;
 
+    // Constructor
     public FakeBlockListener(FakeBlock plugin) {
         this.plugin = plugin;
     }
 
+    // Hook for Utility class
     Utility utility = new Utility();
 
+    // Users to track for illicit actions
     HashMap<String, Location> tracking = new HashMap<String, Location>();
 
-    boolean wallExists = true;
+    /**
+     * Method to listen for PlayerJoin, sending the Fake Packets when they do connect.
+     * <p/>
+     * Note: The delay is to ensure that when they are receiving the World Packets, they do not conflict or overwrite
+     * the Fake packets for the Wall
+     *
+     * @param e - PlayerJoinEvent
+     */
 
     @EventHandler
     public void playerJoin(PlayerJoinEvent e) {
         final Player p = e.getPlayer();
-        if (wallExists) {
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                public void run() {
-                    utility.sendFakeBlocks(p);
-                }
-            }, (2 * 20));
-        }
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+            public void run() {
+                utility.sendFakeBlocks(p);
+            }
+        }, (2 * 20));
     }
+
+    /**
+     * Method to listen for Teleportation by a Player, sending the Fake Packets when they do teleport
+     * <p/>
+     * TODO: Implement a check if they are close to a Wall or not, saves processing / sending unneeded Packets
+     * <p/>
+     * Note: The delay is to ensure that when they are receiving the World Packets, they do not conflict or overwrite
+     * the Fake packets for the Wall
+     *
+     * @param e - PlayerTeleportEvent
+     */
 
     @EventHandler
     public void onTeleport(PlayerTeleportEvent e) {
         final Player p = e.getPlayer();
-        if (wallExists) {
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                public void run() {
-                    for (Player server : Bukkit.getServer().getOnlinePlayers()) {
-                        utility.sendFakeBlocks(server);
-                    }
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+            public void run() {
+                for (Player server : Bukkit.getServer().getOnlinePlayers()) {
+                    utility.sendFakeBlocks(server);
                 }
-            }, (2 * 20));
-        }
+            }
+        }, (2 * 20));
     }
+
+    /**
+     * Method to listen for PlayerRespawn, sending the Fake Packets to them
+     * <p/>
+     * Note: The delay is to ensure that when they are receiving the World Packets, they do not conflict or overwrite
+     * the Fake packets for the Wall
+     *
+     * @param e - PlayerRespawnEvent
+     */
 
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e) {
         final Player p = e.getPlayer();
-        if (wallExists) {
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                public void run() {
-                    for (Player server : Bukkit.getServer().getOnlinePlayers()) {
-                        utility.sendFakeBlocks(server);
-                    }
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+            public void run() {
+                for (Player server : Bukkit.getServer().getOnlinePlayers()) {
+                    utility.sendFakeBlocks(server);
                 }
-            }, (2 * 20));
-        }
+            }
+        }, (2 * 20));
     }
 
+
+    /**
+     * Method to Listen for PlayerMove, checking if the Player is close to a Wall, if so, ensure they receive the Fake Packets
+     *
+     * @param e - PlayerMoveEvent
+     */
 
     @EventHandler
     public void onMove(PlayerMoveEvent e) {
@@ -85,6 +116,15 @@ public class FakeBlockListener implements Listener {
         }
     }
 
+    /**
+     * Method to listen for PlayerInteract ensuring that if they click a Block that is apart of the Wall, send them the Wall again
+     * to ensure that the client does not overwrite the Fake data
+     * <p/>
+     * Note: The delay is to ensure that when they are receiving the World Packets, they do not conflict or overwrite
+     * the Fake packets for the Wall
+     *
+     * @param e - PlayerInteractEvent
+     */
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent e) {
@@ -113,6 +153,15 @@ public class FakeBlockListener implements Listener {
         }
     }
 
+    /**
+     * Method to listen for BlockBreak to send the Player the Wall packets again if they are close to the Wall
+     * <p/>
+     * Note: The delay is to ensure that when they are receiving the World Packets, they do not conflict or overwrite
+     * the Fake packets for the Wall
+     *
+     * @param e - BlockBreakEvent
+     */
+
     @EventHandler
     public void onBlockBreak(BlockBreakEvent e) {
         Player p = e.getPlayer();
@@ -134,6 +183,16 @@ public class FakeBlockListener implements Listener {
 
     }
 
+    /**
+     * Method to listen for EnderPearl land Event in order to cancel it if the player is near a wall and currently being tracked
+     * for throwing an EnderPearl
+     * <p/>
+     * TODO: Fix, is currently broken and supposedly not working
+     * TODO: Test
+     *
+     * @param e
+     */
+
     @EventHandler
     public void onEnderPearl(ProjectileHitEvent e) {
         if (e.getEntity() instanceof Player) {
@@ -148,6 +207,12 @@ public class FakeBlockListener implements Listener {
             }
         }
     }
+
+    /**
+     * Method to listen for the launching of an EnderPearl in order to initiate tracking of a Player for when the EnderPearl lands
+     *
+     * @param e - ProjectileLaunchEvent
+     */
 
     @EventHandler
     public void onEnderPearl(ProjectileLaunchEvent e) {
