@@ -61,8 +61,9 @@ public class FakeBlock extends JavaPlugin implements Listener {
      * Method to handle Plugin shutdown.
      */
     public void onDisable() {
-        // Unload all Walls
+        // Unload all Wall objects
         Wall.unloadWalls();
+        // Unload all Config objects
         unloadConfigObjects();
     }
 
