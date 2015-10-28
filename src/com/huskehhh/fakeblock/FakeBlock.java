@@ -44,6 +44,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
     /**
      * Method to handle Plugin startup.
      */
+
     public void onEnable() {
         // Register events
         getServer().getPluginManager().registerEvents(new FakeBlockListener(this), this);
@@ -60,6 +61,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
     /**
      * Method to handle Plugin shutdown.
      */
+
     public void onDisable() {
         // Unload all Wall objects
         Wall.unloadWalls();
@@ -70,6 +72,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
     /**
      * Unloads all Configuration objects containing partial Walls in the making.
      */
+
     private void unloadConfigObjects() {
         configObj.clear();
     }
@@ -77,6 +80,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
     /**
      * Method to handle the creation of configuration file if not currently present.
      */
+
     private void createConfig() {
         boolean exists = new File("plugins/FakeBlock/config.yml").exists();
 
@@ -107,6 +111,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
      * @param args         - Arguments of the Command
      * @return whether or not the command worked
      */
+
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 
         if (commandLabel.equalsIgnoreCase("fakeblock") || commandLabel.equalsIgnoreCase("fb")) {
@@ -187,6 +192,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
      *
      * @param e - PlayerInteractEvent
      */
+
     @EventHandler
     public void wallSelection(PlayerInteractEvent e) {
 
