@@ -143,7 +143,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void selection(PlayerInteractEvent e) {
+    public void wallSelection(PlayerInteractEvent e) {
 
         Player p = e.getPlayer();
         if (e.getClickedBlock() != null) {
