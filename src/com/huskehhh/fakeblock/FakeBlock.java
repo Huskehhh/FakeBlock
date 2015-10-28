@@ -253,7 +253,6 @@ public class FakeBlock extends JavaPlugin implements Listener {
                                 }
                             }
                         }, (2 * 20));
-
                     }
                 }
             }
