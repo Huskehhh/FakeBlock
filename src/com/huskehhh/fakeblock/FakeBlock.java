@@ -10,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -116,11 +117,9 @@ public class FakeBlock extends JavaPlugin implements Listener {
 
         if (commandLabel.equalsIgnoreCase("fakeblock") || commandLabel.equalsIgnoreCase("fb")) {
 
-            if (sender == getServer().getConsoleSender()) {
+            if (sender != getServer().getConsoleSender()) {
 
                 sender.sendMessage(ChatColor.RED + "Only players can use these commands.");
-
-            } else {
 
                 if (args.length > 0) {
                     Player p = (Player) sender;
@@ -162,28 +161,29 @@ public class FakeBlock extends JavaPlugin implements Listener {
                         } else {
                             p.sendMessage(ChatColor.RED + "[FakeBlock] You don't have permission for this command.");
                         }
-                    } else if (para.equalsIgnoreCase("reload")) {
+                    }
+                }
+            } else {
+                if (args[0].equalsIgnoreCase("reload")) {
 
-                        if (p.hasPermission("fakeblock.admin")) {
-                            Wall.unloadWalls();
-                            Wall.loadWalls();
+                    if (sender instanceof ConsoleCommandSender) {
+                        Wall.unloadWalls();
+                        Utility.forceConfigRefresh();
+                        Wall.loadWalls();
 
-                            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-                                public void run() {
-                                    for (Player server : Bukkit.getServer().getOnlinePlayers()) {
-                                        api.sendFakeBlocks(server);
-                                    }
+                        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+                            public void run() {
+                                for (Player server : Bukkit.getServer().getOnlinePlayers()) {
+                                    api.sendFakeBlocks(server);
                                 }
-                            }, (2 * 20));
-                        } else {
-                            p.sendMessage(ChatColor.RED + "[FakeBlock] You don't have permission for this command.");
-                        }
-                        return true;
+                            }
+                        }, (2 * 20));
                     }
                 }
                 return true;
             }
         }
+
         return false;
     }
 
