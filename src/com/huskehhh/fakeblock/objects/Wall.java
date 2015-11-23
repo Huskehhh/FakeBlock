@@ -1,9 +1,7 @@
 package com.huskehhh.fakeblock.objects;
 
 import com.huskehhh.fakeblock.util.Utility;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -277,11 +275,6 @@ public class Wall {
                 config.save("plugins/FakeBlock/config.yml");
             } catch (IOException e) {
                 e.printStackTrace();
-            }
-
-            Utility api = new Utility();
-            for (Player server : Bukkit.getServer().getOnlinePlayers()) {
-                api.sendFakeBlocks(server);
             }
 
         }

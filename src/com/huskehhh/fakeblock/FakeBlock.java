@@ -4,7 +4,6 @@ import com.huskehhh.fakeblock.listeners.FakeBlockListener;
 import com.huskehhh.fakeblock.objects.Config;
 import com.huskehhh.fakeblock.objects.Wall;
 import com.huskehhh.fakeblock.util.Utility;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -37,8 +36,8 @@ public class FakeBlock extends JavaPlugin implements Listener {
     // HashMap used to contain the Configuration of a Wall mid creation
     HashMap<String, Config> configObj = new HashMap<String, Config>();
 
-    // Hook for Utility class
-    Utility api = new Utility();
+    // Hook for Utility class - UNUSED at the moment
+    Utility api = new Utility(this);
 
 
     /**
@@ -168,13 +167,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
                             Wall.unloadWalls();
                             Wall.loadWalls();
 
-                            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-                                public void run() {
-                                    for (Player server : Bukkit.getServer().getOnlinePlayers()) {
-                                        api.sendFakeBlocks(server);
-                                    }
-                                }
-                            }, (2 * 20));
+                            Utility.sendFakeBlocks();
                         } else {
                             p.sendMessage(ChatColor.RED + "[FakeBlock] You don't have permission for this command.");
                         }
@@ -246,13 +239,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
 
                         e.setCancelled(true);
 
-                        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-                            public void run() {
-                                for (Player server : Bukkit.getServer().getOnlinePlayers()) {
-                                    api.sendFakeBlocks(server);
-                                }
-                            }
-                        }, (2 * 20));
+                        Utility.sendFakeBlocks();
                     }
                 }
             }

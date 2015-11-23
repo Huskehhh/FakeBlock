@@ -95,6 +95,7 @@ public class Config {
         this.id = id;
     }
 
+
     /**
      * Set material data of the block
      *

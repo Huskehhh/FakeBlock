@@ -2,7 +2,6 @@ package com.huskehhh.fakeblock.listeners;
 
 import com.huskehhh.fakeblock.FakeBlock;
 import com.huskehhh.fakeblock.util.Utility;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -30,9 +29,6 @@ public class FakeBlockListener implements Listener {
         this.plugin = plugin;
     }
 
-    // Hook for Utility class
-    Utility utility = new Utility();
-
     // Users to track for illicit actions
     HashMap<String, Location> tracking = new HashMap<String, Location>();
 
@@ -47,12 +43,7 @@ public class FakeBlockListener implements Listener {
 
     @EventHandler
     public void playerJoin(PlayerJoinEvent e) {
-        final Player p = e.getPlayer();
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-            public void run() {
-                utility.sendFakeBlocks(p);
-            }
-        }, (2 * 20));
+        Utility.sendFakeBlocks();
     }
 
     /**
@@ -68,14 +59,7 @@ public class FakeBlockListener implements Listener {
 
     @EventHandler
     public void onTeleport(PlayerTeleportEvent e) {
-        final Player p = e.getPlayer();
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-            public void run() {
-                for (Player server : Bukkit.getServer().getOnlinePlayers()) {
-                    utility.sendFakeBlocks(server);
-                }
-            }
-        }, (2 * 20));
+        Utility.sendFakeBlocks();
     }
 
     /**
@@ -89,14 +73,7 @@ public class FakeBlockListener implements Listener {
 
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e) {
-        final Player p = e.getPlayer();
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-            public void run() {
-                for (Player server : Bukkit.getServer().getOnlinePlayers()) {
-                    utility.sendFakeBlocks(server);
-                }
-            }
-        }, (2 * 20));
+        Utility.sendFakeBlocks();
     }
 
 
@@ -109,10 +86,8 @@ public class FakeBlockListener implements Listener {
     @EventHandler
     public void onMove(PlayerMoveEvent e) {
         Player p = e.getPlayer();
-        if (utility.isSuperNearWall(p)) {
-            for (Player server : Bukkit.getServer().getOnlinePlayers()) {
-                utility.sendFakeBlocks(server);
-            }
+        if (Utility.isSuperNearWall(p) || Utility.isNearWall(p)) {
+            Utility.sendFakeBlocks();
         }
     }
 
@@ -130,8 +105,8 @@ public class FakeBlockListener implements Listener {
     public void onPlayerInteract(PlayerInteractEvent e) {
         Player p = e.getPlayer();
 
-        if (utility.isNearWall(p)) {
-            utility.sendFakeBlocks(p);
+        if (Utility.isNearWall(p)) {
+            Utility.sendFakeBlocks();
         }
 
         if (e.getClickedBlock() != null) {
@@ -145,10 +120,8 @@ public class FakeBlockListener implements Listener {
             int py = p.getLocation().getBlockY();
             int pz = p.getLocation().getBlockZ();
 
-            if (utility.isNear(x, y, z, px, py, pz, 10)) {
-                for (Player server : Bukkit.getServer().getOnlinePlayers()) {
-                    utility.sendFakeBlocks(server);
-                }
+            if (Utility.isNear(x, y, z, px, py, pz, 10)) {
+                Utility.sendFakeBlocks();
             }
         }
     }
@@ -175,10 +148,8 @@ public class FakeBlockListener implements Listener {
         int py = p.getLocation().getBlockY();
         int pz = p.getLocation().getBlockZ();
 
-        if (utility.isNear(x, y, z, px, py, pz, 10)) {
-            for (Player server : Bukkit.getServer().getOnlinePlayers()) {
-                utility.sendFakeBlocks(server);
-            }
+        if (Utility.isNear(x, y, z, px, py, pz, 10)) {
+            Utility.sendFakeBlocks();
         }
 
     }
@@ -198,7 +169,7 @@ public class FakeBlockListener implements Listener {
         if (e.getEntity() instanceof Player) {
             Player p = (Player) e.getEntity();
             if (tracking.containsKey(p.getName())) {
-                if (utility.isNearWall(p)) {
+                if (Utility.isNearWall(p)) {
                     p.teleport(tracking.get(p.getName()));
                     tracking.remove(p.getName());
                     p.sendMessage(ChatColor.RED + "[FakeBlock] Unable to teleport through the wall");

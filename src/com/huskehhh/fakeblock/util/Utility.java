@@ -1,11 +1,10 @@
 package com.huskehhh.fakeblock.util;
 
+import com.huskehhh.fakeblock.FakeBlock;
 import com.huskehhh.fakeblock.objects.Wall;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.io.File;
@@ -15,6 +14,12 @@ import java.util.List;
 import java.util.ListIterator;
 
 public class Utility {
+
+    private static FakeBlock fakeblock;
+
+    public Utility(FakeBlock fakeblock) {
+        this.fakeblock = fakeblock;
+    }
 
     /**
      * Data will be stored like
@@ -57,11 +62,17 @@ public class Utility {
 
     /**
      * Send Wall to the Player
-     *
-     * @param p - Player to send the Wall to
      */
 
-    public void sendFakeBlocks(Player p) {
+    public static void sendFakeBlocks() {
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(fakeblock, new Runnable() {
+            public void run() {
+                processBlockSend();
+            }
+        }, (2 * 20));
+    }
+
+    private static void processBlockSend() {
         List<Wall> walls = getWalls();
         Iterator<Wall> wallIterator = walls.listIterator();
 
@@ -70,49 +81,109 @@ public class Utility {
 
             if (wall != null) {
 
-                if (!p.hasPermission("fakeblock." + wall.getName()) && p.getLocation().getWorld() == Bukkit.getServer().getWorld(wall.getWorldname())) {
+                List<String> playerNames = processSendBlocksTo(wall);
 
-                    int j = Bukkit.getServer().getOnlinePlayers().size();
+                Material m = Material.getMaterial(wall.getId());
 
-                    Material m = Material.getMaterial(wall.getId());
+                ArrayList<Location> allBlocks = getBlocks(wall);
+                ListIterator<Location> locations = allBlocks.listIterator();
 
-                    ArrayList<Location> allBlocks = getBlocks(wall);
-                    ListIterator<Location> locations = allBlocks.listIterator();
+                ListIterator<String> players = playerNames.listIterator();
 
-                    for (int h = 0; h < j; h++) {
+                while (players.hasNext()) {
+                    Player p = Bukkit.getServer().getPlayer(players.next());
 
-                        while (locations.hasNext()) {
-                            Location send = locations.next();
-                            p.sendBlockChange(send, m, (byte) wall.getData());
-                        }
+                    if (!p.hasPermission("fakeblock." + wall.getName()) || !p.hasPermission("fakeblock.admin")) break;
 
+                    while (locations.hasNext()) {
+                        Location send = locations.next();
+                        p.sendBlockChange(send, m, (byte) wall.getData());
                     }
                 }
+
             }
         }
     }
 
-    private int getMaxX(int x, int x1) {
+    /**
+     * Method to determine which players are eligible to receive the Wall packets
+     *
+     * @param wall - Wall to check for eligible players
+     * @return List of PlayerNames
+     */
+
+    private static List<String> processSendBlocksTo(Wall wall) {
+
+        List<String> process = new ArrayList<String>();
+
+        int x = wall.getX();
+        int y = wall.getY();
+        int z = wall.getZ();
+
+        int x1 = wall.getX1();
+        int y1 = wall.getY1();
+        int z1 = wall.getZ1();
+
+        for (Player server : Bukkit.getServer().getOnlinePlayers()) {
+
+            if (server.getLocation().getWorld() == Bukkit.getServer().getWorld(wall.getWorldname())) {
+
+                //TODO: <test>
+
+                if (Bukkit.getWorld(wall.getWorldname()).getChunkAt(new Location(Bukkit.getServer().getWorld(wall.getWorldname()), x, y, z)) == server.getLocation().getChunk()) {
+                    process.add(server.getName());
+                }
+
+                if (Bukkit.getWorld(wall.getWorldname()).getChunkAt(new Location(Bukkit.getServer().getWorld(wall.getWorldname()), x1, y1, z1)) == server.getLocation().getChunk()) {
+                    process.add(server.getName());
+                }
+
+                //TODO: </test>
+
+                /**
+
+                 Process using 'getAllPlayersInChunk'
+
+                 if (getAllPlayersInChunk(Bukkit.getWorld(wall.getWorldname()).getChunkAt(new Location(Bukkit.getServer().getWorld(wall.getWorldname()), x, y, z))).contains(server.getName())) {
+                 process.add(server.getName());
+                 }
+
+                 if (getAllPlayersInChunk(Bukkit.getWorld(wall.getWorldname()).getChunkAt(new Location(Bukkit.getServer().getWorld(wall.getWorldname()), x1, y1, z1))).contains(server.getName())) {
+                 process.add(server.getName());
+                 }
+
+                 // Expected to result in less performance
+
+                 **/
+
+            }
+
+        }
+        return process;
+    }
+
+
+    private static int getMaxX(int x, int x1) {
         return Math.max(x, x1);
     }
 
-    private int getMinX(int x, int x1) {
+    private static int getMinX(int x, int x1) {
         return Math.min(x, x1);
     }
 
-    private int getMaxY(int y, int y1) {
+    private static int getMaxY(int y, int y1) {
         return Math.max(y, y1);
     }
 
-    private int getMinY(int y, int y1) {
+    private static int getMinY(int y, int y1) {
         return Math.min(y, y1);
     }
 
-    private int getMaxZ(int z, int z1) {
+    private static int getMaxZ(int z, int z1) {
         return Math.max(z, z1);
     }
 
-    private int getMinZ(int z, int z1) {
+    private static int getMinZ(int z, int z1) {
         return Math.min(z, z1);
     }
 
@@ -123,7 +194,7 @@ public class Utility {
      * @return ArrayList of locations that contains all block locations
      */
 
-    public ArrayList<Location> getBlocks(Wall wall) {
+    public static ArrayList<Location> getBlocks(Wall wall) {
 
         World w = Bukkit.getServer().getWorld(wall.getWorldname());
 
@@ -136,9 +207,9 @@ public class Utility {
 
         ArrayList<Location> blocks = new ArrayList<Location>();
 
-        for (int x = this.getMinX(bx, bx1); x <= this.getMaxX(bx, bx1); ++x) {
-            for (int y = this.getMinY(by, by1); y <= this.getMaxY(by, by1); ++y) {
-                for (int z = this.getMinZ(bz, bz1); z <= this.getMaxZ(bz, bz1); ++z) {
+        for (int x = getMinX(bx, bx1); x <= getMaxX(bx, bx1); ++x) {
+            for (int y = getMinY(by, by1); y <= getMaxY(by, by1); ++y) {
+                for (int z = getMinZ(bz, bz1); z <= getMaxZ(bz, bz1); ++z) {
                     blocks.add(new Location(w, x, y, z));
                 }
             }
@@ -246,5 +317,27 @@ public class Utility {
         return false;
     }
 
+    /**
+     * Method to return all players in chunk
+     *
+     * @param chunk - Chunk to check
+     * @return list of players in chunk
+     */
+
+    public static List<String> getAllPlayersInChunk(Chunk chunk) {
+        List<String> ret = new ArrayList<String>();
+
+        Entity[] ent = chunk.getEntities();
+
+        for (int i = 0; i < ent.length; i++) {
+            Entity entity = ent[i];
+            if (entity instanceof Player) {
+                Player p = (Player) entity;
+                ret.add(p.getName());
+            }
+        }
+
+        return ret;
+    }
 
 }
