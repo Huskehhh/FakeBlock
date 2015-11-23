@@ -28,6 +28,16 @@ public class Utility {
 
     public static YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/FakeBlock/config.yml"));
 
+
+    /**
+     * Forces refresh of the config file
+     * Used to refresh to return manually added Walls
+     */
+
+    public static void forceConfigRefresh() {
+        config = YamlConfiguration.loadConfiguration(new File("plugins/FakeBlock/config.yml"));
+    }
+
     /**
      * Get StringList of Walls in config
      *

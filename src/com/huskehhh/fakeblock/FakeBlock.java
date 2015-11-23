@@ -115,23 +115,19 @@ public class FakeBlock extends JavaPlugin implements Listener {
 
         if (commandLabel.equalsIgnoreCase("fakeblock") || commandLabel.equalsIgnoreCase("fb")) {
 
-            if (sender == getServer().getConsoleSender()) {
+            if (args.length > 0) {
+                String para = args[0];
 
-                sender.sendMessage(ChatColor.RED + "Only players can use these commands.");
-
-            } else {
-
-                if (args.length > 0) {
-                    Player p = (Player) sender;
-                    String para = args[0];
+                if (sender.hasPermission("fakeblock.admin")) {
 
                     if (para.equalsIgnoreCase("set")) {
+                        if (sender instanceof Player) {
+
+                            Player p = (Player) sender;
 
                         /*
                          * /fb set <name> <id>:<materialdata>
                          */
-
-                        if (p.hasPermission("fakeblock.admin")) {
 
                             if (args.length == 3) {
                                 map.put(p.getName(), args[1]);
@@ -142,6 +138,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
                                 conf.setName(args[1]);
 
                                 String getData = args[2];
+
                                 if (getData.contains(":")) {
                                     String[] splitForData = getData.split(":");
                                     if (splitForData.length == 2) {
@@ -156,28 +153,24 @@ public class FakeBlock extends JavaPlugin implements Listener {
 
                                 p.sendMessage(ChatColor.GREEN + "[FakeBlock] You can now select the blocks you want.");
                             } else {
-                                p.sendMessage(ChatColor.RED + "[FakeBlock] Need more arguments!");
+                                p.sendMessage(ChatColor.RED + "[FakeBlock] Wrong amount of arguments.");
                             }
                         } else {
-                            p.sendMessage(ChatColor.RED + "[FakeBlock] You don't have permission for this command.");
+                            sender.sendMessage(ChatColor.RED + "[FakeBlock] Only players can use this command!");
                         }
                     } else if (para.equalsIgnoreCase("reload")) {
+                        Wall.unloadWalls();
+                        Utility.forceConfigRefresh();
+                        Wall.loadWalls();
 
-                        if (p.hasPermission("fakeblock.admin")) {
-                            Wall.unloadWalls();
-                            Wall.loadWalls();
-
-                            Utility.sendFakeBlocks();
-                        } else {
-                            p.sendMessage(ChatColor.RED + "[FakeBlock] You don't have permission for this command.");
-                        }
-                        return true;
+                        Utility.sendFakeBlocks();
                     }
+                } else {
+                    sender.sendMessage(ChatColor.RED + "[FakeBlock] You don't have permission for this command.");
                 }
-                return true;
             }
         }
-        return false;
+        return true;
     }
 
     /**
