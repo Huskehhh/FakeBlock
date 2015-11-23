@@ -3,6 +3,7 @@ package com.huskehhh.fakeblock.listeners;
 import com.huskehhh.fakeblock.FakeBlock;
 import com.huskehhh.fakeblock.util.Utility;
 import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -31,6 +32,8 @@ public class FakeBlockListener implements Listener {
 
     // Users to track for illicit actions
     HashMap<String, Location> tracking = new HashMap<String, Location>();
+
+    HashMap<String, Chunk> chunkTracking = new HashMap<String, Chunk>();
 
     /**
      * Method to listen for PlayerJoin, sending the Fake Packets when they do connect.
@@ -89,6 +92,17 @@ public class FakeBlockListener implements Listener {
         if (Utility.isSuperNearWall(p) || Utility.isNearWall(p)) {
             Utility.sendFakeBlocks();
         }
+
+        if (chunkTracking.containsKey(p.getName())) {
+            if (chunkTracking.get(p.getName()) != p.getLocation().getChunk()) {
+                chunkTracking.remove(p.getName());
+                chunkTracking.put(p.getName(), p.getLocation().getChunk());
+                Utility.processIndividual(p);
+            }
+        } else {
+            chunkTracking.put(p.getName(), p.getLocation().getChunk());
+        }
+
     }
 
     /**

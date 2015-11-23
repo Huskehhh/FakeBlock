@@ -116,6 +116,43 @@ public class Utility {
     }
 
     /**
+     * Process singular Player instead of processing all players on server
+     *
+     * @param p - Player to process
+     */
+
+    public static void processIndividual(final Player p) {
+        List<Wall> walls = getWalls();
+        Iterator<Wall> wallIterator = walls.listIterator();
+
+        while (wallIterator.hasNext()) {
+            final Wall wall = wallIterator.next();
+
+            if (wall != null) {
+
+                final Material m = Material.getMaterial(wall.getId());
+
+                ArrayList<Location> allBlocks = getBlocks(wall);
+                final ListIterator<Location> locations = allBlocks.listIterator();
+
+                if (!p.hasPermission("fakeblock." + wall.getName()) || !p.hasPermission("fakeblock.admin")) break;
+
+                if (processSendBlocksTo(wall).contains(p.getName())) {
+
+                    Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(fakeblock, new Runnable() {
+                        public void run() {
+                            while (locations.hasNext()) {
+                                Location send = locations.next();
+                                p.sendBlockChange(send, m, (byte) wall.getData());
+                            }
+                        }
+                    }, (2 * 20));
+                }
+            }
+        }
+    }
+
+    /**
      * Method to determine which players are eligible to receive the Wall packets
      *
      * @param wall - Wall to check for eligible players
