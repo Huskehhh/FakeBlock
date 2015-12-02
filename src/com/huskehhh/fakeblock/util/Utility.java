@@ -103,7 +103,7 @@ public class Utility {
                 while (players.hasNext()) {
                     Player p = Bukkit.getServer().getPlayer(players.next());
 
-                    if (!p.hasPermission("fakeblock." + wall.getName()) || !p.hasPermission("fakeblock.admin")) break;
+                    if (p.hasPermission("fakeblock." + wall.getName()) || p.hasPermission("fakeblock.admin")) break;
 
                     while (locations.hasNext()) {
                         Location send = locations.next();
@@ -135,7 +135,7 @@ public class Utility {
                 ArrayList<Location> allBlocks = getBlocks(wall);
                 final ListIterator<Location> locations = allBlocks.listIterator();
 
-                if (!p.hasPermission("fakeblock." + wall.getName()) || !p.hasPermission("fakeblock.admin")) break;
+                if (p.hasPermission("fakeblock." + wall.getName()) || p.hasPermission("fakeblock.admin")) break;
 
                 if (processSendBlocksTo(wall).contains(p.getName())) {
 
