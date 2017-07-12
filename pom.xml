@@ -39,19 +39,15 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.8.7-R0.1-SNAPSHOT</version>
+            <version>LATEST</version>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.8.7-R0.1-SNAPSHOT</version>
+            <version>LATEST</version>
         </dependency>
     </dependencies>
     <repositories>
-        <repository>
-            <id>OresomeCraft</id>
-            <url>http://assets.oresomecraft.com/maven</url>
-        </repository>
         <repository>
             <id>bukkit-repo</id>
             <url>http://repo.bukkit.org/content/groups/public</url>
@@ -67,5 +63,5 @@
         <url>https://github.com/Huskehhh/FakeBlock/issues</url>
     </issueManagement>
     <url>https://huskehhh.com/</url>
-    <version>1.4.2</version>
+    <version>1.4.3</version>
 </project>
