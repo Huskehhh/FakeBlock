@@ -37,11 +37,6 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>LATEST</version>
-        </dependency>
-        <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
             <version>LATEST</version>
@@ -49,12 +44,8 @@
     </dependencies>
     <repositories>
         <repository>
-            <id>bukkit-repo</id>
-            <url>http://repo.bukkit.org/content/groups/public</url>
-        </repository>
-        <repository>
             <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
     </repositories>
     <description>A plugin that allows the use of 'Fake' blocks for certain players.</description>
@@ -63,5 +54,5 @@
         <url>https://github.com/Huskehhh/FakeBlock/issues</url>
     </issueManagement>
     <url>https://huskehhh.com/</url>
-    <version>1.4.3</version>
+    <version>1.4.4</version>
 </project>
