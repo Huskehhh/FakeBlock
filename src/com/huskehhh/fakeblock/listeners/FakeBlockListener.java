@@ -1,7 +1,6 @@
 package com.huskehhh.fakeblock.listeners;
 
 import com.huskehhh.fakeblock.util.Utility;
-import org.bukkit.Chunk;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -9,11 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.*;
 
-import java.util.HashMap;
-
 public class FakeBlockListener implements Listener {
-
-    HashMap<String, Chunk> chunkTracking = new HashMap<String, Chunk>();
 
     /**
      * Method to listen for PlayerJoin, sending the Fake Packets when they do connect.
@@ -57,32 +52,6 @@ public class FakeBlockListener implements Listener {
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e) {
         Utility.sendFakeBlocks();
-    }
-
-
-    /**
-     * Method to Listen for PlayerMove, checking if the Player is close to a Wall, if so, ensure they receive the Fake Packets
-     *
-     * @param e - PlayerMoveEvent
-     */
-
-    @EventHandler
-    public void onMove(PlayerMoveEvent e) {
-        Player p = e.getPlayer();
-        if (Utility.isNearWall(p, 10)) {
-            Utility.sendFakeBlocks();
-        }
-
-        if (chunkTracking.containsKey(p.getName())) {
-            if (chunkTracking.get(p.getName()) != p.getLocation().getChunk()) {
-                chunkTracking.remove(p.getName());
-                chunkTracking.put(p.getName(), p.getLocation().getChunk());
-                Utility.processIndividual(p);
-            }
-        } else {
-            chunkTracking.put(p.getName(), p.getLocation().getChunk());
-        }
-
     }
 
     /**
