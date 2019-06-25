@@ -16,9 +16,10 @@ public class Wall {
 
     public static HashMap<String, Wall> wallObjects = new HashMap<String, Wall>();
 
-    public int x, y, z, x1, y1, z1, id, data;
-    public String worldname;
-    public String name;
+    int x, y, z, x1, y1, z1;
+    String worldname;
+    String name;
+    String id;
 
     /**
      * Constructor
@@ -31,11 +32,10 @@ public class Wall {
      * @param y1        - Second y coordinate
      * @param z1        - Second z coordinate
      * @param name      - Name of the Wall
-     * @param id        - Block ID of the Wall
-     * @param data      - Material data of the wall
+     * @param id        - Block name of the Wall
      */
 
-    public Wall(int x, int y, int z, String worldname, int x1, int y1, int z1, String name, int id, int data) {
+    public Wall(int x, int y, int z, String worldname, int x1, int y1, int z1, String name, String id) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -45,7 +45,6 @@ public class Wall {
         this.z1 = z1;
         this.name = name;
         this.id = id;
-        this.data = data;
 
         wallObjects.put(name, this);
         writeToConfig(name);
@@ -87,7 +86,7 @@ public class Wall {
 
     public String convertToString() {
         String sep = ",";
-        return x + sep + y + sep + z + sep + worldname + sep + x1 + sep + y1 + sep + z1 + sep + id + sep + data;
+        return x + sep + y + sep + z + sep + worldname + sep + x1 + sep + y1 + sep + z1 + sep + id + sep;
     }
 
     /**
@@ -109,15 +108,9 @@ public class Wall {
         int x1 = convert(split[4]);
         int y1 = convert(split[5]);
         int z1 = convert(split[6]);
-        int id = convert(split[7]);
+        String id = split[7];
 
-        int dataID = 0;
-
-        if (split.length == 9) {
-            dataID = convert(split[8]);
-        }
-
-        return new Wall(x, y, z, world, x1, y1, z1, name, id, dataID);
+        return new Wall(x, y, z, world, x1, y1, z1, name, id);
     }
 
     /**
@@ -212,23 +205,13 @@ public class Wall {
     }
 
     /**
-     * Returns ID of the Wall
+     * Returns block name of the Wall
      *
-     * @return Block ID of the Wall
+     * @return Block name of the Wall
      */
 
-    public int getId() {
+    public String getId() {
         return id;
-    }
-
-    /**
-     * Returns material data of Wall
-     *
-     * @return material data
-     */
-
-    public int getData() {
-        return data;
     }
 
     /**
@@ -249,9 +232,7 @@ public class Wall {
      */
 
     public static void removeByName(String name) {
-        Wall wall = getByName(name);
         wallObjects.remove(name);
-        wall = null;
     }
 
     /**

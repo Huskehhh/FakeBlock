@@ -36,10 +36,6 @@ public class FakeBlock extends JavaPlugin implements Listener {
     // HashMap used to contain the Configuration of a Wall mid creation
     HashMap<String, Config> configObj = new HashMap<String, Config>();
 
-    // Hook for Utility class - UNUSED at the moment
-    Utility api = new Utility(this);
-
-
     /**
      * Method to handle Plugin startup.
      */
@@ -125,9 +121,9 @@ public class FakeBlock extends JavaPlugin implements Listener {
 
                             Player p = (Player) sender;
 
-                        /*
-                         * /fb set <name> <id>:<materialdata>
-                         */
+                            /*
+                             * /fb set <name> <blockname>
+                             */
 
                             if (args.length == 3) {
                                 map.put(p.getName(), args[1]);
@@ -136,18 +132,8 @@ public class FakeBlock extends JavaPlugin implements Listener {
                                 Config conf = new Config();
 
                                 conf.setName(args[1]);
-
-                                String getData = args[2];
-
-                                if (getData.contains(":")) {
-                                    String[] splitForData = getData.split(":");
-                                    if (splitForData.length == 2) {
-                                        conf.setData(Integer.parseInt(splitForData[1]));
-                                        conf.setId(Integer.parseInt(splitForData[0]));
-                                    }
-                                } else {
-                                    conf.setId(Integer.parseInt(args[2]));
-                                }
+                                
+                                conf.setId(args[2]);
 
                                 configObj.put(p.getName(), conf);
 

@@ -107,7 +107,7 @@ public class Utility {
 
                     while (locations.hasNext()) {
                         Location send = locations.next();
-                        p.sendBlockChange(send, m, (byte) wall.getData());
+                        p.sendBlockChange(send, m, (byte) Integer.parseInt(wall.getId()));
                     }
                 }
 
@@ -143,7 +143,7 @@ public class Utility {
                         public void run() {
                             while (locations.hasNext()) {
                                 Location send = locations.next();
-                                p.sendBlockChange(send, m, (byte) wall.getData());
+                                p.sendBlockChange(send, m, (byte) Integer.parseInt(wall.getId()));
                             }
                         }
                     }, (2 * 20));
@@ -200,7 +200,6 @@ public class Utility {
                  }
 
                  // Expected to result in less performance
-
                  **/
 
             }

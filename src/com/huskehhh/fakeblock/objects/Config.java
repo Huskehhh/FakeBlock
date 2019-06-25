@@ -2,9 +2,10 @@ package com.huskehhh.fakeblock.objects;
 
 public class Config {
 
-    public int x, y, z, x1, y1, z1, id, data = 0;
-    public String worldname;
-    public String name;
+    int x, y, z, x1, y1, z1;
+    String worldname;
+    String name;
+    String id;
 
     /**
      * Set first x coordinate
@@ -91,20 +92,10 @@ public class Config {
      *
      * @param id - ID Given through command
      */
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-
-    /**
-     * Set material data of the block
-     *
-     * @param data - Material data integer value
-     */
-
-    public void setData(int data) {
-        this.data = data;
-    }
 
     /**
      * Create a Wall object from stored data.
@@ -113,7 +104,7 @@ public class Config {
      */
 
     public Wall createObject() {
-        return new Wall(x, y, z, worldname, x1, y1, z1, name, id, data);
+        return new Wall(x, y, z, worldname, x1, y1, z1, name, id);
     }
 
 }
