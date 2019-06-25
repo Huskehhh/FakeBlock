@@ -262,31 +262,7 @@ public class Utility {
      * @return whether distance is acceptable
      */
     public static boolean isNear(Location first, Location second, int distance) {
-        return (second.distanceSquared(first) < distance || first.distanceSquared(second) < distance);
-    }
-
-
-    /**
-     * Method to return all players in chunk
-     *
-     * @param chunk - Chunk to check
-     * @return list of players in chunk
-     */
-
-    public static List<String> getAllPlayersInChunk(Chunk chunk) {
-        List<String> ret = new ArrayList<String>();
-
-        Entity[] ent = chunk.getEntities();
-
-        for (int i = 0; i < ent.length; i++) {
-            Entity entity = ent[i];
-            if (entity instanceof Player) {
-                Player p = (Player) entity;
-                ret.add(p.getName());
-            }
-        }
-
-        return ret;
+        return second.distanceSquared(first) < distance;
     }
 
 }

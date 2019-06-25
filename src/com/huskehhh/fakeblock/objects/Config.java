@@ -1,81 +1,39 @@
 package com.huskehhh.fakeblock.objects;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 public class Config {
 
-    int x, y, z, x1, y1, z1;
+    Location loc1, loc2;
     String worldname;
     String name;
     String blockname;
 
-    /**
-     * Set first x coordinate
-     *
-     * @param x - First x coordinate of selected location
-     */
 
-    public void setX(int x) {
-        this.x = x;
+    /**
+     * Method to store location 1 of wall during creation
+     *
+     * @param loc1 location 1 of wall
+     */
+    public void setLocation1(Location loc1) {
+        this.loc1 = loc1;
     }
 
     /**
-     * Set second x coordinate
+     * Method to store location 2 of wall during creation
      *
-     * @param x1 - Second x coordinate of selected location
+     * @param loc2 location 2 of wall
      */
-
-    public void setX1(int x1) {
-        this.x1 = x1;
+    public void setLocation2(Location loc2) {
+        this.loc2 = loc2;
     }
 
-    /**
-     * Set first y coordinate
-     *
-     * @param y - First y coordinate of selected location
-     */
-
-    public void setY(int y) {
-        this.y = y;
-    }
 
     /**
-     * Set second x coordinate
+     * Set name of wall
      *
-     * @param y1 - Second x coordinate of selected location
+     * @param name of wall
      */
-
-    public void setY1(int y1) {
-        this.y1 = y1;
-    }
-
-    /**
-     * Set first z coordinate
-     *
-     * @param z - First z coordinate of selected location
-     */
-
-    public void setZ(int z) {
-        this.z = z;
-    }
-
-    /**
-     * Set second z coordinate
-     *
-     * @param z1 - Second z coordinate of selected location
-     */
-
-    public void setZ1(int z1) {
-        this.z1 = z1;
-    }
-
-    /**
-     * Set name of the Wall to be created
-     *
-     * @param name - Name of the Wall given through command
-     */
-
     public void setName(String name) {
         this.name = name;
     }
@@ -95,7 +53,7 @@ public class Config {
      *
      * @param blockname - block name Given through command
      */
-    public void setId(String blockname) {
+    public void setBlockname(String blockname) {
         this.blockname = blockname;
     }
 
@@ -107,9 +65,6 @@ public class Config {
      */
 
     public Wall createObject() {
-        Location loc1 = new Location(Bukkit.getWorld(worldname), x, y, z);
-        Location loc2 = new Location(Bukkit.getWorld(worldname), x1, y1, z1);
-
         return new Wall(loc1, loc2, name, blockname);
     }
 
