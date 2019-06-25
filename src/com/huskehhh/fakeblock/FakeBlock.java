@@ -6,6 +6,7 @@ import com.huskehhh.fakeblock.objects.Wall;
 import com.huskehhh.fakeblock.util.Utility;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -137,7 +138,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
 
                                 conf.setName(args[1]);
 
-                                conf.setId(args[2]);
+                                conf.setBlockname(Material.matchMaterial(args[2]).toString());
 
                                 configObj.put(p.getName(), conf);
 
@@ -182,47 +183,29 @@ public class FakeBlock extends JavaPlugin implements Listener {
                     if (selecting.contains(p.getName()) && !right.contains(p.getName())) {
                         Location l = b.getLocation();
 
-                        int lx = l.getBlockX();
-                        int ly = l.getBlockY();
-                        int lz = l.getBlockZ();
-
                         Config conf = configObj.get(p.getName());
-                        conf.setWorldname(l.getWorld().getName());
-                        conf.setX(lx);
-                        conf.setY(ly);
-                        conf.setZ(lz);
+
+                        conf.setLocation1(l);
 
                         right.add(p.getName());
                         selecting.remove(p.getName());
                         p.sendMessage(ChatColor.GREEN + "[FakeBlock] Great! Now Please Right-Click and select the second point!");
                         e.setCancelled(true);
-
                     }
                 } else if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
                     if (!selecting.contains(p.getName()) && right.contains(p.getName())) {
-
                         Location rl = b.getLocation();
-                        int rx = rl.getBlockX();
-                        int ry = rl.getBlockY();
-                        int rz = rl.getBlockZ();
 
                         Config conf = configObj.get(p.getName());
-                        conf.setX1(rx);
-                        conf.setY1(ry);
-                        conf.setZ1(rz);
 
+                        conf.setLocation2(rl);
                         conf.createObject();
 
                         configObj.remove(p.getName());
-
-                        p.sendMessage(ChatColor.GREEN + "[FakeBlock] Great! Creating the fake wall now!");
-
                         right.remove(p.getName());
-
+                        p.sendMessage(ChatColor.GREEN + "[FakeBlock] Great! Creating the fake wall now!");
                         e.setCancelled(true);
-
-                        Utility.sendFakeBlocks();
                     }
                 }
             }
