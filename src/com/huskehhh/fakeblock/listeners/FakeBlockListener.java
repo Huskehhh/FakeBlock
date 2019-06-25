@@ -77,24 +77,5 @@ public class FakeBlockListener implements Listener {
         }
     }
 
-    /**
-     * Method to listen for BlockBreak to send the Player the Wall packets again if they are close to the Wall
-     * <p/>
-     * Note: The delay is to ensure that when they are receiving the World Packets, they do not conflict or overwrite
-     * the Fake packets for the Wall
-     *
-     * @param e - BlockBreakEvent
-     */
-
-    @EventHandler
-    public void onBlockBreak(BlockBreakEvent e) {
-        Player p = e.getPlayer();
-        Block b = e.getBlock();
-
-        if (Utility.isNear(b.getLocation(), p.getLocation(), 10) || Utility.isNearWall(p, 10)) {
-            Utility.sendFakeBlocks();
-        }
-    }
-
 
 }
