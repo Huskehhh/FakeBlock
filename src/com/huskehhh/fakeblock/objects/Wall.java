@@ -243,9 +243,6 @@ public class Wall {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
-
     }
-
 }

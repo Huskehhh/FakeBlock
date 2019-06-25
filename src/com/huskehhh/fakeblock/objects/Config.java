@@ -15,6 +15,7 @@ public class Config {
      *
      * @param loc1 location 1 of wall
      */
+
     public void setLocation1(Location loc1) {
         this.loc1 = loc1;
     }
@@ -24,16 +25,17 @@ public class Config {
      *
      * @param loc2 location 2 of wall
      */
+
     public void setLocation2(Location loc2) {
         this.loc2 = loc2;
     }
-
 
     /**
      * Set name of wall
      *
      * @param name of wall
      */
+    
     public void setName(String name) {
         this.name = name;
     }
@@ -67,5 +69,4 @@ public class Config {
     public Wall createObject() {
         return new Wall(loc1, loc2, name, blockname);
     }
-
 }

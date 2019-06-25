@@ -4,7 +4,6 @@ import com.huskehhh.fakeblock.FakeBlock;
 import com.huskehhh.fakeblock.objects.Wall;
 import org.bukkit.*;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.io.File;
@@ -261,8 +260,8 @@ public class Utility {
      * @param distance permitted distance between the two points
      * @return whether distance is acceptable
      */
+    
     public static boolean isNear(Location first, Location second, int distance) {
         return second.distanceSquared(first) < distance;
     }
-
 }
