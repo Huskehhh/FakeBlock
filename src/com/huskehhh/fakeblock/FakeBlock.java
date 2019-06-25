@@ -36,13 +36,15 @@ public class FakeBlock extends JavaPlugin implements Listener {
     // HashMap used to contain the Configuration of a Wall mid creation
     HashMap<String, Config> configObj = new HashMap<String, Config>();
 
+    public static FakeBlock plugin;
+
     /**
      * Method to handle Plugin startup.
      */
 
     public void onEnable() {
         // Register events
-        getServer().getPluginManager().registerEvents(new FakeBlockListener(this), this);
+        getServer().getPluginManager().registerEvents(new FakeBlockListener(), this);
         getServer().getPluginManager().registerEvents(this, this);
 
         // Create Config if not already created
@@ -50,6 +52,8 @@ public class FakeBlock extends JavaPlugin implements Listener {
 
         // Load all Walls from Config
         Wall.loadWalls();
+
+        plugin = this;
     }
 
 
@@ -132,7 +136,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
                                 Config conf = new Config();
 
                                 conf.setName(args[1]);
-                                
+
                                 conf.setId(args[2]);
 
                                 configObj.put(p.getName(), conf);

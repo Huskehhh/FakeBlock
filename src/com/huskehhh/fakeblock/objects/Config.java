@@ -1,11 +1,14 @@
 package com.huskehhh.fakeblock.objects;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+
 public class Config {
 
     int x, y, z, x1, y1, z1;
     String worldname;
     String name;
-    String id;
+    String blockname;
 
     /**
      * Set first x coordinate
@@ -88,12 +91,12 @@ public class Config {
     }
 
     /**
-     * Set block ID of the Wall to be created
+     * Set block name of the Wall to be created
      *
-     * @param id - ID Given through command
+     * @param blockname - block name Given through command
      */
-    public void setId(String id) {
-        this.id = id;
+    public void setId(String blockname) {
+        this.blockname = blockname;
     }
 
 
@@ -104,7 +107,10 @@ public class Config {
      */
 
     public Wall createObject() {
-        return new Wall(x, y, z, worldname, x1, y1, z1, name, id);
+        Location loc1 = new Location(Bukkit.getWorld(worldname), x, y, z);
+        Location loc2 = new Location(Bukkit.getWorld(worldname), x1, y1, z1);
+
+        return new Wall(loc1, loc2, name, blockname);
     }
 
 }

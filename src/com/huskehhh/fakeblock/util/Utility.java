@@ -15,15 +15,9 @@ import java.util.ListIterator;
 
 public class Utility {
 
-    private static FakeBlock fakeblock;
-
-    public Utility(FakeBlock fakeblock) {
-        this.fakeblock = fakeblock;
-    }
-
     /**
      * Data will be stored like
-     * walls.data, 'x,y,z,world,x1,y1,z1,block-id,data'
+     * walls.data, 'x,y,z,world,x1,y1,z1,blockname'
      */
 
     public static YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/FakeBlock/config.yml"));
@@ -75,7 +69,7 @@ public class Utility {
      */
 
     public static void sendFakeBlocks() {
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(fakeblock, new Runnable() {
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(FakeBlock.plugin, new Runnable() {
             public void run() {
                 processBlockSend();
             }
@@ -93,7 +87,7 @@ public class Utility {
 
                 List<String> playerNames = processSendBlocksTo(wall);
 
-                Material m = Material.getMaterial(wall.getId());
+                Material material = Material.matchMaterial(wall.getBlockName());
 
                 ArrayList<Location> allBlocks = getBlocks(wall);
                 ListIterator<Location> locations = allBlocks.listIterator();
@@ -107,10 +101,11 @@ public class Utility {
 
                     while (locations.hasNext()) {
                         Location send = locations.next();
-                        p.sendBlockChange(send, m, (byte) Integer.parseInt(wall.getId()));
+
+                        //TODO: Test on stable version of Spigot, doesn't work so far?
+                        p.sendBlockChange(send, material.createBlockData());
                     }
                 }
-
             }
         }
     }
@@ -130,8 +125,6 @@ public class Utility {
 
             if (wall != null) {
 
-                final Material m = Material.getMaterial(wall.getId());
-
                 ArrayList<Location> allBlocks = getBlocks(wall);
                 final ListIterator<Location> locations = allBlocks.listIterator();
 
@@ -139,11 +132,14 @@ public class Utility {
 
                 if (processSendBlocksTo(wall).contains(p.getName())) {
 
-                    Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(fakeblock, new Runnable() {
+                    Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(FakeBlock.plugin, new Runnable() {
                         public void run() {
+                            Material material = Material.matchMaterial(wall.getBlockName());
                             while (locations.hasNext()) {
                                 Location send = locations.next();
-                                p.sendBlockChange(send, m, (byte) Integer.parseInt(wall.getId()));
+
+                                //TODO: Test on stable version of Spigot, doesn't work so far?
+                                p.sendBlockChange(send, material.createBlockData());
                             }
                         }
                     }, (2 * 20));
@@ -163,47 +159,12 @@ public class Utility {
 
         List<String> process = new ArrayList<String>();
 
-        int x = wall.getX();
-        int y = wall.getY();
-        int z = wall.getZ();
-
-        int x1 = wall.getX1();
-        int y1 = wall.getY1();
-        int z1 = wall.getZ1();
-
-        for (Player server : Bukkit.getServer().getOnlinePlayers()) {
-
-            if (server.getLocation().getWorld() == Bukkit.getServer().getWorld(wall.getWorldname())) {
-
-                //TODO: <test>
-
-                if (Bukkit.getWorld(wall.getWorldname()).getChunkAt(new Location(Bukkit.getServer().getWorld(wall.getWorldname()), x, y, z)) == server.getLocation().getChunk()) {
-                    process.add(server.getName());
+        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+            if (player.getLocation().getWorld() == Bukkit.getServer().getWorld(wall.getWorldname())) {
+                if (isNear(wall.getLoc1(), player.getLocation(), 20) || isNear(wall.getLoc2(), player.getLocation(), 20)) {
+                    process.add(player.getName());
                 }
-
-                if (Bukkit.getWorld(wall.getWorldname()).getChunkAt(new Location(Bukkit.getServer().getWorld(wall.getWorldname()), x1, y1, z1)) == server.getLocation().getChunk()) {
-                    process.add(server.getName());
-                }
-
-                //TODO: </test>
-
-                /**
-
-                 Process using 'getAllPlayersInChunk'
-
-                 if (getAllPlayersInChunk(Bukkit.getWorld(wall.getWorldname()).getChunkAt(new Location(Bukkit.getServer().getWorld(wall.getWorldname()), x, y, z))).contains(server.getName())) {
-                 process.add(server.getName());
-                 }
-
-                 if (getAllPlayersInChunk(Bukkit.getWorld(wall.getWorldname()).getChunkAt(new Location(Bukkit.getServer().getWorld(wall.getWorldname()), x1, y1, z1))).contains(server.getName())) {
-                 process.add(server.getName());
-                 }
-
-                 // Expected to result in less performance
-                 **/
-
             }
-
         }
         return process;
     }
@@ -244,12 +205,12 @@ public class Utility {
 
         World w = Bukkit.getServer().getWorld(wall.getWorldname());
 
-        int bx = wall.getX();
-        int bx1 = wall.getX1();
-        int by = wall.getY();
-        int by1 = wall.getY1();
-        int bz = wall.getZ();
-        int bz1 = wall.getZ1();
+        int bx = (int) wall.getLoc1().getX();
+        int bx1 = (int) wall.getLoc2().getX();
+        int by = (int) wall.getLoc1().getY();
+        int by1 = (int) wall.getLoc2().getY();
+        int bz = (int) wall.getLoc1().getY();
+        int bz1 = (int) wall.getLoc2().getY();
 
         ArrayList<Location> blocks = new ArrayList<Location>();
 
@@ -261,7 +222,6 @@ public class Utility {
             }
         }
 
-
         return blocks;
     }
 
@@ -272,96 +232,39 @@ public class Utility {
      * @return whether or not the Player is close to a Wall
      */
 
-    public static boolean isNearWall(Player p) {
-        int px = p.getLocation().getBlockX();
-        int py = p.getLocation().getBlockX();
-        int pz = p.getLocation().getBlockX();
-
+    public static boolean isNearWall(Player p, int distance) {
         List<Wall> walls = getWalls();
         Iterator<Wall> wallIterator = walls.listIterator();
 
         while (wallIterator.hasNext()) {
             Wall wall = wallIterator.next();
 
-            int wx = wall.getX();
-            int wy = wall.getY();
-            int wz = wall.getZ();
+            List<Location> locations = wall.getLocations();
+            Iterator<Location> locationIterator = locations.listIterator();
 
-            int wx1 = wall.getX1();
-            int wy1 = wall.getY1();
-            int wz1 = wall.getZ1();
-
-
-            boolean isNear1 = isNear(px, py, pz, wx, wy, wz, 10);
-            boolean isNear2 = isNear(px, py, pz, wx1, wy1, wz1, 10);
-
-            if (isNear1 || isNear2) {
-                return true;
+            while (locationIterator.hasNext()) {
+                Location locationToCheck = locationIterator.next();
+                if (isNear(p.getLocation(), locationToCheck, distance)) {
+                    return true;
+                }
             }
         }
-
         return false;
     }
 
+
     /**
-     * Check whether a Player is super close to a Wall
+     * Method to check if two locations are close
      *
-     * @param p - Player to check
-     * @return whether or not the Player is close to a Wall
+     * @param first    Location number 1
+     * @param second   Location number 2
+     * @param distance permitted distance between the two points
+     * @return whether distance is acceptable
      */
-
-    public static boolean isSuperNearWall(Player p) {
-        int px = p.getLocation().getBlockX();
-        int py = p.getLocation().getBlockX();
-        int pz = p.getLocation().getBlockX();
-
-        List<Wall> walls = getWalls();
-        Iterator<Wall> wallIterator = walls.listIterator();
-
-        while (wallIterator.hasNext()) {
-            Wall wall = wallIterator.next();
-
-            int wx = wall.getX();
-            int wy = wall.getY();
-            int wz = wall.getZ();
-
-            int wx1 = wall.getX1();
-            int wy1 = wall.getY1();
-            int wz1 = wall.getZ1();
-
-
-            boolean isNear1 = isNear(px, py, pz, wx, wy, wz, 2);
-            boolean isNear2 = isNear(px, py, pz, wx1, wy1, wz1, 2);
-
-            if (isNear1 || isNear2) {
-                return true;
-            }
-        }
-
-        return false;
+    public static boolean isNear(Location first, Location second, int distance) {
+        return (second.distanceSquared(first) < distance || first.distanceSquared(second) < distance);
     }
 
-    /**
-     * @param x        - First x value
-     * @param y        - First y value
-     * @param z        - First z value
-     * @param x1       - Second x value
-     * @param y1       - Second y value
-     * @param z1       - Second z value
-     * @param distance - How many blocks between to check
-     * @return whether or not coordinates are close
-     */
-
-    public static boolean isNear(int x, int y, int z, int x1, int y1, int z1, int distance) {
-        if ((x - distance) < x1 || (x + distance) < x1 || (x - distance) > x1 || (x + distance) > x1) {
-            return true;
-        } else if ((y - distance) < y1 || (y + distance) < y1 || (y - distance) > y1 || (y + distance) > y1) {
-            return true;
-        } else if ((z - distance) < z1 || (z + distance) < z1 || (z - distance) > z1 || (z + distance) > z1) {
-            return true;
-        }
-        return false;
-    }
 
     /**
      * Method to return all players in chunk

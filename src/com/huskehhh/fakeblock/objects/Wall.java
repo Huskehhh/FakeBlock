@@ -1,9 +1,13 @@
 package com.huskehhh.fakeblock.objects;
 
 import com.huskehhh.fakeblock.util.Utility;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -16,38 +20,33 @@ public class Wall {
 
     public static HashMap<String, Wall> wallObjects = new HashMap<String, Wall>();
 
-    int x, y, z, x1, y1, z1;
-    String worldname;
     String name;
-    String id;
+    String blockname;
+    Location loc1;
+    Location loc2;
+
+    private List<Location> locations = new ArrayList<Location>();
 
     /**
      * Constructor
      *
-     * @param x         - First x coordinate
-     * @param y         - First y coordinate
-     * @param z         - First z coordinate
-     * @param worldname - Name of the world where the Wall was created
-     * @param x1        - Second x coordinate
-     * @param y1        - Second y coordinate
-     * @param z1        - Second z coordinate
+     * @param loc1      - First location
+     * @param loc2      - First location
      * @param name      - Name of the Wall
-     * @param id        - Block name of the Wall
+     * @param blockname - Block name of the Wall
      */
 
-    public Wall(int x, int y, int z, String worldname, int x1, int y1, int z1, String name, String id) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.worldname = worldname;
-        this.x1 = x1;
-        this.y1 = y1;
-        this.z1 = z1;
+    public Wall(Location loc1, Location loc2, String name, String blockname) {
+        this.loc1 = loc1;
+        this.loc2 = loc2;
         this.name = name;
-        this.id = id;
+        this.blockname = blockname;
 
         wallObjects.put(name, this);
         writeToConfig(name);
+
+        locations.add(loc1);
+        locations.add(loc2);
     }
 
     /**
@@ -86,7 +85,18 @@ public class Wall {
 
     public String convertToString() {
         String sep = ",";
-        return x + sep + y + sep + z + sep + worldname + sep + x1 + sep + y1 + sep + z1 + sep + id + sep;
+
+        double x = loc1.getX();
+        double x1 = loc2.getX();
+        double y = loc1.getY();
+        double y1 = loc2.getY();
+        double z = loc1.getZ();
+        double z1 = loc2.getZ();
+
+        String worldname = loc1.getWorld().getName();
+
+
+        return x + sep + y + sep + z + sep + worldname + sep + x1 + sep + y1 + sep + z1 + sep + blockname;
     }
 
     /**
@@ -108,9 +118,16 @@ public class Wall {
         int x1 = convert(split[4]);
         int y1 = convert(split[5]);
         int z1 = convert(split[6]);
-        String id = split[7];
+        String blockname = split[7];
 
-        return new Wall(x, y, z, world, x1, y1, z1, name, id);
+
+        World w = Bukkit.getWorld(world);
+
+        Location buildLoc1 = new Location(w, x, y, z);
+        Location buildLoc2 = new Location(w, x1, y1, z1);
+
+
+        return new Wall(buildLoc1, buildLoc2, name, blockname);
     }
 
     /**
@@ -131,67 +148,36 @@ public class Wall {
      */
 
     public String getWorldname() {
-        return worldname;
+        return loc1.getWorld().getName();
     }
 
     /**
-     * Returns the first 'x' coordinate
+     * Returns the locations in an arraylist
      *
-     * @return First x coordinate
+     * @return arraylist of locations
      */
 
-    public int getX() {
-        return x;
+    public List<Location> getLocations() {
+        return locations;
     }
 
     /**
-     * Returns the second 'x' coordinate
+     * Method to isolate loc1
      *
-     * @return Second x coordinate
+     * @return location number 1
      */
-
-    public int getX1() {
-        return x1;
+    public Location getLoc1() {
+        return loc1;
     }
 
     /**
-     * Returns the first 'y' coordinate
+     * Method to isolate loc2
      *
-     * @return First y coordinate
+     * @return location number 2
      */
 
-    public int getY() {
-        return y;
-    }
-
-    /**
-     * Returns the second 'y' coordinate
-     *
-     * @return Second y coordinate
-     */
-
-    public int getY1() {
-        return y1;
-    }
-
-    /**
-     * Returns the first 'z' coordinate
-     *
-     * @return First z coordinate
-     */
-
-    public int getZ() {
-        return z;
-    }
-
-    /**
-     * Returns the second 'z' coordinate
-     *
-     * @return Second z coordinate
-     */
-
-    public int getZ1() {
-        return z1;
+    public Location getLoc2() {
+        return loc2;
     }
 
     /**
@@ -210,8 +196,8 @@ public class Wall {
      * @return Block name of the Wall
      */
 
-    public String getId() {
-        return id;
+    public String getBlockName() {
+        return blockname;
     }
 
     /**
