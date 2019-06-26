@@ -25,7 +25,8 @@ public class Wall {
     Location loc1;
     Location loc2;
 
-    private List<Location> locations = new ArrayList<Location>();
+    private ArrayList<Location> locations = new ArrayList<Location>();
+    private ArrayList<Location> blocks = new ArrayList<Location>();
 
     /**
      * Constructor
@@ -47,6 +48,8 @@ public class Wall {
 
         locations.add(loc1);
         locations.add(loc2);
+
+        generateBlockArray();
     }
 
     /**
@@ -201,6 +204,25 @@ public class Wall {
     }
 
     /**
+     * Gets generated block location array
+     *
+     * @return block location array
+     */
+
+    public ArrayList<Location> getBlocks() {
+        return this.blocks;
+    }
+
+    /**
+     * Gets distance between the two location points
+     *
+     * @return distanceBetweenPoints
+     */
+    public double getDistanceBetweenPoints() {
+        return loc1.distance(loc2);
+    }
+
+    /**
      * Retrieves wall by name
      *
      * @param name - Name of the wall to be retrieved
@@ -227,7 +249,7 @@ public class Wall {
      * @param nme - Object that's converted to string to be written to config.
      */
 
-    public void writeToConfig(String nme) {
+    private void writeToConfig(String nme) {
 
         if (FakeBlock.config.getString(nme + ".data") == null) {
             String converted = convertToString();
@@ -245,4 +267,32 @@ public class Wall {
             }
         }
     }
+
+    /**
+     * Get all blocks in a Wall
+     * Also calculates distance between the two points
+     *
+     * @return ArrayList of locations that contains all block locations
+     */
+
+    private void generateBlockArray() {
+
+        World w = loc1.getWorld();
+
+        int bx = (int) getLoc1().getX();
+        int bx1 = (int) getLoc2().getX();
+        int by = (int) getLoc1().getY();
+        int by1 = (int) getLoc2().getY();
+        int bz = (int) getLoc1().getZ();
+        int bz1 = (int) getLoc2().getZ();
+
+        for (int x = Math.min(bx, bx1); x <= Math.max(bx, bx1); ++x) {
+            for (int y = Math.min(by, by1); y <= Math.max(by, by1); ++y) {
+                for (int z = Math.min(bz, bz1); z <= Math.max(bz, bz1); ++z) {
+                    blocks.add(new Location(w, x, y, z));
+                }
+            }
+        }
+    }
+
 }

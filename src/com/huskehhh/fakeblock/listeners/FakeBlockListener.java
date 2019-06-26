@@ -84,12 +84,8 @@ public class FakeBlockListener implements Listener {
     public void onPlayerInteract(PlayerInteractEvent e) {
         Player p = e.getPlayer();
 
-        if (e.getClickedBlock() != null) {
-            Block b = e.getClickedBlock();
-
-            if (plugin.isNear(b.getLocation(), p.getLocation(), 10) || plugin.isNearWall(p, 10)) {
-                plugin.processIndividual(p);
-            }
+        if (plugin.isPlayerNearWall(p)) {
+            plugin.processIndividual(p);
         }
     }
 
@@ -103,7 +99,7 @@ public class FakeBlockListener implements Listener {
     public void onBlockBreak(BlockBreakEvent e) {
         Player p = e.getPlayer();
 
-        if (plugin.isNearWall(p, 10)) {
+        if (plugin.isPlayerNearWall(p)) {
             plugin.processIndividual(p);
         }
     }
@@ -166,9 +162,8 @@ public class FakeBlockListener implements Listener {
     public void onPlayerMove(PlayerMoveEvent e) {
         Player p = e.getPlayer();
 
-        if (plugin.isNearWall(p, 10)) {
+        if (plugin.isPlayerNearWall(p)) {
             plugin.processIndividual(p);
         }
     }
-
 }

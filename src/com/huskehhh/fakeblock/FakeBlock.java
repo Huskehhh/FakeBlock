@@ -3,7 +3,10 @@ package com.huskehhh.fakeblock;
 import com.huskehhh.fakeblock.listeners.FakeBlockListener;
 import com.huskehhh.fakeblock.objects.Config;
 import com.huskehhh.fakeblock.objects.Wall;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -99,6 +102,8 @@ public class FakeBlock extends JavaPlugin implements Listener {
      * @param commandLabel - Command sent converted to String
      * @param args         - Arguments of the Command
      * @return whether or not the command worked
+     * <p>
+     * //TODO: Clean this command process up + make it idiot-proof
      */
 
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
@@ -231,7 +236,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
 
             Material material = Material.matchMaterial(wall.getBlockName());
 
-            ArrayList<Location> allBlocks = getBlocks(wall);
+            ArrayList<Location> allBlocks = wall.getBlocks();
             ListIterator<Location> locations = allBlocks.listIterator();
 
             ListIterator<String> players = playerNames.listIterator();
@@ -263,7 +268,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
         while (wallIterator.hasNext()) {
             final Wall wall = wallIterator.next();
 
-            ArrayList<Location> allBlocks = getBlocks(wall);
+            ArrayList<Location> allBlocks = wall.getBlocks();
             final ListIterator<Location> locations = allBlocks.listIterator();
 
             if (p.hasPermission("fakeblock." + wall.getName()) || p.hasPermission("fakeblock.admin")) break;
@@ -305,59 +310,31 @@ public class FakeBlock extends JavaPlugin implements Listener {
     }
 
     /**
-     * Get all blocks in a Wall
-     *
-     * @param wall - Wall object to check for blocks
-     * @return ArrayList of locations that contains all block locations
-     */
-
-    public ArrayList<Location> getBlocks(Wall wall) {
-
-        World w = Bukkit.getServer().getWorld(wall.getWorldname());
-
-        int bx = (int) wall.getLoc1().getX();
-        int bx1 = (int) wall.getLoc2().getX();
-        int by = (int) wall.getLoc1().getY();
-        int by1 = (int) wall.getLoc2().getY();
-        int bz = (int) wall.getLoc1().getZ();
-        int bz1 = (int) wall.getLoc2().getZ();
-
-        ArrayList<Location> blocks = new ArrayList<Location>();
-
-        for (int x = Math.min(bx, bx1); x <= Math.max(bx, bx1); ++x) {
-            for (int y = Math.min(by, by1); y <= Math.max(by, by1); ++y) {
-                for (int z = Math.min(bz, bz1); z <= Math.max(bz, bz1); ++z) {
-                    blocks.add(new Location(w, x, y, z));
-                }
-            }
-        }
-        return blocks;
-    }
-
-    /**
      * Check whether a Player is close to a Wall
      *
      * @param p - Player to check
      * @return whether or not the Player is close to a Wall
      */
 
-    public boolean isNearWall(Player p, int distance) {
+    public boolean isPlayerNearWall(Player p) {
         List<Wall> walls = getWalls();
         Iterator<Wall> wallIterator = walls.listIterator();
 
         while (wallIterator.hasNext()) {
             Wall wall = wallIterator.next();
 
+            int distance = (int) wall.getDistanceBetweenPoints();
+
             List<Location> locations = wall.getLocations();
             Iterator<Location> locationIterator = locations.listIterator();
 
             while (locationIterator.hasNext()) {
                 Location locationToCheck = locationIterator.next();
-                if (isNear(p.getLocation(), locationToCheck, distance)) {
-                    return true;
-                }
+
+                if (isNear(p.getLocation(), locationToCheck, distance)) return true;
             }
         }
+
         return false;
     }
 
