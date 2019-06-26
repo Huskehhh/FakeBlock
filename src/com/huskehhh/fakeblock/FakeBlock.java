@@ -252,7 +252,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
      * @param p - Player to process
      */
 
-    public void processIndividual(final Player p) {
+    public void processIndividual(final Player p, int delay) {
         List<Wall> walls = getWalls();
         Iterator<Wall> wallIterator = walls.listIterator();
 
@@ -273,7 +273,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
                             p.sendBlockChange(send, material.createBlockData());
                         }
                     }
-                }, (2 * 20));
+                }, (delay * 20));
             }
         }
     }

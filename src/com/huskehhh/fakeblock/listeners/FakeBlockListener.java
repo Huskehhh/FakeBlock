@@ -42,7 +42,7 @@ public class FakeBlockListener implements Listener {
 
     @EventHandler
     public void playerJoin(PlayerJoinEvent e) {
-        plugin.processIndividual(e.getPlayer());
+        plugin.processIndividual(e.getPlayer(), 2);
     }
 
     /**
@@ -55,7 +55,7 @@ public class FakeBlockListener implements Listener {
 
     @EventHandler
     public void onTeleport(PlayerTeleportEvent e) {
-        plugin.processIndividual(e.getPlayer());
+        plugin.processIndividual(e.getPlayer(), 2);
     }
 
     /**
@@ -68,7 +68,7 @@ public class FakeBlockListener implements Listener {
 
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e) {
-        plugin.processIndividual(e.getPlayer());
+        plugin.processIndividual(e.getPlayer(), 2);
     }
 
     /**
@@ -85,7 +85,7 @@ public class FakeBlockListener implements Listener {
         Player p = e.getPlayer();
 
         if (plugin.isPlayerNearWall(p)) {
-            plugin.processIndividual(p);
+            plugin.processIndividual(p, 1);
         }
     }
 
@@ -100,7 +100,7 @@ public class FakeBlockListener implements Listener {
         Player p = e.getPlayer();
 
         if (plugin.isPlayerNearWall(p)) {
-            plugin.processIndividual(p);
+            plugin.processIndividual(p, 1);
         }
     }
 
@@ -163,7 +163,7 @@ public class FakeBlockListener implements Listener {
         Player p = e.getPlayer();
 
         if (plugin.isPlayerNearWall(p)) {
-            plugin.processIndividual(p);
+            plugin.processIndividual(p, 1);
         }
     }
 }
