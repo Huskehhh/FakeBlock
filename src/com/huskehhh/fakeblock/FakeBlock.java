@@ -210,7 +210,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
 
 
     /**
-     * Function to process users to send the blocks to
+     * Function to process users to send the blocks to all relevant players
      */
 
     private void processBlockSend() {

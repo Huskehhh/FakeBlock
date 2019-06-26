@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.*;
 
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ public class FakeBlockListener implements Listener {
 
     @EventHandler
     public void playerJoin(PlayerJoinEvent e) {
-        plugin.sendFakeBlocks(2);
+        plugin.processIndividual(e.getPlayer());
     }
 
     /**
@@ -54,7 +55,7 @@ public class FakeBlockListener implements Listener {
 
     @EventHandler
     public void onTeleport(PlayerTeleportEvent e) {
-        plugin.sendFakeBlocks(2);
+        plugin.processIndividual(e.getPlayer());
     }
 
     /**
@@ -67,7 +68,7 @@ public class FakeBlockListener implements Listener {
 
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e) {
-        plugin.sendFakeBlocks(2);
+        plugin.processIndividual(e.getPlayer());
     }
 
     /**
@@ -87,8 +88,23 @@ public class FakeBlockListener implements Listener {
             Block b = e.getClickedBlock();
 
             if (plugin.isNear(b.getLocation(), p.getLocation(), 10) || plugin.isNearWall(p, 10)) {
-                plugin.sendFakeBlocks(1);
+                plugin.processIndividual(p);
             }
+        }
+    }
+
+
+    /**
+     * Listening event to handle block break near walls
+     *
+     * @param e - BlockBreakEvent
+     */
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent e) {
+        Player p = e.getPlayer();
+
+        if (plugin.isNearWall(p, 10)) {
+            plugin.processIndividual(p);
         }
     }
 
@@ -143,7 +159,8 @@ public class FakeBlockListener implements Listener {
 
     /**
      * Listening event to handle sending players close to the wall updates
-     * @param e
+     *
+     * @param e - PlayerMoveEvent
      */
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
