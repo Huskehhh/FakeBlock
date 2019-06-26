@@ -41,7 +41,7 @@ public class FakeBlockListener implements Listener {
 
     @EventHandler
     public void playerJoin(PlayerJoinEvent e) {
-        plugin.sendFakeBlocks();
+        plugin.sendFakeBlocks(2);
     }
 
     /**
@@ -54,7 +54,7 @@ public class FakeBlockListener implements Listener {
 
     @EventHandler
     public void onTeleport(PlayerTeleportEvent e) {
-        plugin.sendFakeBlocks();
+        plugin.sendFakeBlocks(2);
     }
 
     /**
@@ -67,7 +67,7 @@ public class FakeBlockListener implements Listener {
 
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e) {
-        plugin.sendFakeBlocks();
+        plugin.sendFakeBlocks(2);
     }
 
     /**
@@ -87,7 +87,7 @@ public class FakeBlockListener implements Listener {
             Block b = e.getClickedBlock();
 
             if (plugin.isNear(b.getLocation(), p.getLocation(), 10) || plugin.isNearWall(p, 10)) {
-                plugin.sendFakeBlocks();
+                plugin.sendFakeBlocks(1);
             }
         }
     }

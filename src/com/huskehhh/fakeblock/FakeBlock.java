@@ -98,7 +98,6 @@ public class FakeBlock extends JavaPlugin implements Listener {
      * @param cmd          - Command sent
      * @param commandLabel - Command sent converted to String
      * @param args         - Arguments of the Command
-     *                     
      * @return whether or not the command worked
      */
 
@@ -143,7 +142,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
                         Wall.unloadWalls();
                         forceConfigRefresh();
                         Wall.loadWalls();
-                        sendFakeBlocks();
+                        sendFakeBlocks(1);
                     }
                 } else {
                     sender.sendMessage(ChatColor.RED + "[FakeBlock] You don't have permission for this command.");
@@ -195,16 +194,24 @@ public class FakeBlock extends JavaPlugin implements Listener {
     }
 
     /**
-     * Send Wall to the Player
+     * Function to queue sending fake blocks
+     * calls processBlockSend()
+     * delay of 2s in order to prevent login fake blocks not showing
      */
 
-    public void sendFakeBlocks() {
+    public void sendFakeBlocks(int delay) {
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
             public void run() {
                 processBlockSend();
             }
-        }, (2 * 20));
+        }, (delay * 20));
     }
+    
+
+
+    /**
+     * Function to process users to send the blocks to
+     */
 
     private void processBlockSend() {
         List<Wall> walls = getWalls();
