@@ -103,6 +103,8 @@ public class FakeBlock extends JavaPlugin implements Listener {
 
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 
+        String title = ChatColor.BLACK + "[" + ChatColor.AQUA + "FakeBlock" + ChatColor.BLACK + "] ";
+
         if (commandLabel.equalsIgnoreCase("fakeblock") || commandLabel.equalsIgnoreCase("fb")) {
 
             if (args.length > 0) {
@@ -131,21 +133,27 @@ public class FakeBlock extends JavaPlugin implements Listener {
 
                                 listener.configObj.put(p.getName(), conf);
 
-                                p.sendMessage(ChatColor.GREEN + "[FakeBlock] You can now select the blocks you want.");
+                                p.sendMessage(title + ChatColor.GREEN + "You can now select the blocks you want.");
                             } else {
-                                p.sendMessage(ChatColor.RED + "[FakeBlock] Wrong amount of arguments.");
+                                p.sendMessage(title + ChatColor.RED + "Wrong amount of arguments.");
                             }
                         } else {
-                            sender.sendMessage(ChatColor.RED + "[FakeBlock] Only players can use this command!");
+                            sender.sendMessage(title + ChatColor.RED + "Only players can use this command!");
                         }
                     } else if (para.equalsIgnoreCase("reload")) {
                         Wall.unloadWalls();
                         forceConfigRefresh();
                         Wall.loadWalls();
                         sendFakeBlocks(1);
+                        sender.sendMessage(title + ChatColor.GREEN + "Walls reloaded!");
+                    } else if (para.equalsIgnoreCase("delete")) {
+                        if (Wall.getByName(args[1]) != null) {
+                            Wall.removeByName(args[1]);
+                            sender.sendMessage(title + ChatColor.RED + "'" + args[1] + "' has been deleted");
+                        }
                     }
                 } else {
-                    sender.sendMessage(ChatColor.RED + "[FakeBlock] You don't have permission for this command.");
+                    sender.sendMessage(title + ChatColor.RED + "You don't have permission for this command.");
                 }
             }
         }
@@ -206,7 +214,6 @@ public class FakeBlock extends JavaPlugin implements Listener {
             }
         }, (delay * 20));
     }
-    
 
 
     /**
