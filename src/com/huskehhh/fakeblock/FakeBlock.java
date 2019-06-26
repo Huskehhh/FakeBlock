@@ -3,10 +3,7 @@ package com.huskehhh.fakeblock;
 import com.huskehhh.fakeblock.listeners.FakeBlockListener;
 import com.huskehhh.fakeblock.objects.Config;
 import com.huskehhh.fakeblock.objects.Wall;
-import com.huskehhh.fakeblock.util.Utility;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -20,41 +17,34 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class FakeBlock extends JavaPlugin implements Listener {
 
-    // Config object
-    YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/FakeBlock/config.yml"));
-
-    // Selection List / Mapping
-    List<String> right = new ArrayList<String>();
-    List<String> selecting = new ArrayList<String>();
-    HashMap<String, String> map = new HashMap<String, String>();
-
-    // HashMap used to contain the Configuration of a Wall mid creation
-    HashMap<String, Config> configObj = new HashMap<String, Config>();
-
     public static FakeBlock plugin;
+    private static FakeBlockListener listener;
+
+    // Config object
+    public static YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/FakeBlock/config.yml"));
 
     /**
      * Method to handle Plugin startup.
      */
 
     public void onEnable() {
+        //Set up plugin variable
+        plugin = this;
+        listener = new FakeBlockListener();
+
         // Register events
-        getServer().getPluginManager().registerEvents(new FakeBlockListener(), this);
-        getServer().getPluginManager().registerEvents(this, this);
+        getServer().getPluginManager().registerEvents(listener, plugin);
+        getServer().getPluginManager().registerEvents(this, plugin);
 
         // Create Config if not already created
         createConfig();
 
         // Load all Walls from Config
         Wall.loadWalls();
-
-        plugin = this;
     }
 
 
@@ -74,7 +64,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
      */
 
     private void unloadConfigObjects() {
-        configObj.clear();
+        listener.configObj.clear();
     }
 
     /**
@@ -131,8 +121,8 @@ public class FakeBlock extends JavaPlugin implements Listener {
                              */
 
                             if (args.length == 3) {
-                                map.put(p.getName(), args[1]);
-                                selecting.add(p.getName());
+                                listener.map.put(p.getName(), args[1]);
+                                listener.selecting.add(p.getName());
 
                                 Config conf = new Config();
 
@@ -140,7 +130,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
 
                                 conf.setBlockname(Material.matchMaterial(args[2]).toString());
 
-                                configObj.put(p.getName(), conf);
+                                listener.configObj.put(p.getName(), conf);
 
                                 p.sendMessage(ChatColor.GREEN + "[FakeBlock] You can now select the blocks you want.");
                             } else {
@@ -151,10 +141,9 @@ public class FakeBlock extends JavaPlugin implements Listener {
                         }
                     } else if (para.equalsIgnoreCase("reload")) {
                         Wall.unloadWalls();
-                        Utility.forceConfigRefresh();
+                        forceConfigRefresh();
                         Wall.loadWalls();
-
-                        Utility.sendFakeBlocks();
+                        sendFakeBlocks();
                     }
                 } else {
                     sender.sendMessage(ChatColor.RED + "[FakeBlock] You don't have permission for this command.");
@@ -165,50 +154,241 @@ public class FakeBlock extends JavaPlugin implements Listener {
     }
 
     /**
-     * Listening event to handle the selection paramaters of Walls
-     *
-     * @param e - PlayerInteractEvent
+     * Forces refresh of the config file
+     * Used to refresh to return manually added Walls
      */
 
-    @EventHandler
-    public void wallSelection(PlayerInteractEvent e) {
+    public void forceConfigRefresh() {
+        config = YamlConfiguration.loadConfiguration(new File("plugins/FakeBlock/config.yml"));
+    }
 
-        Player p = e.getPlayer();
-        if (e.getClickedBlock() != null) {
-            Block b = e.getClickedBlock();
-            if (p.hasPermission("fakeblock.admin")) {
+    /**
+     * Get StringList of Walls in config
+     *
+     * @return StringList of Walls
+     */
 
-                if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
+    public List<String> getAllWalls() {
+        return config.getStringList("walls.list");
+    }
 
-                    if (selecting.contains(p.getName()) && !right.contains(p.getName())) {
-                        Location l = b.getLocation();
+    /**
+     * Get all Walls from config
+     *
+     * @return Walls from config
+     */
 
-                        Config conf = configObj.get(p.getName());
+    public List<Wall> getWalls() {
+        List<Wall> allWalls = new ArrayList<Wall>();
 
-                        conf.setLocation1(l);
+        List<String> configWalls = getAllWalls();
 
-                        right.add(p.getName());
-                        selecting.remove(p.getName());
-                        p.sendMessage(ChatColor.GREEN + "[FakeBlock] Great! Now Please Right-Click and select the second point!");
-                        e.setCancelled(true);
-                    }
-                } else if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+        ListIterator<String> li = configWalls.listIterator();
 
-                    if (!selecting.contains(p.getName()) && right.contains(p.getName())) {
-                        Location rl = b.getLocation();
+        while (li.hasNext()) {
+            String name = li.next();
+            Wall wall = Wall.getByName(name);
+            allWalls.add(wall);
+        }
 
-                        Config conf = configObj.get(p.getName());
+        return allWalls;
+    }
 
-                        conf.setLocation2(rl);
-                        conf.createObject();
+    /**
+     * Send Wall to the Player
+     */
 
-                        configObj.remove(p.getName());
-                        right.remove(p.getName());
-                        p.sendMessage(ChatColor.GREEN + "[FakeBlock] Great! Creating the fake wall now!");
-                        e.setCancelled(true);
+    public void sendFakeBlocks() {
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+            public void run() {
+                processBlockSend();
+            }
+        }, (2 * 20));
+    }
+
+    private void processBlockSend() {
+        List<Wall> walls = getWalls();
+        Iterator<Wall> wallIterator = walls.listIterator();
+
+        while (wallIterator.hasNext()) {
+            Wall wall = wallIterator.next();
+
+            if (wall != null) {
+
+                List<String> playerNames = processSendBlocksTo(wall);
+
+                Material material = Material.matchMaterial(wall.getBlockName());
+
+                ArrayList<Location> allBlocks = getBlocks(wall);
+                ListIterator<Location> locations = allBlocks.listIterator();
+
+                ListIterator<String> players = playerNames.listIterator();
+
+                while (players.hasNext()) {
+                    Player p = Bukkit.getServer().getPlayer(players.next());
+
+                    if (p.hasPermission("fakeblock." + wall.getName()) || p.hasPermission("fakeblock.admin")) break;
+
+                    while (locations.hasNext()) {
+                        Location send = locations.next();
+                        p.sendBlockChange(send, material.createBlockData());
                     }
                 }
             }
         }
+    }
+
+    /**
+     * Process singular Player instead of processing all players on server
+     *
+     * @param p - Player to process
+     */
+
+    public void processIndividual(final Player p) {
+        List<Wall> walls = getWalls();
+        Iterator<Wall> wallIterator = walls.listIterator();
+
+        while (wallIterator.hasNext()) {
+            final Wall wall = wallIterator.next();
+
+            if (wall != null) {
+
+                ArrayList<Location> allBlocks = getBlocks(wall);
+                final ListIterator<Location> locations = allBlocks.listIterator();
+
+                if (p.hasPermission("fakeblock." + wall.getName()) || p.hasPermission("fakeblock.admin")) break;
+
+                if (processSendBlocksTo(wall).contains(p.getName())) {
+
+                    Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+                        public void run() {
+                            Material material = Material.matchMaterial(wall.getBlockName());
+                            while (locations.hasNext()) {
+                                Location send = locations.next();
+                                p.sendBlockChange(send, material.createBlockData());
+                            }
+                        }
+                    }, (2 * 20));
+                }
+            }
+        }
+    }
+
+    /**
+     * Method to determine which players are eligible to receive the Wall packets
+     *
+     * @param wall - Wall to check for eligible players
+     * @return List of PlayerNames
+     */
+
+    private List<String> processSendBlocksTo(Wall wall) {
+
+        List<String> process = new ArrayList<String>();
+
+        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+            if (player.getLocation().getWorld() == Bukkit.getServer().getWorld(wall.getWorldname())) {
+                if (isNear(wall.getLoc1(), player.getLocation(), 20) || isNear(wall.getLoc2(), player.getLocation(), 20)) {
+                    process.add(player.getName());
+                }
+            }
+        }
+        return process;
+    }
+
+
+    private static int getMaxX(int x, int x1) {
+        return Math.max(x, x1);
+    }
+
+    private static int getMinX(int x, int x1) {
+        return Math.min(x, x1);
+    }
+
+    private static int getMaxY(int y, int y1) {
+        return Math.max(y, y1);
+    }
+
+    private static int getMinY(int y, int y1) {
+        return Math.min(y, y1);
+    }
+
+    private static int getMaxZ(int z, int z1) {
+        return Math.max(z, z1);
+    }
+
+    private static int getMinZ(int z, int z1) {
+        return Math.min(z, z1);
+    }
+
+    /**
+     * Get all blocks in a Wall
+     *
+     * @param wall - Wall object to check for blocks
+     * @return ArrayList of locations that contains all block locations
+     */
+
+    public ArrayList<Location> getBlocks(Wall wall) {
+
+        World w = Bukkit.getServer().getWorld(wall.getWorldname());
+
+        int bx = (int) wall.getLoc1().getX();
+        int bx1 = (int) wall.getLoc2().getX();
+        int by = (int) wall.getLoc1().getY();
+        int by1 = (int) wall.getLoc2().getY();
+        int bz = (int) wall.getLoc1().getY();
+        int bz1 = (int) wall.getLoc2().getY();
+
+        ArrayList<Location> blocks = new ArrayList<Location>();
+
+        for (int x = getMinX(bx, bx1); x <= getMaxX(bx, bx1); ++x) {
+            for (int y = getMinY(by, by1); y <= getMaxY(by, by1); ++y) {
+                for (int z = getMinZ(bz, bz1); z <= getMaxZ(bz, bz1); ++z) {
+                    blocks.add(new Location(w, x, y, z));
+                }
+            }
+        }
+
+        return blocks;
+    }
+
+    /**
+     * Check whether a Player is close to a Wall
+     *
+     * @param p - Player to check
+     * @return whether or not the Player is close to a Wall
+     */
+
+    public boolean isNearWall(Player p, int distance) {
+        List<Wall> walls = getWalls();
+        Iterator<Wall> wallIterator = walls.listIterator();
+
+        while (wallIterator.hasNext()) {
+            Wall wall = wallIterator.next();
+
+            List<Location> locations = wall.getLocations();
+            Iterator<Location> locationIterator = locations.listIterator();
+
+            while (locationIterator.hasNext()) {
+                Location locationToCheck = locationIterator.next();
+                if (isNear(p.getLocation(), locationToCheck, distance)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
+    /**
+     * Method to check if two locations are close
+     *
+     * @param first    Location number 1
+     * @param second   Location number 2
+     * @param distance permitted distance between the two points
+     * @return whether distance is acceptable
+     */
+
+    public boolean isNear(Location first, Location second, int distance) {
+        return second.distanceSquared(first) < distance;
     }
 }

@@ -1,6 +1,6 @@
 package com.huskehhh.fakeblock.objects;
 
-import com.huskehhh.fakeblock.util.Utility;
+import com.huskehhh.fakeblock.FakeBlock;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -55,13 +55,13 @@ public class Wall {
 
     public static void loadWalls() {
 
-        List<String> configWalls = Utility.getAllWalls();
+        List<String> configWalls = FakeBlock.plugin.getAllWalls();
 
         ListIterator<String> li = configWalls.listIterator();
 
         while (li.hasNext()) {
             String name = li.next();
-            String data = Utility.config.getString(name + ".data");
+            String data = FakeBlock.config.getString(name + ".data");
             Wall create = objectFromString(data, name);
             wallObjects.put(name, create);
         }
@@ -74,7 +74,7 @@ public class Wall {
      */
 
     public static void unloadWalls() {
-        Utility.getWalls().clear();
+        FakeBlock.plugin.getWalls().clear();
     }
 
     /**
@@ -229,9 +229,9 @@ public class Wall {
 
     public void writeToConfig(String nme) {
 
-        if (Utility.config.getString(nme + ".data") == null) {
+        if (FakeBlock.config.getString(nme + ".data") == null) {
             String converted = convertToString();
-            YamlConfiguration config = Utility.config;
+            YamlConfiguration config = FakeBlock.config;
 
             config.set(nme + ".data", converted);
             List<String> ls = config.getStringList("walls.list");

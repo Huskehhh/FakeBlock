@@ -1,17 +1,32 @@
 package com.huskehhh.fakeblock.listeners;
 
-import com.huskehhh.fakeblock.util.Utility;
+import com.huskehhh.fakeblock.FakeBlock;
+import com.huskehhh.fakeblock.objects.Config;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class FakeBlockListener implements Listener {
 
+    // Selection List / Mapping
+    public static List<String> right = new ArrayList<String>();
+    public static List<String> selecting = new ArrayList<String>();
+    public static HashMap<String, String> map = new HashMap<String, String>();
+
+    // HashMap used to contain the Configuration of a Wall mid creation
+    public static HashMap<String, Config> configObj = new HashMap<String, Config>();
+
     /**
      * Method to listen for PlayerJoin, sending the Fake Packets when they do connect.
-     * <p/>
      * Note: The delay is to ensure that when they are receiving the World Packets, they do not conflict or overwrite
      * the Fake packets for the Wall
      *
@@ -20,14 +35,11 @@ public class FakeBlockListener implements Listener {
 
     @EventHandler
     public void playerJoin(PlayerJoinEvent e) {
-        Utility.sendFakeBlocks();
+        FakeBlock.plugin.sendFakeBlocks();
     }
 
     /**
      * Method to listen for Teleportation by a Player, sending the Fake Packets when they do teleport
-     * <p/>
-     * TODO: Implement a check if they are close to a Wall or not, saves processing / sending unneeded Packets
-     * <p/>
      * Note: The delay is to ensure that when they are receiving the World Packets, they do not conflict or overwrite
      * the Fake packets for the Wall
      *
@@ -36,12 +48,11 @@ public class FakeBlockListener implements Listener {
 
     @EventHandler
     public void onTeleport(PlayerTeleportEvent e) {
-        Utility.sendFakeBlocks();
+        FakeBlock.plugin.sendFakeBlocks();
     }
 
     /**
      * Method to listen for PlayerRespawn, sending the Fake Packets to them
-     * <p/>
      * Note: The delay is to ensure that when they are receiving the World Packets, they do not conflict or overwrite
      * the Fake packets for the Wall
      *
@@ -50,13 +61,12 @@ public class FakeBlockListener implements Listener {
 
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e) {
-        Utility.sendFakeBlocks();
+        FakeBlock.plugin.sendFakeBlocks();
     }
 
     /**
      * Method to listen for PlayerInteract ensuring that if they click a Block that is apart of the Wall, send them the Wall again
      * to ensure that the client does not overwrite the Fake data
-     * <p/>
      * Note: The delay is to ensure that when they are receiving the World Packets, they do not conflict or overwrite
      * the Fake packets for the Wall
      *
@@ -70,8 +80,56 @@ public class FakeBlockListener implements Listener {
         if (e.getClickedBlock() != null) {
             Block b = e.getClickedBlock();
 
-            if (Utility.isNear(b.getLocation(), p.getLocation(), 10) || Utility.isNearWall(p, 10)) {
-                Utility.sendFakeBlocks();
+            if (FakeBlock.plugin.isNear(b.getLocation(), p.getLocation(), 10) || FakeBlock.plugin.isNearWall(p, 10)) {
+                FakeBlock.plugin.sendFakeBlocks();
+            }
+        }
+    }
+
+    /**
+     * Listening event to handle the selection paramaters of Walls
+     *
+     * @param e - PlayerInteractEvent
+     */
+
+    @EventHandler
+    public void wallSelection(PlayerInteractEvent e) {
+
+        Player p = e.getPlayer();
+        if (e.getClickedBlock() != null) {
+            Block b = e.getClickedBlock();
+            if (p.hasPermission("fakeblock.admin")) {
+
+                if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
+
+                    if (selecting.contains(p.getName()) && !right.contains(p.getName())) {
+                        Location l = b.getLocation();
+
+                        Config conf = configObj.get(p.getName());
+
+                        conf.setLocation1(l);
+
+                        right.add(p.getName());
+                        selecting.remove(p.getName());
+                        p.sendMessage(ChatColor.GREEN + "[FakeBlock] Great! Now Please Right-Click and select the second point!");
+                        e.setCancelled(true);
+                    }
+                } else if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+
+                    if (!selecting.contains(p.getName()) && right.contains(p.getName())) {
+                        Location rl = b.getLocation();
+
+                        Config conf = configObj.get(p.getName());
+
+                        conf.setLocation2(rl);
+                        conf.createObject();
+
+                        configObj.remove(p.getName());
+                        right.remove(p.getName());
+                        p.sendMessage(ChatColor.GREEN + "[FakeBlock] Great! Creating the fake wall now!");
+                        e.setCancelled(true);
+                    }
+                }
             }
         }
     }
