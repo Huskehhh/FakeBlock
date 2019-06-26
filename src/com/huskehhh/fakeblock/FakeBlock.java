@@ -208,7 +208,6 @@ public class FakeBlock extends JavaPlugin implements Listener {
 
     /**
      * Function to queue sending fake blocks
-     * calls processBlockSend()
      * delay of 2s in order to prevent login fake blocks not showing
      */
 
@@ -327,11 +326,10 @@ public class FakeBlock extends JavaPlugin implements Listener {
                 int distanceToCheck = (widthOfWall + 50) - playerDistanceToWall;
 
                 if (playerDistanceToWall <= distanceToCheck) {
-                    processIndividual(p);
+                    return true;
                 }
             }
         }
-
         return false;
     }
 
