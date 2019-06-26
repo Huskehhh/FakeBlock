@@ -25,6 +25,12 @@ public class FakeBlockListener implements Listener {
     // HashMap used to contain the Configuration of a Wall mid creation
     public static HashMap<String, Config> configObj = new HashMap<String, Config>();
 
+    private FakeBlock plugin;
+
+    public FakeBlockListener(FakeBlock plugin) {
+        this.plugin = plugin;
+    }
+
     /**
      * Method to listen for PlayerJoin, sending the Fake Packets when they do connect.
      * Note: The delay is to ensure that when they are receiving the World Packets, they do not conflict or overwrite
@@ -35,7 +41,7 @@ public class FakeBlockListener implements Listener {
 
     @EventHandler
     public void playerJoin(PlayerJoinEvent e) {
-        FakeBlock.plugin.sendFakeBlocks();
+        plugin.sendFakeBlocks();
     }
 
     /**
@@ -48,7 +54,7 @@ public class FakeBlockListener implements Listener {
 
     @EventHandler
     public void onTeleport(PlayerTeleportEvent e) {
-        FakeBlock.plugin.sendFakeBlocks();
+        plugin.sendFakeBlocks();
     }
 
     /**
@@ -61,7 +67,7 @@ public class FakeBlockListener implements Listener {
 
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e) {
-        FakeBlock.plugin.sendFakeBlocks();
+        plugin.sendFakeBlocks();
     }
 
     /**
@@ -80,8 +86,8 @@ public class FakeBlockListener implements Listener {
         if (e.getClickedBlock() != null) {
             Block b = e.getClickedBlock();
 
-            if (FakeBlock.plugin.isNear(b.getLocation(), p.getLocation(), 10) || FakeBlock.plugin.isNearWall(p, 10)) {
-                FakeBlock.plugin.sendFakeBlocks();
+            if (plugin.isNear(b.getLocation(), p.getLocation(), 10) || plugin.isNearWall(p, 10)) {
+                plugin.sendFakeBlocks();
             }
         }
     }

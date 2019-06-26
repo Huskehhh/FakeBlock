@@ -61,3 +61,6 @@ pip-log.txt
 
 # Mac crap
 .DS_Store
+
+# Deploy script
+*.sh

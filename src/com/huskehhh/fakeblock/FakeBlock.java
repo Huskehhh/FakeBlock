@@ -4,20 +4,19 @@ import com.huskehhh.fakeblock.listeners.FakeBlockListener;
 import com.huskehhh.fakeblock.objects.Config;
 import com.huskehhh.fakeblock.objects.Wall;
 import org.bukkit.*;
-import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 public class FakeBlock extends JavaPlugin implements Listener {
 
@@ -32,9 +31,9 @@ public class FakeBlock extends JavaPlugin implements Listener {
      */
 
     public void onEnable() {
-        //Set up plugin variable
+        // Set up local object variables
         plugin = this;
-        listener = new FakeBlockListener();
+        listener = new FakeBlockListener(plugin);
 
         // Register events
         getServer().getPluginManager().registerEvents(listener, plugin);
@@ -210,29 +209,37 @@ public class FakeBlock extends JavaPlugin implements Listener {
         List<Wall> walls = getWalls();
         Iterator<Wall> wallIterator = walls.listIterator();
 
+        System.out.println("processBlockSend called");
         while (wallIterator.hasNext()) {
             Wall wall = wallIterator.next();
 
-            if (wall != null) {
+            System.out.println("wall iter! " + wall.getName());
 
-                List<String> playerNames = processSendBlocksTo(wall);
+            System.out.println("wall not null");
 
-                Material material = Material.matchMaterial(wall.getBlockName());
+            List<String> playerNames = processSendBlocksTo(wall);
 
-                ArrayList<Location> allBlocks = getBlocks(wall);
-                ListIterator<Location> locations = allBlocks.listIterator();
+            Material material = Material.matchMaterial(wall.getBlockName());
 
-                ListIterator<String> players = playerNames.listIterator();
+            ArrayList<Location> allBlocks = getBlocks(wall);
+            ListIterator<Location> locations = allBlocks.listIterator();
 
-                while (players.hasNext()) {
-                    Player p = Bukkit.getServer().getPlayer(players.next());
+            ListIterator<String> players = playerNames.listIterator();
 
-                    if (p.hasPermission("fakeblock." + wall.getName()) || p.hasPermission("fakeblock.admin")) break;
+            while (players.hasNext()) {
 
-                    while (locations.hasNext()) {
-                        Location send = locations.next();
-                        p.sendBlockChange(send, material.createBlockData());
-                    }
+                Player p = Bukkit.getServer().getPlayer(players.next());
+                System.out.println("player has next called " + p.getName());
+
+                if (p.hasPermission("fakeblock." + wall.getName()) || p.hasPermission("fakeblock.admin")) break;
+
+                System.out.println("Locations has next? :" + locations.hasNext());
+
+                while (locations.hasNext()) {
+                    Location send = locations.next();
+                    p.sendBlockChange(send, material.createBlockData());
+                    p.sendMessage("Sending blocks at " + send.toString() + " with block type " + material.createBlockData().toString());
+                    System.out.println("Sending blocks at " + send.toString() + " with block type " + material.createBlockData().toString());
                 }
             }
         }
@@ -335,8 +342,8 @@ public class FakeBlock extends JavaPlugin implements Listener {
         int bx1 = (int) wall.getLoc2().getX();
         int by = (int) wall.getLoc1().getY();
         int by1 = (int) wall.getLoc2().getY();
-        int bz = (int) wall.getLoc1().getY();
-        int bz1 = (int) wall.getLoc2().getY();
+        int bz = (int) wall.getLoc1().getZ();
+        int bz1 = (int) wall.getLoc2().getZ();
 
         ArrayList<Location> blocks = new ArrayList<Location>();
 
@@ -389,6 +396,6 @@ public class FakeBlock extends JavaPlugin implements Listener {
      */
 
     public boolean isNear(Location first, Location second, int distance) {
-        return second.distanceSquared(first) < distance;
+        return second.distance(first) < distance || first.distance(second) < distance;
     }
 }
