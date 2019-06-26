@@ -290,31 +290,6 @@ public class FakeBlock extends JavaPlugin implements Listener {
         return process;
     }
 
-
-    private static int getMaxX(int x, int x1) {
-        return Math.max(x, x1);
-    }
-
-    private static int getMinX(int x, int x1) {
-        return Math.min(x, x1);
-    }
-
-    private static int getMaxY(int y, int y1) {
-        return Math.max(y, y1);
-    }
-
-    private static int getMinY(int y, int y1) {
-        return Math.min(y, y1);
-    }
-
-    private static int getMaxZ(int z, int z1) {
-        return Math.max(z, z1);
-    }
-
-    private static int getMinZ(int z, int z1) {
-        return Math.min(z, z1);
-    }
-
     /**
      * Get all blocks in a Wall
      *
@@ -335,9 +310,9 @@ public class FakeBlock extends JavaPlugin implements Listener {
 
         ArrayList<Location> blocks = new ArrayList<Location>();
 
-        for (int x = getMinX(bx, bx1); x <= getMaxX(bx, bx1); ++x) {
-            for (int y = getMinY(by, by1); y <= getMaxY(by, by1); ++y) {
-                for (int z = getMinZ(bz, bz1); z <= getMaxZ(bz, bz1); ++z) {
+        for (int x = Math.min(bx, bx1); x <= Math.max(bx, bx1); ++x) {
+            for (int y = Math.min(by, by1); y <= Math.max(by, by1); ++y) {
+                for (int z = Math.min(bz, bz1); z <= Math.max(bz, bz1); ++z) {
                     blocks.add(new Location(w, x, y, z));
                 }
             }
