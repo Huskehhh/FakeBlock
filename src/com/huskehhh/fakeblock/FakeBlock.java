@@ -215,44 +215,35 @@ public class FakeBlock extends JavaPlugin implements Listener {
     public void sendFakeBlocks(int delay) {
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
             public void run() {
-                processBlockSend();
-            }
-        }, (delay * 20));
-    }
+                List<Wall> walls = getWalls();
+                Iterator<Wall> wallIterator = walls.listIterator();
 
+                while (wallIterator.hasNext()) {
+                    Wall wall = wallIterator.next();
 
-    /**
-     * Function to process users to send the blocks to all relevant players
-     */
+                    List<String> playerNames = processSendBlocksTo(wall);
 
-    private void processBlockSend() {
-        List<Wall> walls = getWalls();
-        Iterator<Wall> wallIterator = walls.listIterator();
+                    Material material = Material.matchMaterial(wall.getBlockName());
 
-        while (wallIterator.hasNext()) {
-            Wall wall = wallIterator.next();
+                    ArrayList<Location> allBlocks = wall.getBlocks();
+                    ListIterator<Location> locations = allBlocks.listIterator();
 
-            List<String> playerNames = processSendBlocksTo(wall);
+                    ListIterator<String> players = playerNames.listIterator();
 
-            Material material = Material.matchMaterial(wall.getBlockName());
+                    while (players.hasNext()) {
 
-            ArrayList<Location> allBlocks = wall.getBlocks();
-            ListIterator<Location> locations = allBlocks.listIterator();
+                        Player p = Bukkit.getServer().getPlayer(players.next());
 
-            ListIterator<String> players = playerNames.listIterator();
+                        if (p.hasPermission("fakeblock." + wall.getName()) || p.hasPermission("fakeblock.admin")) break;
 
-            while (players.hasNext()) {
-
-                Player p = Bukkit.getServer().getPlayer(players.next());
-
-                if (p.hasPermission("fakeblock." + wall.getName()) || p.hasPermission("fakeblock.admin")) break;
-
-                while (locations.hasNext()) {
-                    Location send = locations.next();
-                    p.sendBlockChange(send, material.createBlockData());
+                        while (locations.hasNext()) {
+                            Location send = locations.next();
+                            p.sendBlockChange(send, material.createBlockData());
+                        }
+                    }
                 }
             }
-        }
+        }, (delay * 20));
     }
 
     /**
