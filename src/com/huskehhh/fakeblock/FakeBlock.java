@@ -27,7 +27,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
     private static FakeBlockListener listener;
 
     // Config object
-    public static YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/FakeBlock/config.yml"));
+    public static YamlConfiguration config;
 
     /**
      * Method to handle Plugin startup.
@@ -37,6 +37,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
         // Set up local object variables
         plugin = this;
         listener = new FakeBlockListener(plugin);
+        config = YamlConfiguration.loadConfiguration(new File("plugins/FakeBlock/config.yml"));
 
         // Register events
         getServer().getPluginManager().registerEvents(listener, plugin);
