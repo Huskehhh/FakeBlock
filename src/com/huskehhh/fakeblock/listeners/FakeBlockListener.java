@@ -139,4 +139,19 @@ public class FakeBlockListener implements Listener {
             }
         }
     }
+
+
+    /**
+     * Listening event to handle sending players close to the wall updates
+     * @param e
+     */
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent e) {
+        Player p = e.getPlayer();
+
+        if (plugin.isNearWall(p, 10)) {
+            plugin.processIndividual(p);
+        }
+    }
+
 }

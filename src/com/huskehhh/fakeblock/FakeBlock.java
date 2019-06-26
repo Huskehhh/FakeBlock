@@ -98,6 +98,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
      * @param cmd          - Command sent
      * @param commandLabel - Command sent converted to String
      * @param args         - Arguments of the Command
+     *                     
      * @return whether or not the command worked
      */
 
@@ -209,13 +210,8 @@ public class FakeBlock extends JavaPlugin implements Listener {
         List<Wall> walls = getWalls();
         Iterator<Wall> wallIterator = walls.listIterator();
 
-        System.out.println("processBlockSend called");
         while (wallIterator.hasNext()) {
             Wall wall = wallIterator.next();
-
-            System.out.println("wall iter! " + wall.getName());
-
-            System.out.println("wall not null");
 
             List<String> playerNames = processSendBlocksTo(wall);
 
@@ -229,17 +225,12 @@ public class FakeBlock extends JavaPlugin implements Listener {
             while (players.hasNext()) {
 
                 Player p = Bukkit.getServer().getPlayer(players.next());
-                System.out.println("player has next called " + p.getName());
 
                 if (p.hasPermission("fakeblock." + wall.getName()) || p.hasPermission("fakeblock.admin")) break;
-
-                System.out.println("Locations has next? :" + locations.hasNext());
 
                 while (locations.hasNext()) {
                     Location send = locations.next();
                     p.sendBlockChange(send, material.createBlockData());
-                    p.sendMessage("Sending blocks at " + send.toString() + " with block type " + material.createBlockData().toString());
-                    System.out.println("Sending blocks at " + send.toString() + " with block type " + material.createBlockData().toString());
                 }
             }
         }
@@ -258,25 +249,22 @@ public class FakeBlock extends JavaPlugin implements Listener {
         while (wallIterator.hasNext()) {
             final Wall wall = wallIterator.next();
 
-            if (wall != null) {
+            ArrayList<Location> allBlocks = getBlocks(wall);
+            final ListIterator<Location> locations = allBlocks.listIterator();
 
-                ArrayList<Location> allBlocks = getBlocks(wall);
-                final ListIterator<Location> locations = allBlocks.listIterator();
+            if (p.hasPermission("fakeblock." + wall.getName()) || p.hasPermission("fakeblock.admin")) break;
 
-                if (p.hasPermission("fakeblock." + wall.getName()) || p.hasPermission("fakeblock.admin")) break;
+            if (isNear(wall.getLoc1(), p.getLocation(), 20) || isNear(wall.getLoc2(), p.getLocation(), 20)) {
 
-                if (processSendBlocksTo(wall).contains(p.getName())) {
-
-                    Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-                        public void run() {
-                            Material material = Material.matchMaterial(wall.getBlockName());
-                            while (locations.hasNext()) {
-                                Location send = locations.next();
-                                p.sendBlockChange(send, material.createBlockData());
-                            }
+                Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+                    public void run() {
+                        Material material = Material.matchMaterial(wall.getBlockName());
+                        while (locations.hasNext()) {
+                            Location send = locations.next();
+                            p.sendBlockChange(send, material.createBlockData());
                         }
-                    }, (2 * 20));
-                }
+                    }
+                }, (2 * 20));
             }
         }
     }
@@ -396,6 +384,6 @@ public class FakeBlock extends JavaPlugin implements Listener {
      */
 
     public boolean isNear(Location first, Location second, int distance) {
-        return second.distance(first) < distance || first.distance(second) < distance;
+        return second.distanceSquared(first) < distance || first.distanceSquared(second) < distance;
     }
 }
