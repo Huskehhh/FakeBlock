@@ -78,7 +78,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
             config.options().header("FakeBlock, made by Husky!");
             List<String> walls = new ArrayList<String>();
             walls.add("default");
-            config.set("default.data", "1,2,3,world,1,2,3,46,0");
+            config.set("default.data", "1,2,3,world,1,2,3,ACACIA_LOG");
             config.set("walls.list", walls);
 
             try {
@@ -317,7 +317,6 @@ public class FakeBlock extends JavaPlugin implements Listener {
                 }
             }
         }
-
         return blocks;
     }
 
