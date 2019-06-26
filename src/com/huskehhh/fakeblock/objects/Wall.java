@@ -219,7 +219,7 @@ public class Wall {
      * @return distanceBetweenPoints
      */
     public double getDistanceBetweenPoints() {
-        return loc1.distance(loc2);
+        return loc1.distanceSquared(loc2);
     }
 
     /**

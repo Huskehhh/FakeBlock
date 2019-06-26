@@ -273,8 +273,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
 
             if (p.hasPermission("fakeblock." + wall.getName()) || p.hasPermission("fakeblock.admin")) break;
 
-            if (isNear(wall.getLoc1(), p.getLocation(), 20) || isNear(wall.getLoc2(), p.getLocation(), 20)) {
-
+            if (isPlayerNearWall(p)) {
                 Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
                     public void run() {
                         Material material = Material.matchMaterial(wall.getBlockName());
@@ -301,7 +300,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
 
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
             if (player.getLocation().getWorld() == Bukkit.getServer().getWorld(wall.getWorldname())) {
-                if (isNear(wall.getLoc1(), player.getLocation(), 20) || isNear(wall.getLoc2(), player.getLocation(), 20)) {
+                if (isPlayerNearWall(player)) {
                     process.add(player.getName());
                 }
             }
@@ -323,7 +322,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
         while (wallIterator.hasNext()) {
             Wall wall = wallIterator.next();
 
-            int distance = (int) wall.getDistanceBetweenPoints();
+            int widthOfWall = (int) wall.getDistanceBetweenPoints();
 
             List<Location> locations = wall.getLocations();
             Iterator<Location> locationIterator = locations.listIterator();
@@ -331,24 +330,18 @@ public class FakeBlock extends JavaPlugin implements Listener {
             while (locationIterator.hasNext()) {
                 Location locationToCheck = locationIterator.next();
 
-                if (isNear(p.getLocation(), locationToCheck, distance)) return true;
+                int playerDistanceToWall = (int) p.getLocation().distanceSquared(locationToCheck);
+
+                // Note: Adding 50 to extend the radius
+                int distanceToCheck = (widthOfWall + 50) - playerDistanceToWall;
+
+                if (playerDistanceToWall <= distanceToCheck) {
+                    processIndividual(p);
+                }
             }
         }
 
         return false;
     }
 
-
-    /**
-     * Method to check if two locations are close
-     *
-     * @param first    Location number 1
-     * @param second   Location number 2
-     * @param distance permitted distance between the two points
-     * @return whether distance is acceptable
-     */
-
-    public boolean isNear(Location first, Location second, int distance) {
-        return second.distanceSquared(first) < distance || first.distanceSquared(second) < distance;
-    }
 }
