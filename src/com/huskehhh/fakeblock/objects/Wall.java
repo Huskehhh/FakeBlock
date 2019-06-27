@@ -20,10 +20,10 @@ public class Wall {
 
     public static HashMap<String, Wall> wallObjects = new HashMap<String, Wall>();
 
-    String name;
-    String blockname;
-    Location loc1;
-    Location loc2;
+    private String name;
+    private String blockName;
+    private Location loc1;
+    private Location loc2;
 
     private ArrayList<Location> locations = new ArrayList<Location>();
     private ArrayList<Location> blocks = new ArrayList<Location>();
@@ -34,17 +34,17 @@ public class Wall {
      * @param loc1      - First location
      * @param loc2      - First location
      * @param name      - Name of the Wall
-     * @param blockname - Block name of the Wall
+     * @param blockName - Block name of the Wall
      */
 
-    public Wall(Location loc1, Location loc2, String name, String blockname) {
+    public Wall(Location loc1, Location loc2, String name, String blockName) {
         this.loc1 = loc1;
         this.loc2 = loc2;
         this.name = name;
-        this.blockname = blockname;
+        this.blockName = blockName;
 
         wallObjects.put(name, this);
-        writeToConfig(name);
+        writeToConfig();
 
         locations.add(loc1);
         locations.add(loc2);
@@ -58,7 +58,7 @@ public class Wall {
 
     public static void loadWalls() {
 
-        List<String> configWalls = FakeBlock.plugin.getAllWalls();
+        List<String> configWalls = getAllWalls();
 
         ListIterator<String> li = configWalls.listIterator();
 
@@ -77,7 +77,7 @@ public class Wall {
      */
 
     public static void unloadWalls() {
-        FakeBlock.plugin.getWalls().clear();
+        getWalls().clear();
     }
 
     /**
@@ -99,7 +99,7 @@ public class Wall {
         String worldname = loc1.getWorld().getName();
 
 
-        return x + sep + y + sep + z + sep + worldname + sep + x1 + sep + y1 + sep + z1 + sep + blockname;
+        return x + sep + y + sep + z + sep + worldname + sep + x1 + sep + y1 + sep + z1 + sep + blockName;
     }
 
     /**
@@ -200,7 +200,17 @@ public class Wall {
      */
 
     public String getBlockName() {
-        return blockname;
+        return blockName;
+    }
+
+    /**
+     * Method to set block type to something different
+     *
+     * @param blockName new block name
+     */
+
+    public void setBlockName(String blockName) {
+        this.blockName = blockName;
     }
 
     /**
@@ -240,24 +250,48 @@ public class Wall {
      */
 
     public static void removeByName(String name) {
+        getByName(name).removeFromConfig();
         wallObjects.remove(name);
+    }
+
+
+    /**
+     * Removes object from config
+     */
+
+    public void removeFromConfig() {
+        if (FakeBlock.config.getString(name + ".data") != null) {
+
+            FakeBlock.config.set(name + ".data", null);
+
+            List<String> ls = getAllWalls();
+            
+            ls.remove(name);
+
+            FakeBlock.config.set("walls.list", ls);
+
+            try {
+                FakeBlock.config.save("plugins/FakeBlock/config.yml");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
      * Writes object in string form to config.
-     *
-     * @param nme - Object that's converted to string to be written to config.
      */
 
-    private void writeToConfig(String nme) {
+    private void writeToConfig() {
 
-        if (FakeBlock.config.getString(nme + ".data") == null) {
+        if (FakeBlock.config.getString(name + ".data") == null) {
             String converted = convertToString();
+            
             YamlConfiguration config = FakeBlock.config;
 
-            config.set(nme + ".data", converted);
-            List<String> ls = config.getStringList("walls.list");
-            ls.add(nme);
+            config.set(name + ".data", converted);
+            List<String> ls = getAllWalls();
+            ls.add(name);
             config.set("walls.list", ls);
 
             try {
@@ -293,6 +327,38 @@ public class Wall {
                 }
             }
         }
+    }
+
+    /**
+     * Get StringList of Walls in config
+     *
+     * @return StringList of Walls
+     */
+
+    public static List<String> getAllWalls() {
+        return FakeBlock.config.getStringList("walls.list");
+    }
+
+    /**
+     * Get all Walls from config
+     *
+     * @return Walls from config
+     */
+
+    public static List<Wall> getWalls() {
+        List<Wall> allWalls = new ArrayList<Wall>();
+
+        List<String> configWalls = getAllWalls();
+
+        ListIterator<String> li = configWalls.listIterator();
+
+        while (li.hasNext()) {
+            String name = li.next();
+            Wall wall = Wall.getByName(name);
+            allWalls.add(wall);
+        }
+
+        return allWalls;
     }
 
 }

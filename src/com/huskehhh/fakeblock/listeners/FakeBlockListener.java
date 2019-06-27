@@ -113,6 +113,8 @@ public class FakeBlockListener implements Listener {
     @EventHandler
     public void wallSelection(PlayerInteractEvent e) {
 
+        String fakeBlockTitle = ChatColor.BLACK + "[" + ChatColor.AQUA + "FakeBlock" + ChatColor.BLACK + "] ";
+
         Player p = e.getPlayer();
         if (e.getClickedBlock() != null) {
             Block b = e.getClickedBlock();
@@ -129,7 +131,7 @@ public class FakeBlockListener implements Listener {
 
                         right.add(p.getName());
                         selecting.remove(p.getName());
-                        p.sendMessage(ChatColor.GREEN + "[FakeBlock] Great! Now Please Right-Click and select the second point!");
+                        p.sendMessage(fakeBlockTitle + ChatColor.GREEN + "Great! Now Please Right-Click and select the second point!");
                         e.setCancelled(true);
                     }
                 } else if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
@@ -144,7 +146,7 @@ public class FakeBlockListener implements Listener {
 
                         configObj.remove(p.getName());
                         right.remove(p.getName());
-                        p.sendMessage(ChatColor.GREEN + "[FakeBlock] Great! Creating the fake wall now!");
+                        p.sendMessage(fakeBlockTitle + ChatColor.GREEN + "Great! Creating the fake wall now!");
                         e.setCancelled(true);
                     }
                 }
