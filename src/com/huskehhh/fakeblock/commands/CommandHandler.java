@@ -64,17 +64,20 @@ public class CommandHandler implements CommandExecutor {
                     if (commandSender instanceof Player) {
                         Player player = (Player) commandSender;
                         if (arguments.length == 3) {
-                            listener.map.put(player.getName(), arguments[1]);
-                            listener.selecting.add(player.getName());
+                            if (Material.matchMaterial(arguments[2]) != null) {
+                                listener.map.put(player.getName(), arguments[1]);
+                                listener.selecting.add(player.getName());
 
-                            Config conf = new Config();
+                                Config conf = new Config();
 
-                            conf.setName(arguments[1]);
-                            conf.setBlockname(Material.matchMaterial(arguments[2]).toString());
+                                conf.setName(arguments[1]);
+                                conf.setBlockname(Material.matchMaterial(arguments[2]).toString());
+                                listener.configObj.put(player.getName(), conf);
 
-                            listener.configObj.put(player.getName(), conf);
-
-                            player.sendMessage(fakeBlockTitle + ChatColor.GREEN + "You can now select the blocks you want.");
+                                commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "You can now select the blocks you want.");
+                            } else {
+                                commandSender.sendMessage(fakeBlockTitle + ChatColor.RED + "Unknown block name!");
+                            }
                         } else {
                             commandSender.sendMessage(fakeBlockTitle + ChatColor.RED + "Invalid amount of arguments! Usage: /fakeblock set <wall name> <block name>");
                         }
@@ -99,14 +102,20 @@ public class CommandHandler implements CommandExecutor {
                 } else if (arguments[0].equalsIgnoreCase("replace")) {
                     if (arguments.length == 3) {
                         if (Wall.getByName(arguments[1]) != null) {
-                            Wall wall = Wall.getByName(arguments[1]);
-                            Material replacementMaterial = Material.matchMaterial(arguments[2]);
+                            if (Material.matchMaterial(arguments[2]) != null) {
+                                Wall wall = Wall.getByName(arguments[1]);
+                                Material replacementMaterial = Material.matchMaterial(arguments[2]);
 
-                            wall.setBlockName(replacementMaterial.toString());
+                                wall.setBlockName(replacementMaterial.toString());
 
-                            plugin.forceConfigRefresh();
+                                plugin.forceConfigRefresh();
 
-                            commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "'" + arguments[1] + "'s block has been replaced with " + arguments[2]);
+                                commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "'" + arguments[1] + "'s block has been replaced with " + arguments[2]);
+                            } else {
+                                commandSender.sendMessage(fakeBlockTitle + ChatColor.RED + "Unknown block name!");
+                            }
+                        } else {
+                            commandSender.sendMessage(fakeBlockTitle + ChatColor.RED + "Invalid wall name!");
                         }
                     } else {
                         commandSender.sendMessage(fakeBlockTitle + ChatColor.RED + "Invalid amount of arguments! Usage: /fakeblock replace <wall name> <block name>");
