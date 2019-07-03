@@ -9,3 +9,4 @@ commands:
     usage: /<command>
     aliases: [fb]
 api-version: 1.14
+depend: [ProtocolLib]

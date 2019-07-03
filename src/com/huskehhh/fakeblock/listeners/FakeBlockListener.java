@@ -71,38 +71,6 @@ public class FakeBlockListener implements Listener {
         plugin.processIndividual(e.getPlayer(), 2);
     }
 
-    /**
-     * Method to listen for PlayerInteract ensuring that if they click a Block that is apart of the Wall, send them the Wall again
-     * to ensure that the client does not overwrite the Fake data
-     * Note: The delay is to ensure that when they are receiving the World Packets, they do not conflict or overwrite
-     * the Fake packets for the Wall
-     *
-     * @param e - PlayerInteractEvent
-     */
-
-    @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent e) {
-        Player p = e.getPlayer();
-
-        if (plugin.isPlayerNearWall(p)) {
-            plugin.processIndividual(p, 1);
-        }
-    }
-
-
-    /**
-     * Listening event to handle block break near walls
-     *
-     * @param e - BlockBreakEvent
-     */
-    @EventHandler
-    public void onBlockBreak(BlockBreakEvent e) {
-        Player p = e.getPlayer();
-
-        if (plugin.isPlayerNearWall(p)) {
-            plugin.processIndividual(p, 1);
-        }
-    }
 
     /**
      * Listening event to handle the selection paramaters of Walls
@@ -154,18 +122,18 @@ public class FakeBlockListener implements Listener {
         }
     }
 
-
     /**
-     * Listening event to handle sending players close to the wall updates
+     * Listening event to handle block break near walls
      *
-     * @param e - PlayerMoveEvent
+     * @param e - BlockBreakEvent
      */
     @EventHandler
-    public void onPlayerMove(PlayerMoveEvent e) {
+    public void onBlockBreak(BlockBreakEvent e) {
         Player p = e.getPlayer();
 
         if (plugin.isPlayerNearWall(p)) {
             plugin.processIndividual(p, 1);
         }
     }
+
 }

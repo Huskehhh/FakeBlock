@@ -1,15 +1,17 @@
 package com.huskehhh.fakeblock;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
 import com.huskehhh.fakeblock.commands.CommandHandler;
 import com.huskehhh.fakeblock.listeners.FakeBlockListener;
-import com.huskehhh.fakeblock.objects.Config;
 import com.huskehhh.fakeblock.objects.Wall;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -26,6 +28,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
 
     private static FakeBlock plugin;
     private static FakeBlockListener listener;
+    private static ProtocolManager protocolManager;
 
     // Config object
     public static YamlConfiguration config;
@@ -39,6 +42,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
         plugin = this;
         listener = new FakeBlockListener(plugin);
         config = YamlConfiguration.loadConfiguration(new File("plugins/FakeBlock/config.yml"));
+        protocolManager = ProtocolLibrary.getProtocolManager();
 
         // Register events
         getServer().getPluginManager().registerEvents(listener, plugin);
@@ -47,6 +51,35 @@ public class FakeBlock extends JavaPlugin implements Listener {
         // Register commands
         getCommand("fakeblock").setExecutor(new CommandHandler(plugin, listener));
         getCommand("fb").setExecutor(new CommandHandler(plugin, listener));
+        
+        /**
+         * Utilises ProtocolLib to listen for USE_ITEM packet in order to prevent players destroying the fake wall
+         */
+        protocolManager.addPacketListener(
+                new PacketAdapter(this, ListenerPriority.NORMAL,
+                        PacketType.Play.Client.USE_ITEM) {
+                    
+                    @Override
+                    public void onPacketReceiving(PacketEvent event) {
+                        Player p = event.getPlayer();
+                        if (event.getPacketType() == PacketType.Play.Client.USE_ITEM) {
+                            if (isPlayerNearWall(p)) processIndividual(p, 1);
+                        }
+                    }
+                });
+
+        protocolManager.addPacketListener(
+                new PacketAdapter(this, ListenerPriority.NORMAL,
+                        PacketType.Play.Client.ARM_ANIMATION) {
+
+                    @Override
+                    public void onPacketReceiving(PacketEvent event) {
+                        Player p = event.getPlayer();
+                        if (event.getPacketType() == PacketType.Play.Client.USE_ITEM) {
+                            if (isPlayerNearWall(p)) processIndividual(p, 1);
+                        }
+                    }
+                });
 
         // Create Config if not already created
         createConfig();
@@ -115,7 +148,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
      */
 
     public void sendFakeBlocks(int delay) {
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+        getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
             public void run() {
                 List<Wall> walls = Wall.getWalls();
                 Iterator<Wall> wallIterator = walls.listIterator();
