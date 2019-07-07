@@ -106,7 +106,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
 
     private void createConfig() {
         boolean exists = new File("plugins/FakeBlock/config.yml").exists();
-
+        
         if (!exists) {
             new File("plugins/FakeBlock").mkdir();
             config.options().header("FakeBlock, made by Husky!");
@@ -114,13 +114,11 @@ public class FakeBlock extends JavaPlugin implements Listener {
             walls.add("default");
             config.set("default.data", "1,2,3,world,1,2,3,ACACIA_LOG");
             config.set("walls.list", walls);
-
             try {
                 config.save("plugins/FakeBlock/config.yml");
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
 
     }
@@ -135,9 +133,10 @@ public class FakeBlock extends JavaPlugin implements Listener {
     }
 
     /**
-     * Process singular Player instead of processing all players on server
+     * Process player, checking to see if they are to be sent the fake blocks
      *
      * @param p - Player to process
+     * @param delay - Delay on sending the fake blocks
      */
 
     public void processIndividual(final Player p, int delay) {
@@ -153,7 +152,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
             if (p.hasPermission("fakeblock." + wall.getName()) || p.hasPermission("fakeblock.admin")) break;
 
             if (isPlayerNearWall(p)) {
-                Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+                getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
                     public void run() {
                         Material material = Material.matchMaterial(wall.getBlockName());
                         while (locations.hasNext()) {
