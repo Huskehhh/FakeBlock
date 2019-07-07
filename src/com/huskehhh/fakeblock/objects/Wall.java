@@ -265,7 +265,7 @@ public class Wall {
             FakeBlock.config.set(name + ".data", null);
 
             List<String> ls = getAllWalls();
-            
+
             ls.remove(name);
 
             FakeBlock.config.set("walls.list", ls);
@@ -286,7 +286,7 @@ public class Wall {
 
         if (FakeBlock.config.getString(name + ".data") == null) {
             String converted = convertToString();
-            
+
             YamlConfiguration config = FakeBlock.config;
 
             config.set(name + ".data", converted);

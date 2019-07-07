@@ -41,16 +41,6 @@ public class Config {
     }
 
     /**
-     * Set the name of the world the Wall is to be created in
-     *
-     * @param worldname - Name of the world taken from block selection location
-     */
-
-    public void setWorldname(String worldname) {
-        this.worldname = worldname;
-    }
-
-    /**
      * Set block name of the Wall to be created
      *
      * @param blockname - block name Given through command

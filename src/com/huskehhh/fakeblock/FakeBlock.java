@@ -51,14 +51,14 @@ public class FakeBlock extends JavaPlugin implements Listener {
         // Register commands
         getCommand("fakeblock").setExecutor(new CommandHandler(plugin, listener));
         getCommand("fb").setExecutor(new CommandHandler(plugin, listener));
-        
+
         /**
          * Utilises ProtocolLib to listen for USE_ITEM packet in order to prevent players destroying the fake wall
          */
         protocolManager.addPacketListener(
                 new PacketAdapter(this, ListenerPriority.NORMAL,
                         PacketType.Play.Client.USE_ITEM) {
-                    
+
                     @Override
                     public void onPacketReceiving(PacketEvent event) {
                         Player p = event.getPlayer();
@@ -143,45 +143,6 @@ public class FakeBlock extends JavaPlugin implements Listener {
     }
 
     /**
-     * Function to queue sending fake blocks
-     * delay of 2s in order to prevent login fake blocks not showing
-     */
-
-    public void sendFakeBlocks(int delay) {
-        getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-            public void run() {
-                List<Wall> walls = Wall.getWalls();
-                Iterator<Wall> wallIterator = walls.listIterator();
-
-                while (wallIterator.hasNext()) {
-                    Wall wall = wallIterator.next();
-
-                    List<String> playerNames = processSendBlocksTo(wall);
-
-                    Material material = Material.matchMaterial(wall.getBlockName());
-
-                    ArrayList<Location> allBlocks = wall.getBlocks();
-                    ListIterator<Location> locations = allBlocks.listIterator();
-
-                    ListIterator<String> players = playerNames.listIterator();
-
-                    while (players.hasNext()) {
-
-                        Player p = Bukkit.getServer().getPlayer(players.next());
-
-                        if (p.hasPermission("fakeblock." + wall.getName()) || p.hasPermission("fakeblock.admin")) break;
-
-                        while (locations.hasNext()) {
-                            Location send = locations.next();
-                            p.sendBlockChange(send, material.createBlockData());
-                        }
-                    }
-                }
-            }
-        }, (delay * 20));
-    }
-
-    /**
      * Process singular Player instead of processing all players on server
      *
      * @param p - Player to process
@@ -214,27 +175,6 @@ public class FakeBlock extends JavaPlugin implements Listener {
     }
 
     /**
-     * Method to determine which players are eligible to receive the Wall packets
-     *
-     * @param wall - Wall to check for eligible players
-     * @return List of PlayerNames
-     */
-
-    private List<String> processSendBlocksTo(Wall wall) {
-
-        List<String> process = new ArrayList<String>();
-
-        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-            if (player.getLocation().getWorld() == Bukkit.getServer().getWorld(wall.getWorldname())) {
-                if (isPlayerNearWall(player)) {
-                    process.add(player.getName());
-                }
-            }
-        }
-        return process;
-    }
-
-    /**
      * Check whether a Player is close to a Wall
      *
      * @param p - Player to check
@@ -254,7 +194,10 @@ public class FakeBlock extends JavaPlugin implements Listener {
             Iterator<Location> locationIterator = locations.listIterator();
 
             while (locationIterator.hasNext()) {
+
                 Location locationToCheck = locationIterator.next();
+
+                if (p.getLocation().getWorld() != locationToCheck.getWorld()) return false;
 
                 int playerDistanceToWall = (int) p.getLocation().distanceSquared(locationToCheck);
 

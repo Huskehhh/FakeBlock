@@ -10,7 +10,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -129,11 +132,7 @@ public class FakeBlockListener implements Listener {
      */
     @EventHandler
     public void onBlockBreak(BlockBreakEvent e) {
-        Player p = e.getPlayer();
-
-        if (plugin.isPlayerNearWall(p)) {
-            plugin.processIndividual(p, 1);
-        }
+        plugin.processIndividual(e.getPlayer(), 0);
     }
 
 }

@@ -128,7 +128,9 @@ public class CommandHandler implements CommandExecutor {
 
                         Wall.loadWalls();
 
-                        plugin.sendFakeBlocks(1);
+                        for (Player player : plugin.getServer().getOnlinePlayers()) {
+                            plugin.processIndividual(player, 1);
+                        }
 
                         commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "Walls reloaded!");
                     } else {
