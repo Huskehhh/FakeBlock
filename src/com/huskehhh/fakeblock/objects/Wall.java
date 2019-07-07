@@ -77,7 +77,7 @@ public class Wall {
      */
 
     public static void unloadWalls() {
-        getWalls().clear();
+        wallObjects.clear();
     }
 
     /**

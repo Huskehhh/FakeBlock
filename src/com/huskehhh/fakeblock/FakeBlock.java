@@ -97,14 +97,6 @@ public class FakeBlock extends JavaPlugin implements Listener {
         // Unload all Wall objects
         Wall.unloadWalls();
         // Unload all Config objects
-        unloadConfigObjects();
-    }
-
-    /**
-     * Unloads all Configuration objects containing partial Walls in the making.
-     */
-
-    private void unloadConfigObjects() {
         listener.configObj.clear();
     }
 

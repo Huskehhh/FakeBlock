@@ -89,15 +89,13 @@ public class FakeBlockListener implements Listener {
         Player p = e.getPlayer();
         if (e.getClickedBlock() != null) {
             Block b = e.getClickedBlock();
+
             if (p.hasPermission("fakeblock.admin")) {
-
                 if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
-
                     if (selecting.contains(p.getName()) && !right.contains(p.getName())) {
                         Location l = b.getLocation();
 
                         Config conf = configObj.get(p.getName());
-
                         conf.setLocation1(l);
 
                         right.add(p.getName());
@@ -106,12 +104,10 @@ public class FakeBlockListener implements Listener {
                         e.setCancelled(true);
                     }
                 } else if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-
                     if (!selecting.contains(p.getName()) && right.contains(p.getName())) {
                         Location rl = b.getLocation();
 
                         Config conf = configObj.get(p.getName());
-
                         conf.setLocation2(rl);
                         conf.createObject();
 
