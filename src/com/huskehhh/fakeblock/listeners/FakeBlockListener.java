@@ -76,7 +76,7 @@ public class FakeBlockListener implements Listener {
 
 
     /**
-     * Listening event to handle the selection paramaters of Walls
+     * Listening event to handle the selection parameters of Walls
      *
      * @param e - PlayerInteractEvent
      */

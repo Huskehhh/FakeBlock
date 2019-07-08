@@ -50,7 +50,7 @@ public class CommandHandler implements CommandExecutor {
         if (commandSender.hasPermission("fakeblock.admin")) {
             if (arguments.length == 0) {
 
-                commandSender.sendMessage(ChatColor.GREEN + " --------- FakeBlock Help --------- ");
+                commandSender.sendMessage(ChatColor.GREEN + " --------- " + ChatColor.AQUA + "FakeBlock" + ChatColor.GREEN + " Help --------- ");
                 commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + commandLabel + " | Aliases: /fakeblock, /fb");
                 commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + commandLabel + " set <wall name> <block name> | Creates a wall under specified name using specified block");
                 commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + commandLabel + " delete <wall name> | Deletes wall");
@@ -140,7 +140,7 @@ public class CommandHandler implements CommandExecutor {
                     if (arguments.length == 1) {
                         ListIterator<String> wallListIterator = Wall.getAllWalls().listIterator();
 
-                        commandSender.sendMessage(ChatColor.GREEN + " ---- FakeBlock Wall list ---- ");
+                        commandSender.sendMessage(ChatColor.GREEN + " ---- " + ChatColor.AQUA + "FakeBlock" + ChatColor.GREEN + " Wall list ---- ");
                         while (wallListIterator.hasNext()) {
                             commandSender.sendMessage(ChatColor.GREEN + " ---- " + ChatColor.LIGHT_PURPLE + wallListIterator.next() + ChatColor.GREEN + " ---- ");
                         }
