@@ -41,7 +41,6 @@ public class FakeBlock extends JavaPlugin implements Listener {
         // Set up local object variables
         plugin = this;
         listener = new FakeBlockListener(plugin);
-        config = YamlConfiguration.loadConfiguration(new File("plugins/FakeBlock/config.yml"));
         protocolManager = ProtocolLibrary.getProtocolManager();
 
         // Register events
@@ -120,7 +119,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
                 e.printStackTrace();
             }
         }
-
+        config = YamlConfiguration.loadConfiguration(new File("plugins/FakeBlock/config.yml"));
     }
 
     /**
