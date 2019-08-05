@@ -30,7 +30,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
     private static FakeBlockListener listener;
     private static ProtocolManager protocolManager;
 
-    // Config object
+    // Config objects
     public static YamlConfiguration config;
 
     /**
@@ -38,7 +38,7 @@ public class FakeBlock extends JavaPlugin implements Listener {
      */
 
     public void onEnable() {
-        // Set up local object variables
+        // Set up local objects variables
         plugin = this;
         listener = new FakeBlockListener(plugin);
         protocolManager = ProtocolLibrary.getProtocolManager();

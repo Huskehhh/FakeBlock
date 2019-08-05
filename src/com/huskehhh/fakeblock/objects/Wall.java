@@ -81,9 +81,9 @@ public class Wall {
     }
 
     /**
-     * Converts a Wall object to String
+     * Converts a Wall objects to String
      *
-     * @return String of the current Wall object
+     * @return String of the current Wall objects
      */
 
     public String convertToString() {
@@ -103,12 +103,12 @@ public class Wall {
     }
 
     /**
-     * Creates an object from a string containing all the information a wall contains
+     * Creates an objects from a string containing all the information a wall contains
      * Used for loading from config.
      *
      * @param data - Data in String form
      * @param name - Name of the Wall
-     * @return new Wall object containing given data.
+     * @return new Wall objects containing given data.
      */
 
     public static Wall objectFromString(String data, String name) {
@@ -236,7 +236,7 @@ public class Wall {
      * Retrieves wall by name
      *
      * @param name - Name of the wall to be retrieved
-     * @return Wall object from Name
+     * @return Wall objects from Name
      */
 
     public static Wall getByName(String name) {
@@ -256,7 +256,7 @@ public class Wall {
 
 
     /**
-     * Removes object from config
+     * Removes objects from config
      */
 
     public void removeFromConfig() {
@@ -279,7 +279,7 @@ public class Wall {
     }
 
     /**
-     * Writes object in string form to config.
+     * Writes objects in string form to config.
      */
 
     private void writeToConfig() {

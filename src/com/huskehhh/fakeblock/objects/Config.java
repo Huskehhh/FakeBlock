@@ -51,9 +51,9 @@ public class Config {
 
 
     /**
-     * Create a Wall object from stored data.
+     * Create a Wall objects from stored data.
      *
-     * @return Wall object from data
+     * @return Wall objects from data
      */
 
     public Wall createObject() {
