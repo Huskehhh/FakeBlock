@@ -1,4 +1,4 @@
-package com.huskehhh.fakeblock.objects;
+package pro.husk.fakeblock.objects;
 
 import org.bukkit.Location;
 

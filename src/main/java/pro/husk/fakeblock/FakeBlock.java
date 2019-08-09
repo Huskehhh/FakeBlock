@@ -1,4 +1,4 @@
-package com.huskehhh.fakeblock;
+package pro.husk.fakeblock;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -6,10 +6,9 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import com.huskehhh.fakeblock.commands.CommandHandler;
-import com.huskehhh.fakeblock.listeners.FakeBlockListener;
-import com.huskehhh.fakeblock.objects.Wall;
-import org.bukkit.Bukkit;
+import pro.husk.fakeblock.commands.CommandHandler;
+import pro.husk.fakeblock.listeners.FakeBlockListener;
+import pro.husk.fakeblock.objects.Wall;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;

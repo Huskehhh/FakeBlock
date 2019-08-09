@@ -1,6 +1,6 @@
 name: FakeBlock
 version: 1.4.7
-main: com.huskehhh.fakeblock.FakeBlock
+main: pro.husk.fakeblock.FakeBlock
 author: husK
 description: Enables the creation of fake blocks, so only people with the a permission node can walk through.
 commands:

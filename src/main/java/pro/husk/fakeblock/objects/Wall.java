@@ -1,6 +1,6 @@
-package com.huskehhh.fakeblock.objects;
+package pro.husk.fakeblock.objects;
 
-import com.huskehhh.fakeblock.FakeBlock;
+import pro.husk.fakeblock.FakeBlock;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
