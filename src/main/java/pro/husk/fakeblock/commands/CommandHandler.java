@@ -1,9 +1,9 @@
-package com.huskehhh.fakeblock.commands;
+package pro.husk.fakeblock.commands;
 
-import com.huskehhh.fakeblock.FakeBlock;
-import com.huskehhh.fakeblock.listeners.FakeBlockListener;
-import com.huskehhh.fakeblock.objects.Config;
-import com.huskehhh.fakeblock.objects.Wall;
+import pro.husk.fakeblock.FakeBlock;
+import pro.husk.fakeblock.listeners.FakeBlockListener;
+import pro.husk.fakeblock.objects.Config;
+import pro.husk.fakeblock.objects.Wall;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
