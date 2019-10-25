@@ -27,3 +27,12 @@ Any variable blocks that you want to look different for players at different tim
 ### Download
 ##### [Spigot Resource Page](https://www.spigotmc.org/resources/fakeblock.12830/)
 ##### [Download](https://ci.husk.pro/job/FakeBlock/)
+
+### Compiling
+You must have [Apache Maven](http://maven.apache.org) installed to compile.
+
+to compile use the following command:
+
+```mvn clean package```
+
+Artifacts can be found in their respective file target folders
