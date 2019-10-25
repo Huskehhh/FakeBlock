@@ -37,6 +37,7 @@ public class CommandHandler implements CommandExecutor {
                 commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + commandLabel + " create <wall name> | Creates a wall under specified name");
                 commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + commandLabel + " delete <wall name> | Deletes wall");
                 commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + commandLabel + " reload | Reloads the walls from config");
+                commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + commandLabel + " list | Lists all walls");
                 commandSender.sendMessage(ChatColor.GREEN + "------------------------------------");
 
             } else {
@@ -72,20 +73,14 @@ public class CommandHandler implements CommandExecutor {
                             Config config = new Config(player.getName(), wallName);
 
                             config.setMaterial(Material.TNT);
-                            config.setLocation1(player.getLocation());
-                            config.setLocation2(player.getLocation());
 
-                            WallObject wallObject = config.createWallObject();
-
-                            wallObject.saveWall();
-
-                            player.sendMessage(fakeBlockTitle + ChatColor.GREEN + "Wall '" + wallName + "' created. " +
-                                    "Please refer to the configuration to edit it");
+                            player.sendMessage(fakeBlockTitle + ChatColor.GREEN + "Great! Please use left and " +
+                                    "right click to select the bounds");
                         }
                     }
                 } else if (arguments[0].equalsIgnoreCase("list")) {
                     if (arguments.length == 1) {
-                        commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "Walls |");
+                        commandSender.sendMessage(fakeBlockTitle + ChatColor.GOLD + " Walls");
                         for (WallObject wallObject : WallObject.getWallObjectList()) {
                             commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + wallObject.getName());
                         }

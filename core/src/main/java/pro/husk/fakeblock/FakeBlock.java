@@ -13,8 +13,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import pro.husk.fakeblock.commands.CommandHandler;
 import pro.husk.fakeblock.listeners.FakeBlockListener;
+import pro.husk.fakeblock.listeners.SelectionListener;
 import pro.husk.fakeblock.objects.WallObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ServiceLoader;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -44,12 +47,13 @@ public class FakeBlock extends JavaPlugin {
 
             // Register events
             getServer().getPluginManager().registerEvents(new FakeBlockListener(), plugin);
+            getServer().getPluginManager().registerEvents(new SelectionListener(), plugin);
 
             // Register commands
             getCommand("fakeblock").setExecutor(new CommandHandler());
 
             // Create Config if not already created
-            this.saveDefaultConfig();
+            saveDefaultConfig();
 
             // Load walls of child class
             ServiceLoader<FakeBlockModuleHandler> loader =
@@ -64,7 +68,7 @@ public class FakeBlock extends JavaPlugin {
             addPacketListener();
         } else {
             console.warning("ProtocolLib not detected. Disabling!");
-            this.setEnabled(false);
+            setEnabled(false);
         }
     }
 
@@ -80,7 +84,6 @@ public class FakeBlock extends JavaPlugin {
     private void addPacketListener() {
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 
-        
         protocolManager.addPacketListener(
                 new PacketAdapter(this, ListenerPriority.HIGH,
                         PacketType.Play.Client.USE_ITEM) {
@@ -109,8 +112,7 @@ public class FakeBlock extends JavaPlugin {
         Player player = event.getPlayer();
         if (event.getPacketType() == PacketType.Play.Client.USE_ITEM ||
                 event.getPacketType() == PacketType.Play.Client.ARM_ANIMATION) {
-
-            processWall(player, 1);
+            processWall(player, 2);
         }
     }
 
@@ -121,20 +123,25 @@ public class FakeBlock extends JavaPlugin {
      * @param playerLocation to check
      * @return null if not, wallObject if they are
      */
-    public WallObject isNearWall(Location playerLocation) {
+    public List<WallObject> isNearWall(Location playerLocation) {
+
+        List<WallObject> nearby = new ArrayList<>();
+
         for (WallObject wallObject : WallObject.getWallObjectList()) {
             for (Location location : wallObject.getBlocksInBetween()) {
                 if (location.getWorld() != location.getWorld()) return null;
 
                 int playerDistanceToWall = (int) playerLocation.distanceSquared(location);
-                int distanceToCheck = (int) (wallObject.getDistanceBetweenPoints() + 50) - playerDistanceToWall;
+                int distanceToCheck = (int) (wallObject.getDistanceBetweenPoints() + 500) - playerDistanceToWall;
 
                 if (playerDistanceToWall <= distanceToCheck) {
-                    return wallObject;
+                    if (!nearby.contains(wallObject)) {
+                        nearby.add(wallObject);
+                    }
                 }
             }
         }
-        return null;
+        return nearby;
     }
 
     /**
@@ -144,20 +151,20 @@ public class FakeBlock extends JavaPlugin {
      * @param delay  on sending blocks
      */
     public void processWall(Player player, int delay) {
-        CompletableFuture<WallObject> future = CompletableFuture.supplyAsync(() -> {
+        CompletableFuture<List<WallObject>> future = CompletableFuture.supplyAsync(() -> {
             return isNearWall(player.getLocation());
         });
 
         future.thenRun(() -> {
             try {
-                WallObject wall = future.get();
+                List<WallObject> walls = future.get();
 
-                if (wall != null) {
+                walls.forEach(wall -> {
                     if (!player.hasPermission("fakeblock." + wall.getName()) ||
                             !player.hasPermission("fakeblock.admin")) {
                         sendFakeBlocks(wall, player, delay);
                     }
-                }
+                });
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }

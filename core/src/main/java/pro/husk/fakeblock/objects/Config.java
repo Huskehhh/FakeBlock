@@ -56,4 +56,8 @@ public class Config {
     public WallObject createWallObject() {
         return FakeBlock.getFakeBlockModuleHandler().loadWall(this);
     }
+
+    public void remove() {
+        getCurrentConfigurations().remove(playerName);
+    }
 }

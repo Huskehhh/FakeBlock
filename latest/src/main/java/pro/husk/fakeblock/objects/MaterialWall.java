@@ -55,9 +55,9 @@ public class MaterialWall extends WallObject {
      */
     @Override
     public void renderWall(Player player) {
-        for (Location location : getBlocksInBetween()) {
+        getBlocksInBetween().forEach(location -> {
             player.sendBlockChange(location, material.createBlockData());
-        }
+        });
     }
 
     /**
@@ -101,20 +101,20 @@ public class MaterialWall extends WallObject {
 
     @Override
     public void sendRealBlocks(Player player) {
-        CompletableFuture<WallObject> future = CompletableFuture.supplyAsync(() -> {
+        CompletableFuture<List<WallObject>> future = CompletableFuture.supplyAsync(() -> {
             return FakeBlock.getPlugin().isNearWall(player.getLocation());
         });
 
         future.thenRun(() -> {
             try {
-                WallObject wall = future.get();
+                List<WallObject> walls = future.get();
 
-                if (wall != null) {
+                walls.forEach(wall -> {
                     for (Location location : wall.getBlocksInBetween()) {
                         Block block = location.getBlock();
                         player.sendBlockChange(location, block.getBlockData());
                     }
-                }
+                });
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
