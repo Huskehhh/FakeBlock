@@ -80,6 +80,7 @@ public class FakeBlock extends JavaPlugin {
     private void addPacketListener() {
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 
+        
         protocolManager.addPacketListener(
                 new PacketAdapter(this, ListenerPriority.HIGH,
                         PacketType.Play.Client.USE_ITEM) {

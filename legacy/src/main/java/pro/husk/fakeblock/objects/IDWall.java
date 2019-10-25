@@ -94,7 +94,7 @@ public class IDWall extends WallObject {
     @Override
     public void saveWall() {
         FakeBlock.getPlugin().getConfig().set(getName() + ".location1", getLocation1());
-        FakeBlock.getPlugin().getConfig().set(getName() + ".location1", getLocation2());
+        FakeBlock.getPlugin().getConfig().set(getName() + ".location2", getLocation2());
         FakeBlock.getPlugin().getConfig().set(getName() + ".id", getId());
         FakeBlock.getPlugin().getConfig().set(getName() + ".data", getData());
         FakeBlock.getPlugin().saveConfig();

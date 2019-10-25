@@ -13,8 +13,8 @@
 
     <modules>
         <module>core</module>
-        <module>1.12</module>
-        <module>1.14</module>
+        <module>legacy</module>
+        <module>latest</module>
     </modules>
 
     <properties>
