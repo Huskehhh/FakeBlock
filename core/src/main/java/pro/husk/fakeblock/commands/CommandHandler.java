@@ -90,7 +90,7 @@ public class CommandHandler implements CommandExecutor {
                             commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + wallObject.getName());
                         }
                     } else {
-                        commandSender.sendMessage(fakeBlockTitle + ChatColor.RED + "Invalid amount of arguments! Usage: /fakeblock reload");
+                        commandSender.sendMessage(fakeBlockTitle + ChatColor.RED + "Invalid amount of arguments! Usage: /fakeblock list");
                     }
                 }
             }

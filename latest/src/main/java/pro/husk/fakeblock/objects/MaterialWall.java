@@ -126,10 +126,10 @@ public class MaterialWall extends WallObject {
      */
     @Override
     public void removeFromConfig() {
-        setLocation1(null);
-        setLocation2(null);
-        setMaterial(null);
-
-        saveWall();
+        FakeBlock.getPlugin().getConfig().set(getName() + ".location1", null);
+        FakeBlock.getPlugin().getConfig().set(getName() + ".location2", null);
+        FakeBlock.getPlugin().getConfig().set(getName() + ".material", "");
+        FakeBlock.getPlugin().getConfig().set(getName(), null);
+        FakeBlock.getPlugin().saveConfig();
     }
 }

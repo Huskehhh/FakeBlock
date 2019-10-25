@@ -127,11 +127,11 @@ public class IDWall extends WallObject {
      */
     @Override
     public void removeFromConfig() {
-        setLocation1(null);
-        setLocation2(null);
-        setId(0);
-        setData(0);
-
-        saveWall();
+        FakeBlock.getPlugin().getConfig().set(getName() + ".location1", null);
+        FakeBlock.getPlugin().getConfig().set(getName() + ".location2", null);
+        FakeBlock.getPlugin().getConfig().set(getName() + ".id", null);
+        FakeBlock.getPlugin().getConfig().set(getName() + ".data", null);
+        FakeBlock.getPlugin().getConfig().set(getName(), null);
+        FakeBlock.getPlugin().saveConfig();
     }
 }
