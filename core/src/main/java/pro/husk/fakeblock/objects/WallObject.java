@@ -116,11 +116,26 @@ public abstract class WallObject {
     }
 
     /**
+     * Method to send real blocks to the player (used on destruction of object)
+     * @param player to send real blocks to
+     */
+    abstract void sendRealBlocks(Player player);
+
+    /**
+     * Method to remove wall from config
+     */
+    abstract void removeFromConfig();
+
+    /**
      * Method to delete the wall
      */
     public void delete() {
+        // Send updates to all players
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            sendRealBlocks(player);
+        }
+
+        removeFromConfig();
         wallObjectList.remove(this);
-        // TODO: send real blocks back to player
-        // TODO: remove from conf
     }
 }

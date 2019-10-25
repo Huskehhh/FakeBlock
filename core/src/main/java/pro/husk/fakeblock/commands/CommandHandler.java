@@ -83,6 +83,15 @@ public class CommandHandler implements CommandExecutor {
                                     "Please refer to the configuration to edit it");
                         }
                     }
+                } else if (arguments[0].equalsIgnoreCase("list")) {
+                    if (arguments.length == 1) {
+                        commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "Walls |");
+                        for (WallObject wallObject : WallObject.getWallObjectList()) {
+                            commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + wallObject.getName());
+                        }
+                    } else {
+                        commandSender.sendMessage(fakeBlockTitle + ChatColor.RED + "Invalid amount of arguments! Usage: /fakeblock reload");
+                    }
                 }
             }
         } else {

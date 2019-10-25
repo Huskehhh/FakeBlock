@@ -120,13 +120,12 @@ public class FakeBlock extends JavaPlugin {
      * @param playerLocation to check
      * @return null if not, wallObject if they are
      */
-    private WallObject isNearWall(Location playerLocation) {
+    public WallObject isNearWall(Location playerLocation) {
         for (WallObject wallObject : WallObject.getWallObjectList()) {
             for (Location location : wallObject.getBlocksInBetween()) {
                 if (location.getWorld() != location.getWorld()) return null;
 
                 int playerDistanceToWall = (int) playerLocation.distanceSquared(location);
-
                 int distanceToCheck = (int) (wallObject.getDistanceBetweenPoints() + 50) - playerDistanceToWall;
 
                 if (playerDistanceToWall <= distanceToCheck) {
@@ -153,7 +152,10 @@ public class FakeBlock extends JavaPlugin {
                 WallObject wall = future.get();
 
                 if (wall != null) {
-                    sendFakeBlocks(wall, player, delay);
+                    if (!player.hasPermission("fakeblock." + wall.getName()) ||
+                            !player.hasPermission("fakeblock.admin")) {
+                        sendFakeBlocks(wall, player, delay);
+                    }
                 }
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();

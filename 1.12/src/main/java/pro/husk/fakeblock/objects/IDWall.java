@@ -4,11 +4,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import pro.husk.fakeblock.FakeBlock;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class IDWall extends WallObject {
 
@@ -95,5 +98,40 @@ public class IDWall extends WallObject {
         FakeBlock.getPlugin().getConfig().set(getName() + ".id", getId());
         FakeBlock.getPlugin().getConfig().set(getName() + ".data", getData());
         FakeBlock.getPlugin().saveConfig();
+    }
+
+    @Override
+    public void sendRealBlocks(Player player) {
+        CompletableFuture<WallObject> future = CompletableFuture.supplyAsync(() -> {
+            return FakeBlock.getPlugin().isNearWall(player.getLocation());
+        });
+
+        future.thenRun(() -> {
+            try {
+                WallObject wall = future.get();
+
+                if (wall != null) {
+                    for (Location location : wall.getBlocksInBetween()) {
+                        Block block = location.getBlock();
+                        player.sendBlockChange(location, block.getType(), block.getData());
+                    }
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    /**
+     * Method to remove data from config
+     */
+    @Override
+    public void removeFromConfig() {
+        setLocation1(null);
+        setLocation2(null);
+        setId(0);
+        setData(0);
+
+        saveWall();
     }
 }
