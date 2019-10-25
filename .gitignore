@@ -64,3 +64,5 @@ pip-log.txt
 
 # Deploy script
 *.sh
+
+*/target
