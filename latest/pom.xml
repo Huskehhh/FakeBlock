@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>pro.husk</groupId>
-    <artifactId>fakeblock-latest</artifactId>
+    <artifactId>FakeBlock-latest</artifactId>
     <version>1.6-SNAPSHOT</version>
     <packaging>jar</packaging>
 
@@ -78,7 +78,7 @@
         </dependency>
         <dependency>
             <groupId>pro.husk</groupId>
-            <artifactId>fakeblock-core</artifactId>
+            <artifactId>FakeBlock-core</artifactId>
             <version>1.6-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
