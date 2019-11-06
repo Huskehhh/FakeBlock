@@ -134,10 +134,8 @@ public class FakeBlock extends JavaPlugin {
                 int playerDistanceToWall = (int) playerLocation.distanceSquared(location);
                 int distanceToCheck = (int) (wallObject.getDistanceBetweenPoints() + 500) - playerDistanceToWall;
 
-                if (playerDistanceToWall <= distanceToCheck) {
-                    if (!nearby.contains(wallObject)) {
-                        nearby.add(wallObject);
-                    }
+                if (playerDistanceToWall <= distanceToCheck && !nearby.contains(wallObject)) {
+                    nearby.add(wallObject);
                 }
             }
         }
@@ -160,10 +158,8 @@ public class FakeBlock extends JavaPlugin {
                 List<WallObject> walls = future.get();
 
                 walls.forEach(wall -> {
-                    if (!player.hasPermission("fakeblock.admin")) {
-                        if (!player.hasPermission("fakeblock." + wall.getName())) {
-                            sendFakeBlocks(wall, player, delay);
-                        }
+                    if (!player.hasPermission("fakeblock.admin") && !player.hasPermission("fakeblock." + wall.getName())) {
+                        sendFakeBlocks(wall, player, delay);
                     }
                 });
             } catch (InterruptedException | ExecutionException e) {

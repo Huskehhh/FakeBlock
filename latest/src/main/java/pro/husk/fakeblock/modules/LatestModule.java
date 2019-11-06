@@ -1,7 +1,5 @@
 package pro.husk.fakeblock.modules;
 
-import org.bukkit.Location;
-import org.bukkit.block.Block;
 import pro.husk.fakeblock.FakeBlock;
 import pro.husk.fakeblock.FakeBlockModuleHandler;
 import pro.husk.fakeblock.objects.Config;

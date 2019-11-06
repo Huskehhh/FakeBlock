@@ -119,12 +119,12 @@ public abstract class WallObject {
      * Method to send real blocks to the player (used on destruction of object)
      * @param player to send real blocks to
      */
-    abstract void sendRealBlocks(Player player);
+    public abstract void sendRealBlocks(Player player);
 
     /**
      * Method to remove wall from config
      */
-    abstract void removeFromConfig();
+    public abstract void removeFromConfig();
 
     /**
      * Method to delete the wall

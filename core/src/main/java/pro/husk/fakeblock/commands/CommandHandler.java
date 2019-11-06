@@ -12,8 +12,6 @@ import pro.husk.fakeblock.objects.WallObject;
 
 public class CommandHandler implements CommandExecutor {
 
-    //todo create wall thru command
-
     /**
      * Command handler
      *
@@ -27,17 +25,16 @@ public class CommandHandler implements CommandExecutor {
     public boolean onCommand(CommandSender commandSender, Command command, String commandLabel, String[] arguments) {
 
         String fakeBlockTitle = ChatColor.BLACK + "[" + ChatColor.AQUA + "FakeBlock" + ChatColor.BLACK + "] ";
-        commandLabel = commandLabel.toLowerCase();
 
         if (commandSender.hasPermission("fakeblock.admin")) {
             if (arguments.length == 0) {
 
                 commandSender.sendMessage(ChatColor.GREEN + " --------- " + ChatColor.AQUA + "FakeBlock" + ChatColor.GREEN + " Help --------- ");
-                commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + commandLabel + " | Aliases: /fakeblock, /fb");
-                commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + commandLabel + " create <wall name> | Creates a wall under specified name");
-                commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + commandLabel + " delete <wall name> | Deletes wall");
-                commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + commandLabel + " reload | Reloads the walls from config");
-                commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + commandLabel + " list | Lists all walls");
+                commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + command.getLabel() + " | Aliases: /fakeblock, /fb");
+                commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + command.getLabel() + " create <wall name> | Creates a wall under specified name");
+                commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + command.getLabel() + " delete <wall name> | Deletes wall");
+                commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + command.getLabel() + " reload | Reloads the walls from config");
+                commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + command.getLabel() + " list | Lists all walls");
                 commandSender.sendMessage(ChatColor.GREEN + "------------------------------------");
 
             } else {

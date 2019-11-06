@@ -1,6 +1,5 @@
 package pro.husk.fakeblock;
 
-import org.bukkit.entity.Player;
 import pro.husk.fakeblock.objects.Config;
 import pro.husk.fakeblock.objects.WallObject;
 

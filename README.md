@@ -8,7 +8,7 @@ These fake blocks are indistinguishable from real blocks and prevent players fro
 
 Every wall has its own permission and giving a player the permission for the wall completely removes it for that player. The wall does not exist for players who have its permission.
 
-### Use cases
+## Use cases
 
 This plugin has many potential uses in a variety of different circumstances and especially for RPG servers.
 ````
@@ -24,11 +24,10 @@ This plugin has many potential uses in a variety of different circumstances and 
  ````
 Any variable blocks that you want to look different for players at different times can be done.
 
-### Download
-##### [Spigot Resource Page](https://www.spigotmc.org/resources/fakeblock.12830/)
-##### [Download](https://ci.husk.pro/job/FakeBlock/)
+## [Download](https://ci.husk.pro/job/FakeBlock/)
+## [Spigot Resource Page](https://www.spigotmc.org/resources/fakeblock.12830/)
 
-### Compiling
+### Compiling from source
 You must have [Apache Maven](http://maven.apache.org) installed to compile.
 
 to compile use the following command:
