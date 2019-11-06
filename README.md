@@ -32,6 +32,8 @@ You must have [Apache Maven](http://maven.apache.org) installed to compile.
 
 to compile use the following command:
 
-```mvn clean package```
+```xml
+mvn clean package
+```
 
 Artifacts can be found in their respective file target folders
