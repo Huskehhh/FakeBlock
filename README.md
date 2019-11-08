@@ -11,7 +11,7 @@ Every wall has its own permission and giving a player the permission for the wal
 ## Use cases
 
 This plugin has many potential uses in a variety of different circumstances and especially for RPG servers.
-````
+````text
 1. Creating hidden VIP areas on your server.
 2. Creating hidden Staff areas.
 3. Hidden passages and hallways that are only accessible by certain players or ranks.
@@ -32,8 +32,6 @@ You must have [Apache Maven](http://maven.apache.org) installed to compile.
 
 to compile use the following command:
 
-```xml
-mvn clean package
-```
+```mvn clean package```
 
 Artifacts can be found in their respective file target folders

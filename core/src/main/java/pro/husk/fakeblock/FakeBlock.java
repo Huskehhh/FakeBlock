@@ -158,8 +158,10 @@ public class FakeBlock extends JavaPlugin {
                 List<WallObject> walls = future.get();
 
                 walls.forEach(wall -> {
-                    if (!player.hasPermission("fakeblock.admin") && !player.hasPermission("fakeblock." + wall.getName())) {
-                        sendFakeBlocks(wall, player, delay);
+                    if (!player.hasPermission("fakeblock.admin")) {
+                        if (!player.hasPermission("fakeblock." + wall.getName())) {
+                            sendFakeBlocks(wall, player, delay);
+                        }
                     }
                 });
             } catch (InterruptedException | ExecutionException e) {
