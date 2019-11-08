@@ -10,16 +10,22 @@ subprojects {
     apply plugin: 'maven-publish'
 
     repositories {
-        mavenLocal()
-        maven {
-            url = 'http://repo.maven.apache.org/maven2'
-        }
+        mavenCentral()
 
+        // Spigot repository
         maven {
+            name = 'Spigot'
             url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
         }
 
+        // Added md5's repository to add the missing Bungeecord-Chat api
         maven {
+            name = 'Bungeecord chat repo'
+            url = 'https://oss.sonatype.org/content/repositories/snapshots/'
+        }
+
+        maven {
+            name = 'ProtocolLib repo'
             url = 'http://repo.dmulloy2.net/nexus/repository/public/'
         }
     }
