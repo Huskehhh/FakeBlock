@@ -1,0 +1,29 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '5.1.0'
+    id 'java'
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+compileJava.options.encoding = 'UTF-8'
+
+archivesBaseName = project.property("pluginName")
+
+dependencies {
+    // Spigot API
+    compileOnly "org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT"
+}
+
+processResources {
+    project.properties.put("version", this.version)
+    expand project.properties
+}
+
+shadowJar {
+    archiveFileName = "FakeBlock-core-" + project.property("version") + ".jar"
+}
+
+artifacts {
+    archives shadowJar
+}

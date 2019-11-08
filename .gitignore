@@ -66,3 +66,7 @@ pip-log.txt
 *.sh
 
 */target
+
+# gradle
+*/build/
+/.gradle/
