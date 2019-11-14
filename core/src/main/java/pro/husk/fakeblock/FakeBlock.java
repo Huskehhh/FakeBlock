@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
 public class FakeBlock extends JavaPlugin {
@@ -153,20 +152,14 @@ public class FakeBlock extends JavaPlugin {
             return isNearWall(player.getLocation());
         });
 
-        future.thenRun(() -> {
-            try {
-                List<WallObject> walls = future.get();
-
-                walls.forEach(wall -> {
-                    if (!player.hasPermission("fakeblock.admin")) {
-                        if (!player.hasPermission("fakeblock." + wall.getName())) {
-                            sendFakeBlocks(wall, player, delay);
-                        }
+        future.thenAccept(walls -> {
+            walls.forEach(wall -> {
+                if (!player.hasPermission("fakeblock.admin")) {
+                    if (!player.hasPermission("fakeblock." + wall.getName())) {
+                        sendFakeBlocks(wall, player, delay);
                     }
-                });
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
+                }
+            });
         });
     }
 

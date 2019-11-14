@@ -11,7 +11,6 @@ import pro.husk.fakeblock.FakeBlock;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 public class IDWall extends WallObject {
 
@@ -106,19 +105,13 @@ public class IDWall extends WallObject {
             return FakeBlock.getPlugin().isNearWall(player.getLocation());
         });
 
-        future.thenRun(() -> {
-            try {
-                List<WallObject> walls = future.get();
-
-                walls.forEach(wall -> {
-                    wall.getBlocksInBetween().forEach(location -> {
-                        Block block = location.getBlock();
-                        player.sendBlockChange(location, block.getType(), block.getData());
-                    });
+        future.thenAccept(walls -> {
+            walls.forEach(wall -> {
+                wall.getBlocksInBetween().forEach(location -> {
+                    Block block = location.getBlock();
+                    player.sendBlockChange(location, block.getType(), block.getData());
                 });
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
+            });
         });
     }
 
