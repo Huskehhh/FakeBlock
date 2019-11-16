@@ -34,4 +34,4 @@ This project now uses Gradle!
 
 ```gradlew.bat build``` for Windows
 
-Artifacts can be found in their respective file target folders
+Artifacts can be found in their respective build/libs folder!

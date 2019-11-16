@@ -127,9 +127,10 @@ public class FakeBlock extends JavaPlugin {
         List<WallObject> nearby = new ArrayList<>();
 
         for (WallObject wallObject : WallObject.getWallObjectList()) {
-            for (Location location : wallObject.getBlocksInBetween()) {
-                if (location.getWorld() != location.getWorld()) return null;
 
+            if (playerLocation.getWorld() != wallObject.getLocation1().getWorld()) break;
+
+            for (Location location : wallObject.getBlocksInBetween()) {
                 int playerDistanceToWall = (int) playerLocation.distanceSquared(location);
                 int distanceToCheck = (int) (wallObject.getDistanceBetweenPoints() + 500) - playerDistanceToWall;
 
