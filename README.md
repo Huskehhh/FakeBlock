@@ -28,10 +28,10 @@ Any variable blocks that you want to look different for players at different tim
 ## [Spigot Resource Page](https://www.spigotmc.org/resources/fakeblock.12830/)
 
 ### Compiling from source
-You must have [Apache Maven](http://maven.apache.org) installed to compile.
+This project now uses Gradle!
 
-to compile use the following command:
+```./gradlew build``` for Unix based systems
 
-```mvn clean package```
+```gradlew.bat build``` for Windows
 
 Artifacts can be found in their respective file target folders
