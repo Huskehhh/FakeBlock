@@ -100,16 +100,14 @@ public class MaterialWall extends WallObject {
 
     @Override
     public void sendRealBlocks(Player player) {
-        CompletableFuture<List<WallObject>> future = CompletableFuture.supplyAsync(() -> {
-            return FakeBlock.getPlugin().isNearWall(player.getLocation());
-        });
+        CompletableFuture<List<WallObject>> future = CompletableFuture.supplyAsync(() -> FakeBlock.getPlugin().isNearWall(player.getLocation()));
 
         future.thenAccept(walls -> {
             walls.forEach(wall -> {
-                for (Location location : wall.getBlocksInBetween()) {
+                wall.getBlocksInBetween().forEach(location -> {
                     Block block = location.getBlock();
                     player.sendBlockChange(location, block.getBlockData());
-                }
+                });
             });
         });
     }

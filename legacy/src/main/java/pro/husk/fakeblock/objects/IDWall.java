@@ -101,9 +101,7 @@ public class IDWall extends WallObject {
 
     @Override
     public void sendRealBlocks(Player player) {
-        CompletableFuture<List<WallObject>> future = CompletableFuture.supplyAsync(() -> {
-            return FakeBlock.getPlugin().isNearWall(player.getLocation());
-        });
+        CompletableFuture<List<WallObject>> future = CompletableFuture.supplyAsync(() -> FakeBlock.getPlugin().isNearWall(player.getLocation()));
 
         future.thenAccept(walls -> {
             walls.forEach(wall -> {
