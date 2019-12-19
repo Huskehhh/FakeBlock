@@ -32,7 +32,7 @@ public class CommandHandler implements CommandExecutor {
 
                 commandSender.sendMessage(ChatColor.GREEN + " --------- " + ChatColor.AQUA + fakeBlockTitle + ChatColor.GREEN + " Help --------- ");
                 commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + command.getLabel() + " | Aliases: /fakeblock, /fb");
-                commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + command.getLabel() + " create <wall name> | Creates a wall under specified name");
+                commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + command.getLabel() + " create <wall name> <material name> | Creates a wall under specified name with given material");
                 commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + command.getLabel() + " delete <wall name> | Deletes wall");
                 commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + command.getLabel() + " reload | Reloads the walls from config");
                 commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + command.getLabel() + " list | Lists all walls");
@@ -63,16 +63,21 @@ public class CommandHandler implements CommandExecutor {
                         commandSender.sendMessage(fakeBlockTitle + " " + Language.getWrongArgumentLength());
                     }
                 } else if (arguments[0].equalsIgnoreCase("create")) {
-                    if (arguments.length == 2) {
+                    if (arguments.length == 3) {
                         String wallName = arguments[1];
+                        String materialArgument = arguments[2];
                         if (commandSender instanceof Player) {
                             Player player = (Player) commandSender;
 
                             Config config = new Config(player.getName(), wallName);
 
-                            config.setMaterial(Material.TNT);
+                            Material material = Material.getMaterial(materialArgument);
 
-                            player.sendMessage(fakeBlockTitle + " " + Language.getWallsSelection());
+                            if (material != null) {
+                                config.setMaterial(material);
+
+                                player.sendMessage(fakeBlockTitle + " " + Language.getWallsSelection());
+                            }
                         }
                     }
                 } else if (arguments[0].equalsIgnoreCase("list")) {

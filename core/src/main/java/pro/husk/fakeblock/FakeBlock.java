@@ -97,6 +97,9 @@ public class FakeBlock extends JavaPlugin {
             language.set("walls-selection-complete", "&aWall created, please refer to the configuration " +
                     "if you wish to make changes");
             language.set("walls-selection-located-saved", "&aLocation saved.");
+            language.set("no-material-found", "&4No Material found with that name");
+            language.set("wall-displaying-visualisation", "&aDisplaying a visualisation of what the wall will" +
+                    " look like... In 5 seconds this will disappear!");
             
             try {
                 language.save(DATA_PATH);

@@ -1,5 +1,6 @@
 package pro.husk.fakeblock.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -7,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import pro.husk.fakeblock.FakeBlock;
 import pro.husk.fakeblock.objects.Config;
 import pro.husk.fakeblock.objects.Language;
 import pro.husk.fakeblock.objects.WallObject;
@@ -31,7 +33,6 @@ public class SelectionListener implements Listener {
             }
 
             if (config.getLocation1() != null && config.getLocation2() != null) {
-                // TODO: Prompt for material type and listen for chat or use @Conversation
 
                 // Create WallObject
                 WallObject wallObject = config.createWallObject();
@@ -39,10 +40,22 @@ public class SelectionListener implements Listener {
                 // Remove config object
                 config.remove();
 
-                // Save Wall to config
-                wallObject.saveWall();
+                player.sendMessage(Language.getPrefix() + " " + Language.getDisplayingVisualisation());
 
-                player.sendMessage(Language.getPrefix() + " " + Language.getWallsSelectionComplete());
+                // Render visualisation of the fake wall
+                wallObject.renderWall(player);
+
+                // TODO: pause creation of wall until user confirms, maybe implement state to config
+
+                // Reverse the visualisation after 5 seconds
+                Bukkit.getScheduler().scheduleSyncDelayedTask(FakeBlock.getPlugin(), () -> {
+                    wallObject.sendRealBlocks(player);
+
+                    // Save Wall to config
+                    wallObject.saveWall();
+
+                    player.sendMessage(Language.getPrefix() + " " + Language.getWallsSelectionComplete());
+                }, 5 * 20); // 5 seconds
             }
 
             event.setCancelled(true);
