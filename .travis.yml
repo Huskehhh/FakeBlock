@@ -1,8 +1,5 @@
 language: java
 
-install: echo "skip 'gradle assemble' step"
-script: gradle build
-
 os: linux
 dist: bionic
 jdk: openjdk11
