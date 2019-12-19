@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import pro.husk.fakeblock.FakeBlock;
 import pro.husk.fakeblock.objects.Config;
+import pro.husk.fakeblock.objects.Language;
 import pro.husk.fakeblock.objects.WallObject;
 
 public class CommandHandler implements CommandExecutor {
@@ -24,12 +25,12 @@ public class CommandHandler implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String commandLabel, String[] arguments) {
 
-        String fakeBlockTitle = ChatColor.BLACK + "[" + ChatColor.AQUA + "FakeBlock" + ChatColor.BLACK + "] ";
+        String fakeBlockTitle = Language.getPrefix();
 
         if (commandSender.hasPermission("fakeblock.admin")) {
             if (arguments.length == 0) {
 
-                commandSender.sendMessage(ChatColor.GREEN + " --------- " + ChatColor.AQUA + "FakeBlock" + ChatColor.GREEN + " Help --------- ");
+                commandSender.sendMessage(ChatColor.GREEN + " --------- " + ChatColor.AQUA + fakeBlockTitle + ChatColor.GREEN + " Help --------- ");
                 commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + command.getLabel() + " | Aliases: /fakeblock, /fb");
                 commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + command.getLabel() + " create <wall name> | Creates a wall under specified name");
                 commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + command.getLabel() + " delete <wall name> | Deletes wall");
@@ -43,10 +44,10 @@ public class CommandHandler implements CommandExecutor {
                         WallObject wallObject = WallObject.getByName(arguments[1]);
                         if (wallObject != null) {
                             wallObject.delete();
-                            commandSender.sendMessage(fakeBlockTitle + ChatColor.RED + "'" + arguments[1] + "' has been deleted");
+                            commandSender.sendMessage(fakeBlockTitle + " " + Language.getWallDeleted());
                         }
                     } else {
-                        commandSender.sendMessage(fakeBlockTitle + ChatColor.RED + "Invalid amount of arguments! Usage: /fakeblock delete <wall name>");
+                        commandSender.sendMessage(fakeBlockTitle + " " + Language.getWrongArgumentLength());
                     }
                 } else if (arguments[0].equalsIgnoreCase("reload")) {
                     if (arguments.length == 1) {
@@ -57,9 +58,9 @@ public class CommandHandler implements CommandExecutor {
                             wallObject.loadWall();
                         }
 
-                        commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "Walls reloaded!");
+                        commandSender.sendMessage(fakeBlockTitle + " " + Language.getWallsReloaded());
                     } else {
-                        commandSender.sendMessage(fakeBlockTitle + ChatColor.RED + "Invalid amount of arguments! Usage: /fakeblock reload");
+                        commandSender.sendMessage(fakeBlockTitle + " " + Language.getWrongArgumentLength());
                     }
                 } else if (arguments[0].equalsIgnoreCase("create")) {
                     if (arguments.length == 2) {
@@ -71,8 +72,7 @@ public class CommandHandler implements CommandExecutor {
 
                             config.setMaterial(Material.TNT);
 
-                            player.sendMessage(fakeBlockTitle + ChatColor.GREEN + "Great! Please use left and " +
-                                    "right click to select the bounds");
+                            player.sendMessage(fakeBlockTitle + " " + Language.getWallsSelection());
                         }
                     }
                 } else if (arguments[0].equalsIgnoreCase("list")) {
@@ -82,12 +82,12 @@ public class CommandHandler implements CommandExecutor {
                             commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + wallObject.getName());
                         }
                     } else {
-                        commandSender.sendMessage(fakeBlockTitle + ChatColor.RED + "Invalid amount of arguments! Usage: /fakeblock list");
+                        commandSender.sendMessage(fakeBlockTitle + " " + Language.getWrongArgumentLength());
                     }
                 }
             }
         } else {
-            commandSender.sendMessage(fakeBlockTitle + ChatColor.RED + "You don't have permission to do that!");
+            commandSender.sendMessage(fakeBlockTitle + " " + Language.getNoPermission());
         }
         return true;
     }

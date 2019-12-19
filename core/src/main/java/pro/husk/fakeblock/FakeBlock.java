@@ -9,13 +9,17 @@ import com.comphenix.protocol.events.PacketEvent;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import pro.husk.fakeblock.commands.CommandHandler;
 import pro.husk.fakeblock.listeners.FakeBlockListener;
 import pro.husk.fakeblock.listeners.SelectionListener;
+import pro.husk.fakeblock.objects.Language;
 import pro.husk.fakeblock.objects.WallObject;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -34,6 +38,9 @@ public class FakeBlock extends JavaPlugin {
     @Getter
     private static FakeBlockModuleHandler fakeBlockModuleHandler;
 
+    @Getter
+    private static YamlConfiguration language;
+
     /**
      * Method to handle Plugin startup.
      */
@@ -51,8 +58,9 @@ public class FakeBlock extends JavaPlugin {
             // Register commands
             getCommand("fakeblock").setExecutor(new CommandHandler());
 
-            // Create Config if not already created
+            // Create configs if not already created
             saveDefaultConfig();
+            setupLanguageFile();
 
             // Load walls of child class
             ServiceLoader<FakeBlockModuleHandler> loader =
@@ -69,6 +77,34 @@ public class FakeBlock extends JavaPlugin {
             console.warning("ProtocolLib not detected. Disabling!");
             setEnabled(false);
         }
+    }
+
+    /**
+     * Method used for language file loading
+     */
+    private void setupLanguageFile() {
+        String DATA_PATH = "plugins/FakeBlock/language.yml";
+        boolean exists = (new File(DATA_PATH)).exists();
+        language = YamlConfiguration.loadConfiguration(new File(DATA_PATH));
+
+        if (!exists) {
+            language.options().header("- FakeBlock Language configuration -");
+            language.set("prefix", "&5[FakeBlock]");
+            language.set("no-permission", "&4You don't have permission to do that!");
+            language.set("invalid-argument-length", "&4Invalid amount of arguments...");
+            language.set("walls-reloaded", "&aWalls reloaded");
+            language.set("walls-selection", "&aGreat! Please use left and right click to select the bounds!");
+            language.set("walls-selection-complete", "&aWall created, please refer to the configuration " +
+                    "if you wish to make changes");
+            language.set("walls-selection-located-saved", "&aLocation saved.");
+            
+            try {
+                language.save(DATA_PATH);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        Language.loadValues();
     }
 
     /**

@@ -83,7 +83,7 @@ public class IDWall extends WallObject {
 
             FakeBlock.getConsole().info("Loaded wall '" + getName() + "' successfully");
         } else {
-            FakeBlock.getConsole().warning("[FakeBlock] Wall '" + getName() + "' is configured wrong, the world cannot be different");
+            FakeBlock.getConsole().warning("Wall '" + getName() + "' is configured wrong, the world cannot be different");
         }
     }
 
