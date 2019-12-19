@@ -13,7 +13,7 @@ import java.util.List;
 public abstract class WallObject {
 
     @Getter
-    private static List<WallObject> wallObjectList = new ArrayList<WallObject>();
+    private static List<WallObject> wallObjectList = new ArrayList<>();
 
     @Getter
     private String name;
@@ -40,9 +40,7 @@ public abstract class WallObject {
         wallObjectList.add(this);
 
         // Load Locations in the wall async
-        Bukkit.getScheduler().runTaskAsynchronously(FakeBlock.getPlugin(), () -> {
-            blocksInBetween = loadBlocksInBetween();
-        });
+        Bukkit.getScheduler().runTaskAsynchronously(FakeBlock.getPlugin(), () -> blocksInBetween = loadBlocksInBetween());
     }
 
     /**

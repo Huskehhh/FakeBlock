@@ -100,7 +100,8 @@ public class FakeBlock extends JavaPlugin {
             language.set("no-material-found", "&4No Material found with that name");
             language.set("wall-displaying-visualisation", "&aDisplaying a visualisation of what the wall will" +
                     " look like... In 5 seconds this will disappear!");
-            
+            language.set("walls-toggled", "&aWalls have been toggled for specified player.");
+
             try {
                 language.save(DATA_PATH);
             } catch (IOException e) {
@@ -150,7 +151,7 @@ public class FakeBlock extends JavaPlugin {
         Player player = event.getPlayer();
         if (event.getPacketType() == PacketType.Play.Client.USE_ITEM ||
                 event.getPacketType() == PacketType.Play.Client.ARM_ANIMATION) {
-            processWall(player, 2);
+            processWall(player, 2, false);
         }
     }
 
@@ -187,20 +188,19 @@ public class FakeBlock extends JavaPlugin {
      * @param player to check
      * @param delay  on sending blocks
      */
-    public void processWall(Player player, int delay) {
-        CompletableFuture<List<WallObject>> future = CompletableFuture.supplyAsync(() -> {
-            return isNearWall(player.getLocation());
-        });
+    public void processWall(Player player, int delay, boolean ignorePermission) {
+        CompletableFuture<List<WallObject>> future = CompletableFuture.supplyAsync(() ->
+                isNearWall(player.getLocation()));
 
-        future.thenAccept(walls -> {
-            walls.forEach(wall -> {
-                if (!player.hasPermission("fakeblock.admin")) {
-                    if (!player.hasPermission("fakeblock." + wall.getName())) {
-                        sendFakeBlocks(wall, player, delay);
-                    }
+        future.thenAccept(walls -> walls.forEach(wall -> {
+            if (ignorePermission) sendFakeBlocks(wall, player, delay);
+
+            if (!player.hasPermission("fakeblock.admin")) {
+                if (!player.hasPermission("fakeblock." + wall.getName())) {
+                    sendFakeBlocks(wall, player, delay);
                 }
-            });
-        });
+            }
+        }));
     }
 
     /**
@@ -211,8 +211,6 @@ public class FakeBlock extends JavaPlugin {
      * @param delay  on rendering (used for logging in)
      */
     private void sendFakeBlocks(WallObject wall, Player player, int delay) {
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            wall.renderWall(player);
-        }, delay * 20);
+        Bukkit.getScheduler().runTaskLater(plugin, () -> wall.renderWall(player), delay * 20);
     }
 }

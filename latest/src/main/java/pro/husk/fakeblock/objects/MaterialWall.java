@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 public class MaterialWall extends WallObject {
 
     @Getter
-    private static List<MaterialWall> materialWallList = new ArrayList<MaterialWall>();
+    private static List<MaterialWall> materialWallList = new ArrayList<>();
 
     @Getter
     @Setter
@@ -54,9 +54,7 @@ public class MaterialWall extends WallObject {
      */
     @Override
     public void renderWall(Player player) {
-        getBlocksInBetween().forEach(location -> {
-            player.sendBlockChange(location, material.createBlockData());
-        });
+        getBlocksInBetween().forEach(location -> player.sendBlockChange(location, material.createBlockData()));
     }
 
     /**
@@ -102,14 +100,12 @@ public class MaterialWall extends WallObject {
     public void sendRealBlocks(Player player) {
         CompletableFuture<List<WallObject>> future = CompletableFuture.supplyAsync(() -> FakeBlock.getPlugin().isNearWall(player.getLocation()));
 
-        future.thenAccept(walls -> {
-            walls.forEach(wall -> {
-                wall.getBlocksInBetween().forEach(location -> {
-                    Block block = location.getBlock();
-                    player.sendBlockChange(location, block.getBlockData());
-                });
+        future.thenAccept(walls -> walls.forEach(wall -> {
+            wall.getBlocksInBetween().forEach(location -> {
+                Block block = location.getBlock();
+                player.sendBlockChange(location, block.getBlockData());
             });
-        });
+        }));
     }
 
     /**

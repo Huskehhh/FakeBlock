@@ -1,5 +1,6 @@
 package pro.husk.fakeblock.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -11,7 +12,13 @@ import pro.husk.fakeblock.objects.Config;
 import pro.husk.fakeblock.objects.Language;
 import pro.husk.fakeblock.objects.WallObject;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 public class CommandHandler implements CommandExecutor {
+
+    private static List<UUID> toggledPlayers = new ArrayList<>();
 
     /**
      * Command handler
@@ -36,6 +43,7 @@ public class CommandHandler implements CommandExecutor {
                 commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + command.getLabel() + " delete <wall name> | Deletes wall");
                 commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + command.getLabel() + " reload | Reloads the walls from config");
                 commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + command.getLabel() + " list | Lists all walls");
+                commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + command.getLabel() + " toggle <player> | Shows all nearby walls to a player");
                 commandSender.sendMessage(ChatColor.GREEN + "------------------------------------");
 
             } else {
@@ -85,6 +93,25 @@ public class CommandHandler implements CommandExecutor {
                         commandSender.sendMessage(fakeBlockTitle + ChatColor.GOLD + " Walls");
                         for (WallObject wallObject : WallObject.getWallObjectList()) {
                             commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + wallObject.getName());
+                        }
+                    } else {
+                        commandSender.sendMessage(fakeBlockTitle + " " + Language.getWrongArgumentLength());
+                    }
+                } else if (arguments[0].equalsIgnoreCase("toggle")) {
+                    if (arguments.length == 2) {
+                        String targetName = arguments[1];
+                        Player target = Bukkit.getPlayer(targetName);
+
+                        if (target != null) {
+                            FakeBlock.getPlugin().processWall(target, 1, toggledPlayers.contains(target.getUniqueId()));
+
+                            if (toggledPlayers.contains(target.getUniqueId())) {
+                                toggledPlayers.remove(target.getUniqueId());
+                            } else {
+                                toggledPlayers.add(target.getUniqueId());
+                            }
+
+                            commandSender.sendMessage(fakeBlockTitle + " " + Language.getWallsToggled());
                         }
                     } else {
                         commandSender.sendMessage(fakeBlockTitle + " " + Language.getWrongArgumentLength());

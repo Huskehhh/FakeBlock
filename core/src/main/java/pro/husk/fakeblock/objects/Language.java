@@ -37,6 +37,9 @@ public class Language {
     @Getter
     private static String displayingVisualisation;
 
+    @Getter
+    private static String wallsToggled;
+
     /**
      * Method used to load all values into memory to minimise I/O
      */
@@ -53,6 +56,7 @@ public class Language {
         locationSaved = colourise(language.getString("walls-selection-location-saved"));
         noMaterialFound = colourise(language.getString("no-material-found"));
         displayingVisualisation = colourise(language.getString("wall-displaying-visualisation"));
+        wallsToggled = colourise(language.getString("walls-toggled"));
     }
 
     /**

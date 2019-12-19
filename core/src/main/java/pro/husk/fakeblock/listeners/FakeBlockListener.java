@@ -12,22 +12,22 @@ public class FakeBlockListener implements Listener {
 
     @EventHandler
     public void playerJoin(PlayerJoinEvent event) {
-        FakeBlock.getPlugin().processWall(event.getPlayer(), 3);
+        FakeBlock.getPlugin().processWall(event.getPlayer(), 3, false);
     }
 
     @EventHandler
     public void playerTeleport(PlayerTeleportEvent event) {
-        FakeBlock.getPlugin().processWall(event.getPlayer(), 3);
+        FakeBlock.getPlugin().processWall(event.getPlayer(), 3, false);
     }
 
     @EventHandler
     public void playerRespawn(PlayerRespawnEvent event) {
-        FakeBlock.getPlugin().processWall(event.getPlayer(), 3);
+        FakeBlock.getPlugin().processWall(event.getPlayer(), 3, false);
     }
 
     // idk if needed now the packet listener is there? idk, who knows, test i guess @test
     @EventHandler
     public void blockBreak(BlockBreakEvent event) {
-        FakeBlock.getPlugin().processWall(event.getPlayer(), 1);
+        FakeBlock.getPlugin().processWall(event.getPlayer(), 1, false);
     }
 }
