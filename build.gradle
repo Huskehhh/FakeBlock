@@ -33,7 +33,7 @@ subprojects {
     dependencies {
 
         // ProtocolLib
-        compileOnly 'com.comphenix.protocol:ProtocolLib-API:4.4.0'
+        compileOnly group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.5.0";
 
         // Lombok
         compileOnly 'org.projectlombok:lombok:1.18.10'
