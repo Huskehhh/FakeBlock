@@ -1,6 +1,7 @@
 package pro.husk.fakeblock.listeners;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,6 +13,9 @@ import pro.husk.fakeblock.FakeBlock;
 import pro.husk.fakeblock.objects.Config;
 import pro.husk.fakeblock.objects.Language;
 import pro.husk.fakeblock.objects.WallObject;
+
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class SelectionListener implements Listener {
 
@@ -37,25 +41,31 @@ public class SelectionListener implements Listener {
                 // Create WallObject
                 WallObject wallObject = config.createWallObject();
 
-                // Remove config object
-                config.remove();
+                CompletableFuture<List<Location>> loadWallFuture = wallObject.loadBlocksInBetween();
 
-                player.sendMessage(Language.getPrefix() + " " + Language.getDisplayingVisualisation());
+                loadWallFuture.thenAccept(loadedWallList -> {
+                    wallObject.setBlocksInBetween(loadedWallList);
 
-                // Render visualisation of the fake wall
-                wallObject.renderWall(player);
+                    // Remove config object
+                    config.remove();
 
-                // TODO: pause creation of wall until user confirms, maybe implement state to config
+                    player.sendMessage(Language.getPrefix() + " " + Language.getDisplayingVisualisation());
 
-                // Reverse the visualisation after 5 seconds
-                Bukkit.getScheduler().scheduleSyncDelayedTask(FakeBlock.getPlugin(), () -> {
-                    wallObject.sendRealBlocks(player);
+                    // Render visualisation of the fake wall
+                    wallObject.renderWall(player);
 
-                    // Save Wall to config
-                    wallObject.saveWall();
+                    // TODO: pause creation of wall until user confirms, maybe implement state to config
 
-                    player.sendMessage(Language.getPrefix() + " " + Language.getWallsSelectionComplete());
-                }, 5 * 20); // 5 seconds
+                    // Reverse the visualisation after 5 seconds
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(FakeBlock.getPlugin(), () -> {
+                        wallObject.sendRealBlocks(player);
+
+                        // Save Wall to config
+                        wallObject.saveWall();
+
+                        player.sendMessage(Language.getPrefix() + " " + Language.getWallsSelectionComplete());
+                    }, 5 * 20); // 5 seconds
+                });
             }
 
             event.setCancelled(true);

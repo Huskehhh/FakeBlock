@@ -38,12 +38,12 @@ public class CommandHandler implements CommandExecutor {
             if (arguments.length == 0) {
 
                 commandSender.sendMessage(ChatColor.GREEN + " --------- " + ChatColor.AQUA + fakeBlockTitle + ChatColor.GREEN + " Help --------- ");
-                commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + command.getLabel() + " | Aliases: /fakeblock, /fb");
-                commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + command.getLabel() + " create <wall name> <material name> | Creates a wall under specified name with given material");
-                commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + command.getLabel() + " delete <wall name> | Deletes wall");
-                commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + command.getLabel() + " reload | Reloads the walls from config");
-                commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + command.getLabel() + " list | Lists all walls");
-                commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + "/" + command.getLabel() + " toggle <player> | Shows all nearby walls to a player");
+                commandSender.sendMessage(ChatColor.GREEN + "/" + command.getLabel() + " | Aliases: /fakeblock, /fb");
+                commandSender.sendMessage(ChatColor.GREEN + "/" + command.getLabel() + " create <wall name> <material name> | Creates a wall under specified name with given material");
+                commandSender.sendMessage(ChatColor.GREEN + "/" + command.getLabel() + " delete <wall name> | Deletes wall");
+                commandSender.sendMessage(ChatColor.GREEN + "/" + command.getLabel() + " reload | Reloads the walls from config");
+                commandSender.sendMessage(ChatColor.GREEN + "/" + command.getLabel() + " list | Lists all walls");
+                commandSender.sendMessage(ChatColor.GREEN + "/" + command.getLabel() + " toggle <player> | Shows all nearby walls to a player");
                 commandSender.sendMessage(ChatColor.GREEN + "------------------------------------");
 
             } else {
@@ -85,6 +85,8 @@ public class CommandHandler implements CommandExecutor {
                                 config.setMaterial(material);
 
                                 player.sendMessage(fakeBlockTitle + " " + Language.getWallsSelection());
+                            } else {
+                                player.sendMessage(fakeBlockTitle + " " + Language.getNoMaterialFound());
                             }
                         }
                     }
