@@ -28,10 +28,6 @@ public class Config {
     @Getter
     String playerName;
 
-    @Getter
-    @Setter
-    boolean loadWall;
-
     // LATEST
     @Getter
     @Setter
