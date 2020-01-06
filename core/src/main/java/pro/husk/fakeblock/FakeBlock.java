@@ -92,11 +92,12 @@ public class FakeBlock extends JavaPlugin {
             language.set("prefix", "&5[FakeBlock]");
             language.set("no-permission", "&4You don't have permission to do that!");
             language.set("invalid-argument-length", "&4Invalid amount of arguments...");
+            language.set("wall-deleted", "&4Wall has been deleted!");
             language.set("walls-reloaded", "&aWalls reloaded");
             language.set("walls-selection", "&aGreat! Please use left and right click to select the bounds!");
             language.set("walls-selection-complete", "&aWall created, please refer to the configuration " +
                     "if you wish to make changes");
-            language.set("walls-selection-located-saved", "&aLocation saved.");
+            language.set("walls-selection-location-saved", "&aLocation saved.");
             language.set("no-material-found", "&4No Material found with that name");
             language.set("wall-displaying-visualisation", "&aDisplaying a visualisation of what the wall will" +
                     " look like... In 5 seconds this will disappear!");

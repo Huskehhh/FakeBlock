@@ -48,7 +48,7 @@ public class Language {
 
         prefix = colourise(language.getString("prefix"));
         noPermission = colourise(language.getString("no-permission"));
-        wrongArgumentLength = colourise(language.getString("wrong-argument-length"));
+        wrongArgumentLength = colourise(language.getString("invalid-argument-length"));
         wallDeleted = colourise(language.getString("wall-deleted"));
         wallsReloaded = colourise(language.getString("walls-reloaded"));
         wallsSelection = colourise(language.getString("walls-selection"));
