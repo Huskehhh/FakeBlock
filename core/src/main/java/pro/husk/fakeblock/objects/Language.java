@@ -40,6 +40,9 @@ public class Language {
     @Getter
     private static String wallsToggled;
 
+    @Getter
+    private static String cantFindPlayer;
+
     /**
      * Method used to load all values into memory to minimise I/O
      */
@@ -57,6 +60,7 @@ public class Language {
         noMaterialFound = colourise(language.getString("no-material-found"));
         displayingVisualisation = colourise(language.getString("wall-displaying-visualisation"));
         wallsToggled = colourise(language.getString("walls-toggled"));
+        cantFindPlayer = colourise(language.getString("cant-find-player"));
     }
 
     /**

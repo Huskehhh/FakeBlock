@@ -4,13 +4,11 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import pro.husk.fakeblock.FakeBlock;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 public class MaterialWall extends WallObject {
 
@@ -58,6 +56,16 @@ public class MaterialWall extends WallObject {
     }
 
     /**
+     * Method to send the real blocks of the world
+     *
+     * @param player to send real blocks to
+     */
+    @Override
+    public void sendRealBlocks(Player player) {
+        getBlocksInBetween().forEach(location -> player.sendBlockChange(location, location.getBlock().getBlockData()));
+    }
+
+    /**
      * Method to load wall from config
      */
     @Override
@@ -94,18 +102,6 @@ public class MaterialWall extends WallObject {
         FakeBlock.getPlugin().getConfig().set(getName() + ".location2", getLocation2());
         FakeBlock.getPlugin().getConfig().set(getName() + ".material", getMaterial().toString());
         FakeBlock.getPlugin().saveConfig();
-    }
-
-    @Override
-    public void sendRealBlocks(Player player) {
-        CompletableFuture<List<WallObject>> future = CompletableFuture.supplyAsync(() -> FakeBlock.getPlugin().isNearWall(player.getLocation()));
-
-        future.thenAccept(walls -> walls.forEach(wall -> {
-            wall.getBlocksInBetween().forEach(location -> {
-                Block block = location.getBlock();
-                player.sendBlockChange(location, block.getBlockData());
-            });
-        }));
     }
 
     /**

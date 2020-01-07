@@ -100,23 +100,29 @@ public class CommandHandler implements CommandExecutor {
                         commandSender.sendMessage(fakeBlockTitle + " " + Language.getWrongArgumentLength());
                     }
                 } else if (arguments[0].equalsIgnoreCase("toggle")) {
+                    Player target = null;
+
+                    if (commandSender instanceof Player) {
+                        target = (Player) commandSender;
+                    }
+
                     if (arguments.length == 2) {
                         String targetName = arguments[1];
-                        Player target = Bukkit.getPlayer(targetName);
+                        target = Bukkit.getPlayer(targetName);
+                    }
 
-                        if (target != null) {
-                            FakeBlock.getPlugin().processWall(target, 1, toggledPlayers.contains(target.getUniqueId()));
+                    if (target != null) {
+                        FakeBlock.getPlugin().processWall(target, 1, toggledPlayers.contains(target.getUniqueId()));
 
-                            if (toggledPlayers.contains(target.getUniqueId())) {
-                                toggledPlayers.remove(target.getUniqueId());
-                            } else {
-                                toggledPlayers.add(target.getUniqueId());
-                            }
-
-                            commandSender.sendMessage(fakeBlockTitle + " " + Language.getWallsToggled());
+                        if (toggledPlayers.contains(target.getUniqueId())) {
+                            toggledPlayers.remove(target.getUniqueId());
+                        } else {
+                            toggledPlayers.add(target.getUniqueId());
                         }
+
+                        commandSender.sendMessage(fakeBlockTitle + " " + Language.getWallsToggled());
                     } else {
-                        commandSender.sendMessage(fakeBlockTitle + " " + Language.getWrongArgumentLength());
+                        commandSender.sendMessage(fakeBlockTitle + " " + Language.getCantFindPlayer());
                     }
                 }
             }

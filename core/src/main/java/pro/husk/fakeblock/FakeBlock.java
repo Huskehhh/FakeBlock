@@ -102,6 +102,7 @@ public class FakeBlock extends JavaPlugin {
             language.set("wall-displaying-visualisation", "&aDisplaying a visualisation of what the wall will" +
                     " look like... In 5 seconds this will disappear!");
             language.set("walls-toggled", "&aWalls have been toggled for specified player.");
+            language.set("cant-find-player", "&4Cannot find that player!");
 
             try {
                 language.save(DATA_PATH);
