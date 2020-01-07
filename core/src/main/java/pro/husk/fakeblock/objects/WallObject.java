@@ -5,15 +5,15 @@ import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import pro.husk.fakeblock.FakeBlock;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public abstract class WallObject {
 
     @Getter
-    private static List<WallObject> wallObjectList = new ArrayList<WallObject>();
+    private static List<WallObject> wallObjectList = new ArrayList<>();
 
     @Getter
     private String name;
@@ -27,6 +27,7 @@ public abstract class WallObject {
     private Location location2;
 
     @Getter
+    @Setter
     private List<Location> blocksInBetween;
 
     /**
@@ -40,8 +41,10 @@ public abstract class WallObject {
         wallObjectList.add(this);
 
         // Load Locations in the wall async
-        Bukkit.getScheduler().runTaskAsynchronously(FakeBlock.getPlugin(), () -> {
-            blocksInBetween = loadBlocksInBetween();
+        CompletableFuture<List<Location>> loadWallFuture = loadBlocksInBetween();
+
+        loadWallFuture.thenAccept(loadedList -> {
+            blocksInBetween = loadedList;
         });
     }
 
@@ -89,30 +92,32 @@ public abstract class WallObject {
      *
      * @return list of Location
      */
-    private List<Location> loadBlocksInBetween() {
-        List<Location> locations = new ArrayList<>();
+    public CompletableFuture<List<Location>> loadBlocksInBetween() {
+        return CompletableFuture.supplyAsync(() -> {
+            List<Location> locations = new ArrayList<>();
 
-        Location loc1 = getLocation1();
-        Location loc2 = getLocation2();
+            Location loc1 = getLocation1();
+            Location loc2 = getLocation2();
 
-        int topBlockX = (Math.max(loc1.getBlockX(), loc2.getBlockX()));
-        int bottomBlockX = (Math.min(loc1.getBlockX(), loc2.getBlockX()));
+            int topBlockX = (Math.max(loc1.getBlockX(), loc2.getBlockX()));
+            int bottomBlockX = (Math.min(loc1.getBlockX(), loc2.getBlockX()));
 
-        int topBlockY = (Math.max(loc1.getBlockY(), loc2.getBlockY()));
-        int bottomBlockY = (Math.min(loc1.getBlockY(), loc2.getBlockY()));
+            int topBlockY = (Math.max(loc1.getBlockY(), loc2.getBlockY()));
+            int bottomBlockY = (Math.min(loc1.getBlockY(), loc2.getBlockY()));
 
-        int topBlockZ = (Math.max(loc1.getBlockZ(), loc2.getBlockZ()));
-        int bottomBlockZ = (Math.min(loc1.getBlockZ(), loc2.getBlockZ()));
+            int topBlockZ = (Math.max(loc1.getBlockZ(), loc2.getBlockZ()));
+            int bottomBlockZ = (Math.min(loc1.getBlockZ(), loc2.getBlockZ()));
 
-        for (int x = bottomBlockX; x <= topBlockX; x++) {
-            for (int z = bottomBlockZ; z <= topBlockZ; z++) {
-                for (int y = bottomBlockY; y <= topBlockY; y++) {
-                    locations.add(new Location(loc1.getWorld(), x, y, z));
+            for (int x = bottomBlockX; x <= topBlockX; x++) {
+                for (int z = bottomBlockZ; z <= topBlockZ; z++) {
+                    for (int y = bottomBlockY; y <= topBlockY; y++) {
+                        locations.add(new Location(loc1.getWorld(), x, y, z));
+                    }
                 }
             }
-        }
 
-        return locations;
+            return locations;
+        });
     }
 
     /**

@@ -9,13 +9,17 @@ import com.comphenix.protocol.events.PacketEvent;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import pro.husk.fakeblock.commands.CommandHandler;
 import pro.husk.fakeblock.listeners.FakeBlockListener;
 import pro.husk.fakeblock.listeners.SelectionListener;
+import pro.husk.fakeblock.objects.Language;
 import pro.husk.fakeblock.objects.WallObject;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -34,6 +38,9 @@ public class FakeBlock extends JavaPlugin {
     @Getter
     private static FakeBlockModuleHandler fakeBlockModuleHandler;
 
+    @Getter
+    private static YamlConfiguration language;
+
     /**
      * Method to handle Plugin startup.
      */
@@ -51,8 +58,9 @@ public class FakeBlock extends JavaPlugin {
             // Register commands
             getCommand("fakeblock").setExecutor(new CommandHandler());
 
-            // Create Config if not already created
+            // Create configs if not already created
             saveDefaultConfig();
+            setupLanguageFile();
 
             // Load walls of child class
             ServiceLoader<FakeBlockModuleHandler> loader =
@@ -69,6 +77,48 @@ public class FakeBlock extends JavaPlugin {
             console.warning("ProtocolLib not detected. Disabling!");
             setEnabled(false);
         }
+    }
+
+    /**
+     * Method used for language file loading
+     */
+    private void setupLanguageFile() {
+        String DATA_PATH = "plugins/FakeBlock/language.yml";
+        boolean exists = (new File(DATA_PATH)).exists();
+        language = YamlConfiguration.loadConfiguration(new File(DATA_PATH));
+
+        if (!exists) {
+            language.options().header("- FakeBlock Language configuration -");
+            language.set("prefix", "&5[FakeBlock]");
+            language.set("no-permission", "&4You don't have permission to do that!");
+            language.set("invalid-argument-length", "&4Invalid amount of arguments...");
+            language.set("wall-deleted", "&4Wall has been deleted!");
+            language.set("walls-reloaded", "&aWalls and language file reloaded");
+            language.set("walls-selection", "&aGreat! Please use left and right click to select the bounds!");
+            language.set("walls-selection-complete", "&aWall created, please refer to the configuration " +
+                    "if you wish to make changes");
+            language.set("walls-selection-location-saved", "&aLocation saved.");
+            language.set("no-material-found", "&4No Material found with that name");
+            language.set("wall-displaying-visualisation", "&aDisplaying a visualisation of what the wall will" +
+                    " look like... In 5 seconds this will disappear!");
+            language.set("walls-toggled", "&aWalls have been toggled for specified player.");
+            language.set("cant-find-player", "&4Cannot find that player!");
+
+            try {
+                language.save(DATA_PATH);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        Language.loadValues();
+    }
+
+    /**
+     * Method to reload configuration + language file
+     */
+    public void reloadConfigs() {
+        reloadConfig();
+        setupLanguageFile();
     }
 
     /**
@@ -111,7 +161,7 @@ public class FakeBlock extends JavaPlugin {
         Player player = event.getPlayer();
         if (event.getPacketType() == PacketType.Play.Client.USE_ITEM ||
                 event.getPacketType() == PacketType.Play.Client.ARM_ANIMATION) {
-            processWall(player, 2);
+            processWall(player, 2, false);
         }
     }
 
@@ -148,20 +198,19 @@ public class FakeBlock extends JavaPlugin {
      * @param player to check
      * @param delay  on sending blocks
      */
-    public void processWall(Player player, int delay) {
-        CompletableFuture<List<WallObject>> future = CompletableFuture.supplyAsync(() -> {
-            return isNearWall(player.getLocation());
-        });
+    public void processWall(Player player, int delay, boolean ignorePermission) {
+        CompletableFuture<List<WallObject>> future = CompletableFuture.supplyAsync(() ->
+                isNearWall(player.getLocation()));
 
-        future.thenAccept(walls -> {
-            walls.forEach(wall -> {
-                if (!player.hasPermission("fakeblock.admin")) {
-                    if (!player.hasPermission("fakeblock." + wall.getName())) {
-                        sendFakeBlocks(wall, player, delay);
-                    }
+        future.thenAccept(walls -> walls.forEach(wall -> {
+            if (ignorePermission) sendFakeBlocks(wall, player, delay);
+
+            if (!player.hasPermission("fakeblock.admin")) {
+                if (!player.hasPermission("fakeblock." + wall.getName())) {
+                    sendFakeBlocks(wall, player, delay);
                 }
-            });
-        });
+            }
+        }));
     }
 
     /**
@@ -172,8 +221,6 @@ public class FakeBlock extends JavaPlugin {
      * @param delay  on rendering (used for logging in)
      */
     private void sendFakeBlocks(WallObject wall, Player player, int delay) {
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            wall.renderWall(player);
-        }, delay * 20);
+        Bukkit.getScheduler().runTaskLater(plugin, () -> wall.renderWall(player), delay * 20);
     }
 }

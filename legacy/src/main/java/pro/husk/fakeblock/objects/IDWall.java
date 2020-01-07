@@ -10,12 +10,11 @@ import pro.husk.fakeblock.FakeBlock;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 public class IDWall extends WallObject {
 
     @Getter
-    private static List<IDWall> materialWallList = new ArrayList<IDWall>();
+    private static List<IDWall> materialWallList = new ArrayList<>();
 
     @Getter
     @Setter
@@ -61,9 +60,20 @@ public class IDWall extends WallObject {
      */
     @Override
     public void renderWall(Player player) {
-        for (Location location : getBlocksInBetween()) {
-            player.sendBlockChange(location, Material.getMaterial(id), (byte) data);
-        }
+        getBlocksInBetween().forEach(location -> player.sendBlockChange(location, Material.getMaterial(id), (byte) data));
+    }
+
+    /**
+     * Method to send the real blocks of the world
+     *
+     * @param player to send real blocks to
+     */
+    @Override
+    public void sendRealBlocks(Player player) {
+        getBlocksInBetween().forEach(location -> {
+            Block block = location.getBlock();
+            player.sendBlockChange(location, block.getType(), block.getData());
+        });
     }
 
     /**
@@ -83,7 +93,7 @@ public class IDWall extends WallObject {
 
             FakeBlock.getConsole().info("Loaded wall '" + getName() + "' successfully");
         } else {
-            FakeBlock.getConsole().warning("[FakeBlock] Wall '" + getName() + "' is configured wrong, the world cannot be different");
+            FakeBlock.getConsole().warning("Wall '" + getName() + "' is configured wrong, the world cannot be different");
         }
     }
 
@@ -97,20 +107,6 @@ public class IDWall extends WallObject {
         FakeBlock.getPlugin().getConfig().set(getName() + ".id", getId());
         FakeBlock.getPlugin().getConfig().set(getName() + ".data", getData());
         FakeBlock.getPlugin().saveConfig();
-    }
-
-    @Override
-    public void sendRealBlocks(Player player) {
-        CompletableFuture<List<WallObject>> future = CompletableFuture.supplyAsync(() -> FakeBlock.getPlugin().isNearWall(player.getLocation()));
-
-        future.thenAccept(walls -> {
-            walls.forEach(wall -> {
-                wall.getBlocksInBetween().forEach(location -> {
-                    Block block = location.getBlock();
-                    player.sendBlockChange(location, block.getType(), block.getData());
-                });
-            });
-        });
     }
 
     /**

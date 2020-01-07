@@ -8,7 +8,7 @@ public interface FakeBlockModuleHandler {
     /**
      * Method to load all walls
      */
-    abstract void loadWalls();
+    void loadWalls();
 
     /**
      * Method to load wall given a config object
@@ -16,5 +16,5 @@ public interface FakeBlockModuleHandler {
      * @param config object to get values from
      * @return WallObject child
      */
-    abstract WallObject loadWall(Config config);
+    WallObject loadWall(Config config);
 }
