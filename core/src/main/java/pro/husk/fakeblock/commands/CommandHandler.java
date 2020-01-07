@@ -60,7 +60,7 @@ public class CommandHandler implements CommandExecutor {
                 } else if (arguments[0].equalsIgnoreCase("reload")) {
                     if (arguments.length == 1) {
 
-                        FakeBlock.getPlugin().reloadConfig();
+                        FakeBlock.getPlugin().reloadConfigs();
 
                         for (WallObject wallObject : WallObject.getWallObjectList()) {
                             wallObject.loadWall();

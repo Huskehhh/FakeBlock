@@ -114,6 +114,14 @@ public class FakeBlock extends JavaPlugin {
     }
 
     /**
+     * Method to reload configuration + language file
+     */
+    public void reloadConfigs() {
+        reloadConfig();
+        setupLanguageFile();
+    }
+
+    /**
      * Method to handle Plugin shutdown.
      */
     public void onDisable() {
