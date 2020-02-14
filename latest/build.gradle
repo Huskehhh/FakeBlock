@@ -15,7 +15,7 @@ dependencies {
     compile project(':core')
 
     // Spigot API
-    compileOnly "org.spigotmc:spigot-api:1.15-R0.1-SNAPSHOT"
+    compileOnly "org.spigotmc:spigot-api:1.15.2-R0.1-SNAPSHOT"
 
     // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.10'
