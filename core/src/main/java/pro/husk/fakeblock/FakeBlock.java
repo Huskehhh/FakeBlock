@@ -199,10 +199,7 @@ public class FakeBlock extends JavaPlugin {
      */
     public void processWall(Player player, int delay, boolean ignorePermission) {
         CompletableFuture<List<WallObject>> future = CompletableFuture.supplyAsync(() ->
-                isNearWall(player.getLocation())).exceptionally(e -> {
-            System.err.println(e);
-            return null;
-        });
+                isNearWall(player.getLocation()));
 
         future.thenAccept(walls -> walls.forEach(wall -> {
             if (ignorePermission) sendFakeBlocks(wall, player, delay);
