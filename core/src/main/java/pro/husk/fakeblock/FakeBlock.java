@@ -173,7 +173,6 @@ public class FakeBlock extends JavaPlugin {
      * @return null if not, wallObject if they are
      */
     public List<WallObject> isNearWall(Location playerLocation) {
-
         List<WallObject> nearby = new ArrayList<>();
 
         for (WallObject wallObject : WallObject.getWallObjectList()) {
@@ -200,7 +199,10 @@ public class FakeBlock extends JavaPlugin {
      */
     public void processWall(Player player, int delay, boolean ignorePermission) {
         CompletableFuture<List<WallObject>> future = CompletableFuture.supplyAsync(() ->
-                isNearWall(player.getLocation()));
+                isNearWall(player.getLocation())).exceptionally(e -> {
+            System.err.println(e);
+            return null;
+        });
 
         future.thenAccept(walls -> walls.forEach(wall -> {
             if (ignorePermission) sendFakeBlocks(wall, player, delay);

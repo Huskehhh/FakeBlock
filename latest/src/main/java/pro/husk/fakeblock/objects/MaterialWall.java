@@ -86,6 +86,8 @@ public class MaterialWall extends WallObject {
                     this.material = material;
                 }
 
+                loadBlocksInBetweenToCache();
+
                 FakeBlock.getConsole().info("Loaded wall '" + getName() + "' successfully");
             } else {
                 FakeBlock.getConsole().warning("Wall '" + getName() + "' is configured wrong, the world cannot be different");

@@ -91,6 +91,8 @@ public class IDWall extends WallObject {
             id = FakeBlock.getPlugin().getConfig().getInt(getName() + ".id");
             data = FakeBlock.getPlugin().getConfig().getInt(getName() + ".data");
 
+            loadBlocksInBetweenToCache();
+
             FakeBlock.getConsole().info("Loaded wall '" + getName() + "' successfully");
         } else {
             FakeBlock.getConsole().warning("Wall '" + getName() + "' is configured wrong, the world cannot be different");

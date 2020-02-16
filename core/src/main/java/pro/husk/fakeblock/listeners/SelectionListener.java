@@ -41,7 +41,7 @@ public class SelectionListener implements Listener {
                 // Create WallObject
                 WallObject wallObject = config.createWallObject();
 
-                CompletableFuture<List<Location>> loadWallFuture = wallObject.loadBlocksInBetween();
+                CompletableFuture<List<Location>> loadWallFuture = CompletableFuture.supplyAsync(() -> wallObject.loadBlocksInBetween());
 
                 loadWallFuture.thenAccept(loadedWallList -> {
                     wallObject.setBlocksInBetween(loadedWallList);
