@@ -1,6 +1,6 @@
 allprojects {
     group = 'pro.husk.fakeblock'
-    version = '1.7-SNAPSHOT'
+    version = '1.7.1-SNAPSHOT'
 }
 
 defaultTasks 'shadow'

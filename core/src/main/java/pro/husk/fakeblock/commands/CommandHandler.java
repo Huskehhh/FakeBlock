@@ -89,6 +89,8 @@ public class CommandHandler implements CommandExecutor {
                                 player.sendMessage(fakeBlockTitle + " " + Language.getNoMaterialFound());
                             }
                         }
+                    } else {
+                        commandSender.sendMessage(fakeBlockTitle + " " + Language.getWrongArgumentLength());
                     }
                 } else if (arguments[0].equalsIgnoreCase("list")) {
                     if (arguments.length == 1) {
