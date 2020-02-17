@@ -73,7 +73,7 @@ public class CommandHandler implements CommandExecutor {
                 } else if (arguments[0].equalsIgnoreCase("create")) {
                     if (arguments.length == 3) {
                         String wallName = arguments[1];
-                        String materialArgument = arguments[2];
+                        String materialArgument = arguments[2].toUpperCase();
                         if (commandSender instanceof Player) {
                             Player player = (Player) commandSender;
 
