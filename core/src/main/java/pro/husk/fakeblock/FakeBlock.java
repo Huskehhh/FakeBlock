@@ -13,6 +13,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import pro.husk.fakeblock.commands.CommandHandler;
+import pro.husk.fakeblock.commands.TabCompleteHandler;
 import pro.husk.fakeblock.listeners.FakeBlockListener;
 import pro.husk.fakeblock.listeners.SelectionListener;
 import pro.husk.fakeblock.objects.Language;
@@ -57,6 +58,7 @@ public class FakeBlock extends JavaPlugin {
 
             // Register commands
             getCommand("fakeblock").setExecutor(new CommandHandler());
+            getCommand("fakeblock").setTabCompleter(new TabCompleteHandler());
 
             // Create configs if not already created
             saveDefaultConfig();
