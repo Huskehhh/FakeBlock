@@ -1,6 +1,6 @@
 allprojects {
     group = 'pro.husk.fakeblock'
-    version = '1.7.1-SNAPSHOT'
+    version = project.property("version") + "-SNAPSHOT"
 }
 
 defaultTasks 'shadow'
@@ -11,6 +11,7 @@ subprojects {
 
     repositories {
         mavenCentral()
+        mavenLocal()
 
         // Spigot repository
         maven {

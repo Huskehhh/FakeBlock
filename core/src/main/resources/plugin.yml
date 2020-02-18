@@ -10,4 +10,4 @@ commands:
     aliases: [fb]
 api-version: 1.13
 depend: [ProtocolLib]
-softdepend: [Multiverse-Core]
+softdepend: [Multiverse-Core, LuckPerms]

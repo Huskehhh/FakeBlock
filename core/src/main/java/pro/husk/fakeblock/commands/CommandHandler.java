@@ -96,7 +96,7 @@ public class CommandHandler implements CommandExecutor {
                     if (arguments.length == 1) {
                         commandSender.sendMessage(fakeBlockTitle + ChatColor.GOLD + " Walls");
                         for (WallObject wallObject : WallObject.getWallObjectList()) {
-                            commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + wallObject.getName());
+                            commandSender.sendMessage(fakeBlockTitle + ChatColor.GREEN + " " + wallObject.getName());
                         }
                     } else {
                         commandSender.sendMessage(fakeBlockTitle + " " + Language.getWrongArgumentLength());

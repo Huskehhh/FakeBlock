@@ -7,13 +7,18 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import lombok.Getter;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.event.EventSubscription;
+import net.luckperms.api.event.node.NodeAddEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import pro.husk.fakeblock.commands.CommandHandler;
 import pro.husk.fakeblock.commands.TabCompleteHandler;
+import pro.husk.fakeblock.hooks.LuckPermsHook;
 import pro.husk.fakeblock.listeners.FakeBlockListener;
 import pro.husk.fakeblock.listeners.SelectionListener;
 import pro.husk.fakeblock.objects.Language;
@@ -41,6 +46,12 @@ public class FakeBlock extends JavaPlugin {
 
     @Getter
     private static YamlConfiguration language;
+
+    @Getter
+    private static LuckPerms api;
+
+    @Getter
+    private static EventSubscription nodeChangeSubscription;
 
     /**
      * Method to handle Plugin startup.
@@ -75,6 +86,16 @@ public class FakeBlock extends JavaPlugin {
 
             // Register packet listener with ProtocolLib
             addPacketListener();
+
+            if (getServer().getPluginManager().getPlugin("LuckPerms") != null) {
+                RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
+                if (provider != null) {
+                    api = provider.getProvider();
+                    nodeChangeSubscription = api.getEventBus().subscribe(NodeAddEvent.class, LuckPermsHook::onNodeChange);
+                }
+            } else {
+                console.warning("LuckPerms not detected, FakeBlock will be unable to listen for permission node changes");
+            }
         } else {
             console.warning("ProtocolLib not detected. Disabling!");
             setEnabled(false);
@@ -127,6 +148,7 @@ public class FakeBlock extends JavaPlugin {
      * Method to handle Plugin shutdown.
      */
     public void onDisable() {
+        nodeChangeSubscription.close();
     }
 
     /**

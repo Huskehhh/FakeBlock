@@ -25,7 +25,7 @@ public class TabCompleteHandler implements TabCompleter {
 
         List<String> tabComplete = new ArrayList<>();
 
-        if (arguments.length == 0) {
+        if (arguments.length == 1) {
             tabComplete.add("create");
             tabComplete.add("delete");
             tabComplete.add("reload");
@@ -34,15 +34,17 @@ public class TabCompleteHandler implements TabCompleter {
         }
 
         if (arguments[0].equalsIgnoreCase("create")) {
-            if (arguments.length == 2) {
+            if (arguments.length == 3) {
                 for (Material material : Material.values()) {
-                    tabComplete.add(material.toString());
+                    if (material.toString().contains(arguments[2].toUpperCase())) {
+                        tabComplete.add(material.toString());
+                    }
                 }
             }
         }
 
         if (arguments[0].equalsIgnoreCase("delete")) {
-            if (arguments.length == 1) {
+            if (arguments.length == 2) {
                 WallObject.getWallObjectList().forEach(wallObject -> tabComplete.add(wallObject.getName()));
             }
         }
