@@ -233,10 +233,9 @@ public class FakeBlock extends JavaPlugin {
         future.thenAccept(walls -> walls.forEach(wall -> {
             if (ignorePermission) sendFakeBlocks(wall, player, delay);
 
-            if (!player.hasPermission("fakeblock.admin")) {
-                if (!player.hasPermission("fakeblock." + wall.getName())) {
-                    sendFakeBlocks(wall, player, delay);
-                }
+            if (!player.hasPermission("fakeblock.admin") &&
+                    !player.hasPermission("fakeblock." + wall.getName())) {
+                sendFakeBlocks(wall, player, delay);
             }
         }));
     }

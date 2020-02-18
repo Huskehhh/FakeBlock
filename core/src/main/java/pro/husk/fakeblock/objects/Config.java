@@ -15,32 +15,32 @@ public class Config {
 
     // BOTH
     @Getter
-    String wallName;
+    private String wallName;
 
     @Getter
     @Setter
-    Location location1;
+    private Location location1;
 
     @Getter
     @Setter
-    Location location2;
+    private Location location2;
 
     @Getter
-    String playerName;
+    private String playerName;
 
     // LATEST
     @Getter
     @Setter
-    Material material;
+    private Material material;
 
     // LEGACY
     @Getter
     @Setter
-    int id;
+    private int id;
 
     @Getter
     @Setter
-    int data;
+    private int data;
 
     public Config(String playerName, String wallName) {
         this.playerName = playerName;

@@ -19,6 +19,11 @@ import java.util.concurrent.CompletableFuture;
 
 public class SelectionListener implements Listener {
 
+    /**
+     * Listener for FakeBlock bound selection
+     *
+     * @param event PlayerInteractEvent
+     */
     @EventHandler
     public void playerSelect(PlayerInteractEvent event) {
         Player player = event.getPlayer();

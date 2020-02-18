@@ -33,20 +33,16 @@ public class TabCompleteHandler implements TabCompleter {
             tabComplete.add("toggle");
         }
 
-        if (arguments[0].equalsIgnoreCase("create")) {
-            if (arguments.length == 3) {
-                for (Material material : Material.values()) {
-                    if (material.toString().contains(arguments[2].toUpperCase())) {
-                        tabComplete.add(material.toString());
-                    }
+        if (arguments[0].equalsIgnoreCase("create") && arguments.length == 3) {
+            for (Material material : Material.values()) {
+                if (material.toString().contains(arguments[2].toUpperCase())) {
+                    tabComplete.add(material.toString());
                 }
             }
         }
 
-        if (arguments[0].equalsIgnoreCase("delete")) {
-            if (arguments.length == 2) {
-                WallObject.getWallObjectList().forEach(wallObject -> tabComplete.add(wallObject.getName()));
-            }
+        if (arguments[0].equalsIgnoreCase("delete") && arguments.length == 2) {
+            WallObject.getWallObjectList().forEach(wallObject -> tabComplete.add(wallObject.getName()));
         }
 
         return tabComplete;
