@@ -59,22 +59,22 @@ public class LuckPermsHelper {
     private static void handleNodeEvents(Node node, PermissionHolder holder) {
         FakeBlock plugin = FakeBlock.getPlugin();
 
-        if (node.getType() == NodeType.PERMISSION && node.getKey().contains("fakeblock.")) {
-            if (holder.getIdentifier().getType().equals("user")) {
-                plugin.getServer().getScheduler().runTask(plugin, () -> {
+        if (node.getType() == NodeType.PERMISSION &&
+                node.getKey().contains("fakeblock.") &&
+                holder.getIdentifier().getType().equals("user")) {
+            plugin.getServer().getScheduler().runTask(plugin, () -> {
 
-                    UUID uuid = UUID.fromString(holder.getIdentifier().getName());
-                    Player player = plugin.getServer().getPlayer(uuid);
+                UUID uuid = UUID.fromString(holder.getIdentifier().getName());
+                Player player = plugin.getServer().getPlayer(uuid);
 
-                    if (player != null) {
-                        if (node.hasExpired() || !node.getValue()) {
-                            plugin.processWall(player, 0, false);
-                        } else {
-                            plugin.isNearWall(player.getLocation()).forEach(wallObject -> wallObject.sendRealBlocks(player));
-                        }
+                if (player != null) {
+                    if (node.hasExpired() || !node.getValue()) {
+                        plugin.processWall(player, 0, false);
+                    } else {
+                        plugin.isNearWall(player.getLocation()).forEach(wallObject -> wallObject.sendRealBlocks(player));
                     }
-                });
-            }
+                }
+            });
         }
     }
 
