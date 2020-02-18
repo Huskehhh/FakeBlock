@@ -10,6 +10,9 @@ import lombok.Getter;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.event.EventSubscription;
 import net.luckperms.api.event.node.NodeAddEvent;
+import net.luckperms.api.event.node.NodeRemoveEvent;
+import net.luckperms.api.event.user.track.UserDemoteEvent;
+import net.luckperms.api.event.user.track.UserPromoteEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -18,7 +21,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import pro.husk.fakeblock.commands.CommandHandler;
 import pro.husk.fakeblock.commands.TabCompleteHandler;
-import pro.husk.fakeblock.hooks.LuckPermsHook;
+import pro.husk.fakeblock.hooks.LuckPermsHelper;
 import pro.husk.fakeblock.listeners.FakeBlockListener;
 import pro.husk.fakeblock.listeners.SelectionListener;
 import pro.husk.fakeblock.objects.Language;
@@ -50,8 +53,7 @@ public class FakeBlock extends JavaPlugin {
     @Getter
     private static LuckPerms api;
 
-    @Getter
-    private static EventSubscription nodeChangeSubscription;
+    private static List<EventSubscription> subscriptions = new ArrayList<>();
 
     /**
      * Method to handle Plugin startup.
@@ -91,7 +93,10 @@ public class FakeBlock extends JavaPlugin {
                 RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
                 if (provider != null) {
                     api = provider.getProvider();
-                    nodeChangeSubscription = api.getEventBus().subscribe(NodeAddEvent.class, LuckPermsHook::onNodeChange);
+                    subscriptions.add(api.getEventBus().subscribe(NodeAddEvent.class, LuckPermsHelper::onNodeAdd));
+                    subscriptions.add(api.getEventBus().subscribe(NodeRemoveEvent.class, LuckPermsHelper::onNodeRemove));
+                    subscriptions.add(api.getEventBus().subscribe(UserPromoteEvent.class, LuckPermsHelper::onUserPromote));
+                    subscriptions.add(api.getEventBus().subscribe(UserDemoteEvent.class, LuckPermsHelper::onUserDemote));
                 }
             } else {
                 console.warning("LuckPerms not detected, FakeBlock will be unable to listen for permission node changes");
@@ -148,7 +153,7 @@ public class FakeBlock extends JavaPlugin {
      * Method to handle Plugin shutdown.
      */
     public void onDisable() {
-        nodeChangeSubscription.close();
+        subscriptions.forEach(EventSubscription::close);
     }
 
     /**

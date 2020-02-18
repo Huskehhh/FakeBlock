@@ -66,7 +66,7 @@ public class MaterialWall extends WallObject {
 
                 for (BlockFace face : faces) {
                     Block relative = location.getBlock().getRelative(face);
-                    multipleFacing.setFace(face, getBlocksInBetween().contains(relative.getLocation()));
+                    multipleFacing.setFace(face, getBlocksInBetween().contains(relative.getLocation()) || relative.getType().isSolid());
                 }
 
                 fakeBlockData = multipleFacing;
