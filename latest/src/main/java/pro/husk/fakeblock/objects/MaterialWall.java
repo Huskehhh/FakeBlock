@@ -4,6 +4,10 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.MultipleFacing;
 import org.bukkit.entity.Player;
 import pro.husk.fakeblock.FakeBlock;
 
@@ -52,7 +56,24 @@ public class MaterialWall extends WallObject {
      */
     @Override
     public void renderWall(Player player) {
-        getBlocksInBetween().forEach(location -> player.sendBlockChange(location, material.createBlockData()));
+        getBlocksInBetween().forEach(location -> {
+            BlockData fakeBlockData = material.createBlockData();
+
+            if (fakeBlockData instanceof MultipleFacing) {
+                MultipleFacing multipleFacing = (MultipleFacing) fakeBlockData;
+
+                BlockFace[] faces = {BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
+
+                for (BlockFace face : faces) {
+                    Block relative = location.getBlock().getRelative(face);
+                    multipleFacing.setFace(face, getBlocksInBetween().contains(relative.getLocation()));
+                }
+
+                fakeBlockData = multipleFacing;
+            }
+
+            player.sendBlockChange(location, fakeBlockData);
+        });
     }
 
     /**
