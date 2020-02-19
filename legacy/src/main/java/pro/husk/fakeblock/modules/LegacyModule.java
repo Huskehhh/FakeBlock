@@ -13,9 +13,7 @@ public class LegacyModule implements FakeBlockModuleHandler {
      */
     @Override
     public void loadWalls() {
-        for (String key : FakeBlock.getPlugin().getConfig().getKeys(false)) {
-            new IDWall(key).loadWall();
-        }
+        FakeBlock.getPlugin().getConfig().getKeys(false).forEach(key -> new IDWall(key).loadWall());
     }
 
     /**

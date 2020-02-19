@@ -85,11 +85,9 @@ public abstract class WallObject {
      */
     public void loadBlocksInBetweenToCache() {
         // Load Locations in the wall async
-        CompletableFuture<List<Location>> loadWallFuture = CompletableFuture.supplyAsync(() -> loadBlocksInBetween());
+        CompletableFuture<List<Location>> loadWallFuture = CompletableFuture.supplyAsync(this::loadBlocksInBetween);
 
-        loadWallFuture.thenAccept(loadedList -> {
-            blocksInBetween = loadedList;
-        });
+        loadWallFuture.thenAccept(loadedList -> blocksInBetween = loadedList);
     }
 
     /**

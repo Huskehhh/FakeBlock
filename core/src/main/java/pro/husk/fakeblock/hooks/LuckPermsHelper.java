@@ -83,6 +83,8 @@ public class LuckPermsHelper {
      */
     private static void queueWallToAll() {
         FakeBlock plugin = FakeBlock.getPlugin();
-        plugin.getServer().getScheduler().runTask(plugin, () -> plugin.getServer().getOnlinePlayers().forEach(player -> plugin.processWall(player, 0, false)));
+        plugin.getServer().getScheduler().runTask(plugin, () ->
+                plugin.getServer().getOnlinePlayers().forEach(player ->
+                        plugin.processWall(player, 0, false)));
     }
 }

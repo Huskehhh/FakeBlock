@@ -13,10 +13,7 @@ public class LatestModule implements FakeBlockModuleHandler {
      */
     @Override
     public void loadWalls() {
-        for (String key : FakeBlock.getPlugin().getConfig().getKeys(false)) {
-            FakeBlock.getConsole().info("Loading wall '" + key + "'!");
-            new MaterialWall(key).loadWall();
-        }
+        FakeBlock.getPlugin().getConfig().getKeys(false).forEach(key -> new MaterialWall(key).loadWall());
     }
 
     /**
