@@ -91,8 +91,8 @@ public class MaterialWall extends WallObject {
      */
     @Override
     public void loadWall() {
-        Location location1 = (Location) FakeBlock.getPlugin().getConfig().get(getName() + ".location1");
-        Location location2 = (Location) FakeBlock.getPlugin().getConfig().get(getName() + ".location2");
+        Location location1 = FakeBlock.getPlugin().getConfig().getLocation(getName() + ".location1");
+        Location location2 = FakeBlock.getPlugin().getConfig().getLocation(getName() + ".location2");
 
         if (location1 != null && location2 != null) {
 
