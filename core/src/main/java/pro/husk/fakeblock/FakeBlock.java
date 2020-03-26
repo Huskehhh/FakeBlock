@@ -53,6 +53,9 @@ public class FakeBlock extends JavaPlugin {
     @Getter
     private static LuckPerms api;
 
+    @Getter
+    private static ProtocolManager protocolManager;
+
     private static List<EventSubscription> subscriptions = new ArrayList<>();
 
     /**
@@ -160,7 +163,7 @@ public class FakeBlock extends JavaPlugin {
      * Utilises ProtocolLib to listen for USE_ITEM packet in order to prevent players destroying the fake wall
      */
     private void addPacketListener() {
-        ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+        protocolManager = ProtocolLibrary.getProtocolManager();
 
         protocolManager.addPacketListener(
                 new PacketAdapter(this, ListenerPriority.HIGH,
