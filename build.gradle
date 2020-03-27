@@ -4,7 +4,7 @@ allprojects {
     version = project.property("version") + "-SNAPSHOT"
 
     if (buildNumber != null) {
-        version = version + "-b" + buildNumber
+        version = version + "-build" + buildNumber
     }
 }
 
