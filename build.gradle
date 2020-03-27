@@ -1,13 +1,17 @@
 allprojects {
     group = 'pro.husk.fakeblock'
+    String buildNumber = System.getenv("BUILD_NUMBER")
     version = project.property("version") + "-SNAPSHOT"
+
+    if (buildNumber != null) {
+        version = version + "-b" + buildNumber
+    }
 }
 
 defaultTasks 'shadow'
 
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'maven-publish'
 
     repositories {
         mavenCentral()
@@ -42,14 +46,6 @@ subprojects {
     }
 
     sourceCompatibility = '1.8'
-
-    publishing {
-        publications {
-            maven(MavenPublication) {
-                from(components.java)
-            }
-        }
-    }
 
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
