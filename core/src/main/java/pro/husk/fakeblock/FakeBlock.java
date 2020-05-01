@@ -9,7 +9,6 @@ import com.comphenix.protocol.events.PacketEvent;
 import lombok.Getter;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.event.EventSubscription;
-import net.luckperms.api.event.LuckPermsEvent;
 import net.luckperms.api.event.node.NodeAddEvent;
 import net.luckperms.api.event.node.NodeRemoveEvent;
 import net.luckperms.api.event.user.track.UserDemoteEvent;
@@ -174,12 +173,27 @@ public class FakeBlock extends JavaPlugin {
                         handlePacketEvent(event);
                     }
                 });
-
         protocolManager.addPacketListener(
                 new PacketAdapter(this, ListenerPriority.HIGH,
                         PacketType.Play.Client.ARM_ANIMATION) {
                     @Override
                     public void onPacketReceiving(PacketEvent event) {
+                        handlePacketEvent(event);
+                    }
+                });
+        protocolManager.addPacketListener(
+                new PacketAdapter(this, ListenerPriority.HIGH,
+                        PacketType.Play.Server.MAP) {
+                    @Override
+                    public void onPacketSending(PacketEvent event) {
+                        handlePacketEvent(event);
+                    }
+                });
+        protocolManager.addPacketListener(
+                new PacketAdapter(this, ListenerPriority.HIGH,
+                        PacketType.Play.Server.MAP_CHUNK) {
+                    @Override
+                    public void onPacketSending(PacketEvent event) {
                         handlePacketEvent(event);
                     }
                 });
@@ -192,10 +206,7 @@ public class FakeBlock extends JavaPlugin {
      */
     private void handlePacketEvent(PacketEvent event) {
         Player player = event.getPlayer();
-        if (event.getPacketType() == PacketType.Play.Client.USE_ITEM ||
-                event.getPacketType() == PacketType.Play.Client.ARM_ANIMATION) {
-            processWall(player, 2, false);
-        }
+        processWall(player, 2, false);
     }
 
     /**
