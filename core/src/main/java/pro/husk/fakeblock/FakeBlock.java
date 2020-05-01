@@ -9,6 +9,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import lombok.Getter;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.event.EventSubscription;
+import net.luckperms.api.event.LuckPermsEvent;
 import net.luckperms.api.event.node.NodeAddEvent;
 import net.luckperms.api.event.node.NodeRemoveEvent;
 import net.luckperms.api.event.user.track.UserDemoteEvent;
@@ -56,7 +57,7 @@ public class FakeBlock extends JavaPlugin {
     @Getter
     private static ProtocolManager protocolManager;
 
-    private static List<EventSubscription> subscriptions = new ArrayList<>();
+    private static final List<EventSubscription> subscriptions = new ArrayList<>();
 
     /**
      * Method to handle Plugin startup.

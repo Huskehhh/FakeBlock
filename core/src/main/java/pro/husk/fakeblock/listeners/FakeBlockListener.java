@@ -4,10 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.*;
 import pro.husk.fakeblock.FakeBlock;
 
 public class FakeBlockListener implements Listener {
@@ -35,6 +32,13 @@ public class FakeBlockListener implements Listener {
     @EventHandler
     public void worldChange(PlayerChangedWorldEvent event) {
         caterForAllConnections(event.getPlayer());
+    }
+
+    @EventHandler
+    public void resourcePackApply(PlayerResourcePackStatusEvent event) {
+        if (event.getStatus() == PlayerResourcePackStatusEvent.Status.SUCCESSFULLY_LOADED) {
+            caterForAllConnections(event.getPlayer());
+        }
     }
 
     /**
