@@ -18,7 +18,7 @@ import java.util.UUID;
 
 public class CommandHandler implements CommandExecutor {
 
-    private static List<UUID> toggledPlayers = new ArrayList<>();
+    private static final List<UUID> toggledPlayers = new ArrayList<>();
 
     /**
      * Command handler
@@ -77,8 +77,9 @@ public class CommandHandler implements CommandExecutor {
 
     /**
      * Private helper method to handle the default help messages
-     * @param commandSender sender
-     * @param command command
+     *
+     * @param commandSender  sender
+     * @param command        command
      * @param fakeBlockTitle prefix
      */
     private void help(CommandSender commandSender, Command command, String fakeBlockTitle) {
@@ -94,8 +95,9 @@ public class CommandHandler implements CommandExecutor {
 
     /**
      * Private helper method to handle the delete command
-     * @param commandSender sender
-     * @param arguments arguments
+     *
+     * @param commandSender  sender
+     * @param arguments      arguments
      * @param fakeBlockTitle prefix
      */
     private void delete(CommandSender commandSender, String[] arguments, String fakeBlockTitle) {
@@ -108,7 +110,8 @@ public class CommandHandler implements CommandExecutor {
 
     /**
      * Private helper method to handle the reload command
-     * @param commandSender sender
+     *
+     * @param commandSender  sender
      * @param fakeBlockTitle prefix
      */
     private void reload(CommandSender commandSender, String fakeBlockTitle) {
@@ -119,8 +122,9 @@ public class CommandHandler implements CommandExecutor {
 
     /**
      * Private helper method to handle the create command
-     * @param commandSender sender
-     * @param arguments arguments
+     *
+     * @param commandSender  sender
+     * @param arguments      arguments
      * @param fakeBlockTitle prefix
      */
     private void create(CommandSender commandSender, String[] arguments, String fakeBlockTitle) {
@@ -143,7 +147,8 @@ public class CommandHandler implements CommandExecutor {
 
     /**
      * Private helper method to handle the list command
-     * @param commandSender sender
+     *
+     * @param commandSender  sender
      * @param fakeBlockTitle prefix
      */
     private void list(CommandSender commandSender, String fakeBlockTitle) {
@@ -154,8 +159,9 @@ public class CommandHandler implements CommandExecutor {
 
     /**
      * Private helper method to handle the toggle command
-     * @param commandSender sender
-     * @param arguments arguments
+     *
+     * @param commandSender  sender
+     * @param arguments      arguments
      * @param fakeBlockTitle prefix
      */
     private void toggle(CommandSender commandSender, String[] arguments, String fakeBlockTitle) {

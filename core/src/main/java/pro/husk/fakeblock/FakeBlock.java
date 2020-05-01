@@ -206,7 +206,9 @@ public class FakeBlock extends JavaPlugin {
      */
     private void handlePacketEvent(PacketEvent event) {
         Player player = event.getPlayer();
-        processWall(player, 2, false);
+        processWall(player, 1, false);
+        processWall(player, 3, false);
+        processWall(player, 5, false);
     }
 
     /**
