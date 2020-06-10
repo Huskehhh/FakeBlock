@@ -1,4 +1,4 @@
-name: Java CI with Maven
+name: Java CI with Gradle
 
 on:
   push:
@@ -19,7 +19,6 @@ jobs:
           java-version: 1.8
       - name: Build with Gradle
         run: gradle clean build
-      - run: rm -rf target/original*
       - run: mkdir staging && cp latest/build/libs/FakeBlock-l*.jar staging
       - run: cp legacy/build/libs/FakeBlock-l*.jar staging
       - uses: actions/upload-artifact@v1
