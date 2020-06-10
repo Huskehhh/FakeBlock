@@ -1,4 +1,4 @@
-# FakeBlock [![Build Status](https://travis-ci.com/Huskehhh/FakeBlock.svg?branch=master)](https://travis-ci.com/Huskehhh/FakeBlock)
+# FakeBlock ![Java CI with Gradle](https://github.com/Huskehhh/FakeBlock/workflows/Java%20CI%20with%20Gradle/badge.svg)
 
 Have you ever wanted to make things appear differently to different groups of players? Have you ever wanted to have hidden paths that only certain players could see? Have you ever wanted to change how the world appeared to players at different times? Now you can!
 
@@ -24,7 +24,7 @@ This plugin has many potential uses in a variety of different circumstances and 
  ````
 Any variable blocks that you want to look different for players at different times can be done.
 
-## [Download](https://ci.husk.pro/job/FakeBlock/)
+## [Download](https://github.com/Huskehhh/FakeBlock/actions)
 ## [Spigot Resource Page](https://www.spigotmc.org/resources/fakeblock.12830/)
 
 ### Compiling from source
