@@ -17,4 +17,6 @@ public interface FakeBlockModuleHandler {
      * @return WallObject child
      */
     WallObject loadWall(Config config);
+
+    void registerListeners();
 }

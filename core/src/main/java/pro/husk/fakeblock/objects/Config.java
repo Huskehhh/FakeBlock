@@ -3,7 +3,6 @@ package pro.husk.fakeblock.objects;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import pro.husk.fakeblock.FakeBlock;
 
 import java.util.HashMap;
@@ -11,36 +10,18 @@ import java.util.HashMap;
 public class Config {
 
     @Getter
-    private static HashMap<String, Config> currentConfigurations = new HashMap<>();
+    private static final HashMap<String, Config> currentConfigurations = new HashMap<>();
 
-    // BOTH
     @Getter
-    private String wallName;
-
+    private final String wallName;
+    @Getter
+    private final String playerName;
     @Getter
     @Setter
     private Location location1;
-
     @Getter
     @Setter
     private Location location2;
-
-    @Getter
-    private String playerName;
-
-    // LATEST
-    @Getter
-    @Setter
-    private Material material;
-
-    // LEGACY
-    @Getter
-    @Setter
-    private int id;
-
-    @Getter
-    @Setter
-    private int data;
 
     public Config(String playerName, String wallName) {
         this.playerName = playerName;
@@ -50,7 +31,7 @@ public class Config {
     }
 
     public static boolean isSelecting(String playerName) {
-        return getCurrentConfigurations().containsKey(playerName);
+        return currentConfigurations.containsKey(playerName);
     }
 
     public WallObject createWallObject() {
@@ -58,6 +39,6 @@ public class Config {
     }
 
     public void remove() {
-        getCurrentConfigurations().remove(playerName);
+        currentConfigurations.remove(playerName);
     }
 }

@@ -1,8 +1,8 @@
 name: FakeBlock
-version: ${project.version}
+version: 2.0.0
 main: pro.husk.fakeblock.FakeBlock
 author: husK
-description: Enables the creation of fake blocks, so only people with the a permission node can walk through.
+description: Enables the creation of fake blocks
 commands:
   fakeblock:
     description: Shows all available commands

@@ -1,7 +1,9 @@
 package pro.husk.fakeblock.modules;
 
+import org.bukkit.Bukkit;
 import pro.husk.fakeblock.FakeBlock;
 import pro.husk.fakeblock.FakeBlockModuleHandler;
+import pro.husk.fakeblock.listener.LatestSelectionListener;
 import pro.husk.fakeblock.objects.Config;
 import pro.husk.fakeblock.objects.MaterialWall;
 import pro.husk.fakeblock.objects.WallObject;
@@ -24,6 +26,11 @@ public class LatestModule implements FakeBlockModuleHandler {
      */
     @Override
     public WallObject loadWall(Config config) {
-        return new MaterialWall(config.getWallName(), config.getLocation1(), config.getLocation2(), config.getMaterial());
+        return new MaterialWall(config.getWallName(), config.getLocation1(), config.getLocation2());
+    }
+
+    @Override
+    public void registerListeners() {
+        Bukkit.getPluginManager().registerEvents(new LatestSelectionListener(), FakeBlock.getPlugin());
     }
 }

@@ -2,7 +2,6 @@ package pro.husk.fakeblock.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -50,7 +49,7 @@ public class CommandHandler implements CommandExecutor {
                         commandSender.sendMessage(fakeBlockTitle + " " + Language.getWrongArgumentLength());
                     }
                 } else if (arguments[0].equalsIgnoreCase("create")) {
-                    if (arguments.length == 3) {
+                    if (arguments.length == 2) {
                         create(commandSender, arguments, fakeBlockTitle);
                     } else {
                         commandSender.sendMessage(fakeBlockTitle + " " + Language.getWrongArgumentLength());
@@ -129,19 +128,13 @@ public class CommandHandler implements CommandExecutor {
      */
     private void create(CommandSender commandSender, String[] arguments, String fakeBlockTitle) {
         String wallName = arguments[1];
-        String materialArgument = arguments[2].toUpperCase();
+
         if (commandSender instanceof Player) {
             Player player = (Player) commandSender;
 
-            Config config = new Config(player.getName(), wallName);
-            Material material = Material.getMaterial(materialArgument);
+            new Config(player.getName(), wallName);
 
-            if (material != null) {
-                config.setMaterial(material);
-                player.sendMessage(fakeBlockTitle + " " + Language.getWallsSelection());
-            } else {
-                player.sendMessage(fakeBlockTitle + " " + Language.getNoMaterialFound());
-            }
+            player.sendMessage(fakeBlockTitle + " " + Language.getWallsSelection());
         }
     }
 
@@ -177,7 +170,7 @@ public class CommandHandler implements CommandExecutor {
         }
 
         if (target != null) {
-            FakeBlock.getPlugin().processWall(target, 1, toggledPlayers.contains(target.getUniqueId()));
+            FakeBlock.getWallUtility().processWall(target, 1, toggledPlayers.contains(target.getUniqueId()));
 
             if (toggledPlayers.contains(target.getUniqueId())) {
                 toggledPlayers.remove(target.getUniqueId());

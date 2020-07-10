@@ -1,30 +1,17 @@
 package pro.husk.fakeblock.objects;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.MultipleFacing;
-import org.bukkit.entity.Player;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import pro.husk.fakeblock.FakeBlock;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MaterialWall extends WallObject {
 
-    @Getter
-    private static List<MaterialWall> materialWallList = new ArrayList<>();
-
-    @Getter
-    @Setter
-    private Material material;
-
     /**
-     * Constructor
+     * Constructor for walls loaded from config
      *
      * @param name of wall
      */
@@ -33,57 +20,31 @@ public class MaterialWall extends WallObject {
     }
 
     /**
-     * Constructor
+     * Constructor when creating a new wall
      *
      * @param name      of wall
      * @param location1 bound 1
      * @param location2 bound 2
-     * @param material  of wall
      */
-    public MaterialWall(String name, Location location1, Location location2, Material material) {
+    public MaterialWall(String name, Location location1, Location location2) {
         this(name);
 
         setLocation1(location1);
         setLocation2(location2);
 
-        this.material = material;
-    }
-
-    /**
-     * Method to render fake block wall for player
-     *
-     * @param player to render for
-     */
-    @Override
-    public void renderWall(Player player) {
-        getBlocksInBetween().forEach(location -> {
-            BlockData fakeBlockData = material.createBlockData();
-
-            if (fakeBlockData instanceof MultipleFacing) {
-                MultipleFacing multipleFacing = (MultipleFacing) fakeBlockData;
-
-                BlockFace[] faces = {BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
-
-                for (BlockFace face : faces) {
-                    Block relative = location.getBlock().getRelative(face);
-                    multipleFacing.setFace(face, getBlocksInBetween().contains(relative.getLocation()) || relative.getType().isSolid());
-                }
-
-                fakeBlockData = multipleFacing;
-            }
-
-            player.sendBlockChange(location, fakeBlockData);
-        });
-    }
-
-    /**
-     * Method to send the real blocks of the world
-     *
-     * @param player to send real blocks to
-     */
-    @Override
-    public void sendRealBlocks(Player player) {
-        getBlocksInBetween().forEach(location -> player.sendBlockChange(location, location.getBlock().getBlockData()));
+        this.loadingData = true;
+        FakeBlock.newChain()
+                .async(() -> {
+                    this.blocksInBetween = loadBlocksInBetween();
+                    this.materialMap = generateMaterialMapFromWorld();
+                })
+                .sync(this::removeOriginalBlocks)
+                .async(() -> {
+                    this.sortedChunkMap = loadSortedChunkMap();
+                    this.fakeBlockPacketList = loadPacketList(true);
+                    this.loadingData = false;
+                    saveWall();
+                }).execute();
     }
 
     /**
@@ -91,29 +52,51 @@ public class MaterialWall extends WallObject {
      */
     @Override
     public void loadWall() {
-        Location location1 = FakeBlock.getPlugin().getConfig().getLocation(getName() + ".location1");
-        Location location2 = FakeBlock.getPlugin().getConfig().getLocation(getName() + ".location2");
+        this.loadingData = true;
+        FakeBlock.newChain().async(() -> {
+            FileConfiguration config = FakeBlock.getPlugin().getConfig();
 
-        if (location1 != null && location2 != null) {
+            Location location1 = config.getLocation(getName() + ".location1");
+            Location location2 = config.getLocation(getName() + ".location2");
 
-            if (location1.getWorld() == location2.getWorld()) {
-                setLocation1(location1);
-                setLocation2(location2);
+            if (location1 != null && location2 != null) {
 
-                String materialName = FakeBlock.getPlugin().getConfig().getString(getName() + ".material");
-                Material material = Material.matchMaterial(materialName);
+                if (location1.getWorld() == location2.getWorld()) {
+                    setLocation1(location1);
+                    setLocation2(location2);
 
-                if (material != null) {
-                    this.material = material;
+                    ConfigurationSection configurationSection = config.getConfigurationSection(getName() + ".material-data");
+
+                    if (configurationSection == null) return;
+
+                    configurationSection.getKeys(false).forEach(key -> {
+                        String[] split = key.split(",");
+
+                        World world = Bukkit.getWorld(split[0]);
+                        int x = Integer.parseInt(split[1]);
+                        int y = Integer.parseInt(split[2]);
+                        int z = Integer.parseInt(split[3]);
+
+                        Location built = new Location(world, x, y, z);
+                        String materialString = configurationSection.getString(key);
+
+                        if (materialString != null) {
+                            Material material = Material.getMaterial(materialString);
+                            materialMap.put(built, material);
+                        }
+                    });
+
+                    // Load all data to cache
+                    this.blocksInBetween = loadBlocksInBetween();
+                    this.sortedChunkMap = loadSortedChunkMap();
+                    this.fakeBlockPacketList = loadPacketList(true);
+                    this.loadingData = false;
+                    FakeBlock.getConsole().info("Loaded wall '" + getName() + "' successfully");
+                } else {
+                    FakeBlock.getConsole().warning("Wall '" + getName() + "' is configured wrong, the world cannot be different");
                 }
-
-                loadBlocksInBetweenToCache();
-
-                FakeBlock.getConsole().info("Loaded wall '" + getName() + "' successfully");
-            } else {
-                FakeBlock.getConsole().warning("Wall '" + getName() + "' is configured wrong, the world cannot be different");
             }
-        }
+        }).execute();
     }
 
     /**
@@ -121,21 +104,25 @@ public class MaterialWall extends WallObject {
      */
     @Override
     public void saveWall() {
-        FakeBlock.getPlugin().getConfig().set(getName() + ".location1", getLocation1());
-        FakeBlock.getPlugin().getConfig().set(getName() + ".location2", getLocation2());
-        FakeBlock.getPlugin().getConfig().set(getName() + ".material", getMaterial().toString());
-        FakeBlock.getPlugin().saveConfig();
-    }
+        FakeBlock plugin = FakeBlock.getPlugin();
+        FileConfiguration config = plugin.getConfig();
+        config.set(getName() + ".location1", getLocation1());
+        config.set(getName() + ".location2", getLocation2());
 
-    /**
-     * Method to remove data from config
-     */
-    @Override
-    public void removeFromConfig() {
-        FakeBlock.getPlugin().getConfig().set(getName() + ".location1", null);
-        FakeBlock.getPlugin().getConfig().set(getName() + ".location2", null);
-        FakeBlock.getPlugin().getConfig().set(getName() + ".material", "");
-        FakeBlock.getPlugin().getConfig().set(getName(), null);
-        FakeBlock.getPlugin().saveConfig();
+        getMaterialMap().keySet().forEach(location -> {
+            String locationAsKey = location.getWorld().getName()
+                    + "," + location.getBlockX() + ","
+                    + location.getBlockY() + "," + location.getBlockZ();
+
+            Material material = getMaterialMap().getOrDefault(location, Material.AIR);
+
+            if (material == Material.AIR) return;
+
+            String materialString = material.toString();
+
+            config.set(getName() + ".material-data." + locationAsKey, materialString);
+        });
+
+        plugin.saveConfig();
     }
 }

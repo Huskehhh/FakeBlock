@@ -1,22 +1,46 @@
 package pro.husk.fakeblock.objects;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.ChunkCoordIntPair;
+import com.comphenix.protocol.wrappers.MultiBlockChangeInfo;
+import com.comphenix.protocol.wrappers.WrappedBlockData;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import pro.husk.fakeblock.FakeBlock;
+import pro.husk.fakeblock.hooks.ProtocolLibHelper;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 public abstract class WallObject {
 
     @Getter
-    private static List<WallObject> wallObjectList = new ArrayList<>();
+    private static final List<WallObject> wallObjectList = new ArrayList<>();
 
     @Getter
-    private String name;
+    private final String name;
+
+    @Getter
+    @Setter
+    protected List<Location> blocksInBetween;
+
+    @Getter
+    protected HashMap<Location, Material> materialMap = new HashMap<>();
+
+    @Getter
+    protected HashMap<Chunk, List<Location>> sortedChunkMap;
+
+    @Getter
+    protected List<PacketContainer> fakeBlockPacketList;
 
     @Getter
     @Setter
@@ -27,8 +51,7 @@ public abstract class WallObject {
     private Location location2;
 
     @Getter
-    @Setter
-    private List<Location> blocksInBetween;
+    protected boolean loadingData;
 
     /**
      * Constructor
@@ -65,13 +88,6 @@ public abstract class WallObject {
     public abstract void saveWall();
 
     /**
-     * Method to render wall for player
-     *
-     * @param player to render wall for
-     */
-    public abstract void renderWall(Player player);
-
-    /**
      * Gets distance between the two location points
      *
      * @return distanceBetweenPoints
@@ -81,13 +97,66 @@ public abstract class WallObject {
     }
 
     /**
-     * Method to load the blocks of the wall into cache async
+     * Method to send fake blocks to player with given delay
+     *
+     * @param player to send fake blocks to
+     * @param delay  to send the blocks on (seconds)
      */
-    public void loadBlocksInBetweenToCache() {
-        // Load Locations in the wall async
-        CompletableFuture<List<Location>> loadWallFuture = CompletableFuture.supplyAsync(this::loadBlocksInBetween);
+    public void sendFakeBlocks(Player player, int delay) {
+        if (!loadingData) {
+            Bukkit.getScheduler().runTaskLaterAsynchronously(FakeBlock.getPlugin(), () -> fakeBlockPacketList.forEach(packetContainer -> {
+                try {
+                    ProtocolLibHelper.getProtocolManager().sendServerPacket(player, packetContainer);
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            }), delay * 20);
+        }
+    }
 
-        loadWallFuture.thenAccept(loadedList -> blocksInBetween = loadedList);
+    /**
+     * Method to send real blocks to the player
+     *
+     * @param player to send real blocks to
+     */
+    public void sendRealBlocks(Player player) {
+        if (!loadingData) {
+            FakeBlock.newChain().async(() -> {
+                List<PacketContainer> realPackets = loadPacketList(false);
+                realPackets.forEach(packetContainer -> {
+                    try {
+                        ProtocolLibHelper.getProtocolManager().sendServerPacket(player, packetContainer);
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
+                    }
+                });
+            }).execute();
+        }
+    }
+
+    /**
+     * Method to prepare material map and remove the world blocks, replacing with "fake"
+     */
+    protected HashMap<Location, Material> generateMaterialMapFromWorld() {
+        HashMap<Location, Material> materialHashMap = new HashMap<>();
+        getBlocksInBetween().forEach(location -> {
+            Material material = location.getBlock().getType();
+            if (material != Material.AIR) {
+                materialHashMap.put(location, material);
+            }
+        });
+        return materialHashMap;
+    }
+
+    protected HashMap<Chunk, List<Location>> loadSortedChunkMap() {
+        HashMap<Chunk, List<Location>> sortedChunkMap = new HashMap<>();
+        getBlocksInBetween().forEach(location -> {
+            Chunk chunk = location.getChunk();
+            List<Location> locationList = sortedChunkMap.getOrDefault(chunk, new ArrayList<>());
+            locationList.add(location);
+            sortedChunkMap.put(chunk, locationList);
+        });
+        return sortedChunkMap;
     }
 
     /**
@@ -122,21 +191,73 @@ public abstract class WallObject {
     }
 
     /**
-     * Method to send real blocks to the player (used on destruction of object)
+     * Method to build the packets required for sending the blocks
      *
-     * @param player to send real blocks to
+     * @param fake whether or not you want the real or fake blocks
+     * @return list of PacketContainer ready to send to player
      */
-    public abstract void sendRealBlocks(Player player);
+    protected List<PacketContainer> loadPacketList(boolean fake) {
+        List<PacketContainer> fakeBlockPackets = new ArrayList<>();
+
+        getSortedChunkMap().keySet().forEach(chunkMapKey -> {
+            PacketContainer fakeChunk = new PacketContainer(PacketType.Play.Server.MULTI_BLOCK_CHANGE);
+            ChunkCoordIntPair chunkCoordIntPair = new ChunkCoordIntPair(chunkMapKey.getX(),
+                    chunkMapKey.getZ());
+            List<Location> locationList = getSortedChunkMap().get(chunkMapKey);
+            MultiBlockChangeInfo[] blockChangeInfo = new MultiBlockChangeInfo[locationList.size()];
+
+            int i = 0;
+            for (Location location : locationList) {
+                Material material;
+                if (fake) {
+                    material = getMaterialMap().getOrDefault(location, Material.AIR);
+                } else {
+                    material = location.getBlock().getType();
+                }
+                blockChangeInfo[i] = new MultiBlockChangeInfo(location, WrappedBlockData.createData(material));
+                i++;
+            }
+
+            fakeChunk.getChunkCoordIntPairs().write(0, chunkCoordIntPair);
+            fakeChunk.getMultiBlockChangeInfoArrays().write(0, blockChangeInfo);
+
+            fakeBlockPackets.add(fakeChunk);
+        });
+
+        return fakeBlockPackets;
+    }
 
     /**
-     * Method to remove wall from config
+     * Method to remove all blocks in selection
      */
-    public abstract void removeFromConfig();
+    protected void removeOriginalBlocks() {
+        getBlocksInBetween().forEach(location -> location.getBlock().setType(Material.AIR));
+    }
+
+    public void restoreOriginalBlocks() {
+        for (Location locationKey : materialMap.keySet()) {
+            Material material = materialMap.getOrDefault(locationKey, Material.AIR);
+            locationKey.getBlock().setType(material);
+        }
+    }
+
+    /**
+     * Method to remove data from config
+     */
+    public void removeFromConfig() {
+        FileConfiguration config = FakeBlock.getPlugin().getConfig();
+        config.set(getName() + ".location1", null);
+        config.set(getName() + ".location2", null);
+        config.set(getName() + ".material-data", null);
+        config.set(getName(), null);
+        FakeBlock.getPlugin().saveConfig();
+    }
 
     /**
      * Method to delete the wall
      */
     public void delete() {
+        restoreOriginalBlocks();
         // Send updates to all players
         for (Player player : Bukkit.getOnlinePlayers()) {
             sendRealBlocks(player);

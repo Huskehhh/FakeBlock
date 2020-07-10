@@ -1,79 +1,52 @@
 package pro.husk.fakeblock.objects;
 
 import lombok.Getter;
-import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import pro.husk.fakeblock.FakeBlock;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 public class IDWall extends WallObject {
 
     @Getter
-    private static List<IDWall> materialWallList = new ArrayList<>();
-
-    @Getter
-    @Setter
-    private int id;
-
-    @Getter
-    @Setter
-    private int data;
+    private HashMap<Location, Byte> blockDataMap;
 
     /**
-     * Constructor
+     * Constructor for walls loaded from config
      *
      * @param name of wall
      */
     public IDWall(String name) {
         super(name);
-
-        materialWallList.add(this);
     }
 
     /**
-     * Constructor
+     * Constructor when creating a new wall
      *
      * @param name      of wall
      * @param location1 bound 1
      * @param location2 bound 2
-     * @param id        of wall material
-     * @param data      of wall material
      */
-    public IDWall(String name, Location location1, Location location2, int id, int data) {
+    public IDWall(String name, Location location1, Location location2) {
         this(name);
 
         setLocation1(location1);
         setLocation2(location2);
-        setId(id);
-        setData(data);
-    }
 
-    /**
-     * Method to render wall for player
-     *
-     * @param player to render wall for
-     */
-    @Override
-    public void renderWall(Player player) {
-        getBlocksInBetween().forEach(location -> player.sendBlockChange(location, Material.getMaterial(id), (byte) data));
-    }
-
-    /**
-     * Method to send the real blocks of the world
-     *
-     * @param player to send real blocks to
-     */
-    @Override
-    public void sendRealBlocks(Player player) {
-        getBlocksInBetween().forEach(location -> {
-            Block block = location.getBlock();
-            player.sendBlockChange(location, block.getType(), block.getData());
-        });
+        FakeBlock.newChain().async(() -> {
+            this.blocksInBetween = loadBlocksInBetween();
+            this.materialMap = generateMaterialMapFromWorld();
+            this.blockDataMap = loadDataMap();
+        }).sync(this::removeOriginalBlocks).async(() -> {
+            this.sortedChunkMap = loadSortedChunkMap();
+            this.fakeBlockPacketList = loadPacketList(true);
+            saveWall();
+        }).execute();
     }
 
     /**
@@ -81,22 +54,58 @@ public class IDWall extends WallObject {
      */
     @Override
     public void loadWall() {
-        Location location1 = (Location) FakeBlock.getPlugin().getConfig().get(getName() + ".location1");
-        Location location2 = (Location) FakeBlock.getPlugin().getConfig().get(getName() + ".location2");
+        FakeBlock.newChain().async(() -> {
+            FileConfiguration config = FakeBlock.getPlugin().getConfig();
 
-        if (location1.getWorld() == location2.getWorld()) {
-            setLocation1(location1);
-            setLocation2(location2);
+            Location location1 = (Location) config.get(getName() + ".location1");
+            Location location2 = (Location) config.get(getName() + ".location2");
 
-            id = FakeBlock.getPlugin().getConfig().getInt(getName() + ".id");
-            data = FakeBlock.getPlugin().getConfig().getInt(getName() + ".data");
+            if (location1 != null && location2 != null) {
+                if (location1.getWorld() == location2.getWorld()) {
+                    setLocation1(location1);
+                    setLocation2(location2);
 
-            loadBlocksInBetweenToCache();
+                    this.materialMap = new HashMap<>();
+                    this.blockDataMap = new HashMap<>();
 
-            FakeBlock.getConsole().info("Loaded wall '" + getName() + "' successfully");
-        } else {
-            FakeBlock.getConsole().warning("Wall '" + getName() + "' is configured wrong, the world cannot be different");
-        }
+                    ConfigurationSection materialSection = config.getConfigurationSection(getName() + ".material-data");
+
+                    if (materialSection == null) return;
+
+                    materialSection.getKeys(false).forEach(key -> {
+                        String[] split = key.split(",");
+
+                        World world = Bukkit.getWorld(split[0]);
+                        int x = Integer.parseInt(split[1]);
+                        int y = Integer.parseInt(split[2]);
+                        int z = Integer.parseInt(split[3]);
+
+                        Location built = new Location(world, x, y, z);
+                        String materialDataString = materialSection.getString(key);
+
+                        String[] dataSplit = materialDataString.split(":");
+
+                        String materialString = dataSplit[0];
+                        byte blockData = Byte.parseByte(dataSplit[1]);
+
+                        if (materialString != null) {
+                            Material material = Material.getMaterial(materialString);
+                            materialMap.put(built, material);
+                        }
+
+                        blockDataMap.put(built, blockData);
+                    });
+
+                    // Load all data to cache
+                    this.blocksInBetween = loadBlocksInBetween();
+                    this.sortedChunkMap = loadSortedChunkMap();
+                    this.fakeBlockPacketList = loadPacketList(true);
+                    FakeBlock.getConsole().info("Loaded wall '" + getName() + "' successfully");
+                } else {
+                    FakeBlock.getConsole().warning("Wall '" + getName() + "' is configured wrong, the world cannot be different");
+                }
+            }
+        }).execute();
     }
 
     /**
@@ -104,23 +113,34 @@ public class IDWall extends WallObject {
      */
     @Override
     public void saveWall() {
-        FakeBlock.getPlugin().getConfig().set(getName() + ".location1", getLocation1());
-        FakeBlock.getPlugin().getConfig().set(getName() + ".location2", getLocation2());
-        FakeBlock.getPlugin().getConfig().set(getName() + ".id", getId());
-        FakeBlock.getPlugin().getConfig().set(getName() + ".data", getData());
-        FakeBlock.getPlugin().saveConfig();
+        FakeBlock plugin = FakeBlock.getPlugin();
+        FileConfiguration config = plugin.getConfig();
+        config.set(getName() + ".location1", getLocation1());
+        config.set(getName() + ".location2", getLocation2());
+
+        getMaterialMap().keySet().forEach(location -> {
+            String locationAsKey = location.getWorld().getName()
+                    + "," + location.getBlockX() + ","
+                    + location.getBlockY() + "," + location.getBlockZ();
+
+            Material material = getMaterialMap().getOrDefault(location, Material.AIR);
+
+            if (material == Material.AIR) return;
+
+            String materialString = material.toString();
+            byte dataByte = blockDataMap.get(location);
+
+            String saveString = materialString + ":" + dataByte;
+
+            config.set(getName() + ".material-data." + locationAsKey, saveString);
+        });
+
+        plugin.saveConfig();
     }
 
-    /**
-     * Method to remove data from config
-     */
-    @Override
-    public void removeFromConfig() {
-        FakeBlock.getPlugin().getConfig().set(getName() + ".location1", null);
-        FakeBlock.getPlugin().getConfig().set(getName() + ".location2", null);
-        FakeBlock.getPlugin().getConfig().set(getName() + ".id", null);
-        FakeBlock.getPlugin().getConfig().set(getName() + ".data", null);
-        FakeBlock.getPlugin().getConfig().set(getName(), null);
-        FakeBlock.getPlugin().saveConfig();
+    private HashMap<Location, Byte> loadDataMap() {
+        HashMap<Location, Byte> dataMap = new HashMap<>();
+        getBlocksInBetween().forEach(location -> dataMap.put(location, location.getBlock().getData()));
+        return dataMap;
     }
 }

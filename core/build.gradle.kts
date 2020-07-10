@@ -1,0 +1,25 @@
+plugins {
+    id("com.github.johnrengelman.shadow") version "5.1.0"
+    id("java")
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+dependencies {
+    compileOnly("org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT")
+    compileOnly("net.luckperms:api:5.1")
+}
+
+tasks {
+    withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
+        archiveFileName.set("FakeBlock-core-" + project.version + ".jar")
+        relocate("co.aikar.taskchain", "pro.husk.fakeblock.taskchain")
+    }
+
+    build {
+        dependsOn(shadowJar)
+    }
+}

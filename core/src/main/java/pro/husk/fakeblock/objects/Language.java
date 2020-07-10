@@ -32,12 +32,6 @@ public class Language {
     private static String locationSaved;
 
     @Getter
-    private static String noMaterialFound;
-
-    @Getter
-    private static String displayingVisualisation;
-
-    @Getter
     private static String wallsToggled;
 
     @Getter
@@ -57,8 +51,6 @@ public class Language {
         wallsSelection = colourise(language.getString("walls-selection"));
         wallsSelectionComplete = colourise(language.getString("walls-selection-complete"));
         locationSaved = colourise(language.getString("walls-selection-location-saved"));
-        noMaterialFound = colourise(language.getString("no-material-found"));
-        displayingVisualisation = colourise(language.getString("wall-displaying-visualisation"));
         wallsToggled = colourise(language.getString("walls-toggled"));
         cantFindPlayer = colourise(language.getString("cant-find-player"));
     }
