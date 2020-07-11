@@ -1,5 +1,11 @@
 allprojects {
     group = "pro.husk.fakeblock"
+    val buildNumber = System.getenv("GITHUB_RUN_NUMBER")
+    version = project.property("version").toString() + "-SNAPSHOT"
+
+    if (buildNumber != null) {
+        version = "$version-b$buildNumber"
+    }
 }
 
 plugins {
