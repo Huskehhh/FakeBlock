@@ -11,6 +11,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import pro.husk.fakeblock.FakeBlock;
@@ -32,9 +34,6 @@ public abstract class WallObject {
     @Getter
     @Setter
     protected List<Location> blocksInBetween;
-
-    @Getter
-    protected HashMap<Location, Material> materialMap = new HashMap<>();
 
     @Getter
     protected HashMap<Chunk, List<Location>> sortedChunkMap;
@@ -122,7 +121,7 @@ public abstract class WallObject {
     public void sendRealBlocks(Player player) {
         if (!loadingData) {
             FakeBlock.newChain().async(() -> {
-                List<PacketContainer> realPackets = loadPacketList(false);
+                List<PacketContainer> realPackets = buildPacketList(false);
                 realPackets.forEach(packetContainer -> {
                     try {
                         ProtocolLibHelper.getProtocolManager().sendServerPacket(player, packetContainer);
@@ -132,20 +131,6 @@ public abstract class WallObject {
                 });
             }).execute();
         }
-    }
-
-    /**
-     * Method to prepare material map and remove the world blocks, replacing with "fake"
-     */
-    protected HashMap<Location, Material> generateMaterialMapFromWorld() {
-        HashMap<Location, Material> materialHashMap = new HashMap<>();
-        getBlocksInBetween().forEach(location -> {
-            Material material = location.getBlock().getType();
-            if (material != Material.AIR) {
-                materialHashMap.put(location, material);
-            }
-        });
-        return materialHashMap;
     }
 
     protected HashMap<Chunk, List<Location>> loadSortedChunkMap() {
@@ -190,42 +175,7 @@ public abstract class WallObject {
         return locations;
     }
 
-    /**
-     * Method to build the packets required for sending the blocks
-     *
-     * @param fake whether or not you want the real or fake blocks
-     * @return list of PacketContainer ready to send to player
-     */
-    protected List<PacketContainer> loadPacketList(boolean fake) {
-        List<PacketContainer> fakeBlockPackets = new ArrayList<>();
-
-        getSortedChunkMap().keySet().forEach(chunkMapKey -> {
-            PacketContainer fakeChunk = new PacketContainer(PacketType.Play.Server.MULTI_BLOCK_CHANGE);
-            ChunkCoordIntPair chunkCoordIntPair = new ChunkCoordIntPair(chunkMapKey.getX(),
-                    chunkMapKey.getZ());
-            List<Location> locationList = getSortedChunkMap().get(chunkMapKey);
-            MultiBlockChangeInfo[] blockChangeInfo = new MultiBlockChangeInfo[locationList.size()];
-
-            int i = 0;
-            for (Location location : locationList) {
-                Material material;
-                if (fake) {
-                    material = getMaterialMap().getOrDefault(location, Material.AIR);
-                } else {
-                    material = location.getBlock().getType();
-                }
-                blockChangeInfo[i] = new MultiBlockChangeInfo(location, WrappedBlockData.createData(material));
-                i++;
-            }
-
-            fakeChunk.getChunkCoordIntPairs().write(0, chunkCoordIntPair);
-            fakeChunk.getMultiBlockChangeInfoArrays().write(0, blockChangeInfo);
-
-            fakeBlockPackets.add(fakeChunk);
-        });
-
-        return fakeBlockPackets;
-    }
+    abstract List<PacketContainer> buildPacketList(boolean fake);
 
     /**
      * Method to remove all blocks in selection
@@ -234,12 +184,7 @@ public abstract class WallObject {
         getBlocksInBetween().forEach(location -> location.getBlock().setType(Material.AIR));
     }
 
-    public void restoreOriginalBlocks() {
-        for (Location locationKey : materialMap.keySet()) {
-            Material material = materialMap.getOrDefault(locationKey, Material.AIR);
-            locationKey.getBlock().setType(material);
-        }
-    }
+    abstract void restoreOriginalBlocks();
 
     /**
      * Method to remove data from config

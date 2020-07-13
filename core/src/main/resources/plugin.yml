@@ -1,5 +1,5 @@
 name: FakeBlock
-version: 2.0.0
+version: ${version}
 main: pro.husk.fakeblock.FakeBlock
 author: husK
 description: Enables the creation of fake blocks

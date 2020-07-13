@@ -1,20 +1,28 @@
 package pro.husk.fakeblock.objects;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.ChunkCoordIntPair;
+import com.comphenix.protocol.wrappers.MultiBlockChangeInfo;
+import com.comphenix.protocol.wrappers.WrappedBlockData;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import pro.husk.fakeblock.FakeBlock;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class IDWall extends WallObject {
 
     @Getter
-    private HashMap<Location, Byte> blockDataMap;
+    private HashMap<Location, FakeBlockData> fakeBlockDataHashmap;
 
     /**
      * Constructor for walls loaded from config
@@ -40,11 +48,10 @@ public class IDWall extends WallObject {
 
         FakeBlock.newChain().async(() -> {
             this.blocksInBetween = loadBlocksInBetween();
-            this.materialMap = generateMaterialMapFromWorld();
-            this.blockDataMap = loadDataMap();
+            this.fakeBlockDataHashmap = buildDataMapFromWorld();
         }).sync(this::removeOriginalBlocks).async(() -> {
             this.sortedChunkMap = loadSortedChunkMap();
-            this.fakeBlockPacketList = loadPacketList(true);
+            this.fakeBlockPacketList = buildPacketList(true);
             saveWall();
         }).execute();
     }
@@ -65,8 +72,7 @@ public class IDWall extends WallObject {
                     setLocation1(location1);
                     setLocation2(location2);
 
-                    this.materialMap = new HashMap<>();
-                    this.blockDataMap = new HashMap<>();
+                    this.fakeBlockDataHashmap = new HashMap<>();
 
                     ConfigurationSection materialSection = config.getConfigurationSection(getName() + ".material-data");
 
@@ -90,16 +96,14 @@ public class IDWall extends WallObject {
 
                         if (materialString != null) {
                             Material material = Material.getMaterial(materialString);
-                            materialMap.put(built, material);
+                            fakeBlockDataHashmap.put(built, new FakeBlockData(material, blockData));
                         }
-
-                        blockDataMap.put(built, blockData);
                     });
 
                     // Load all data to cache
                     this.blocksInBetween = loadBlocksInBetween();
                     this.sortedChunkMap = loadSortedChunkMap();
-                    this.fakeBlockPacketList = loadPacketList(true);
+                    this.fakeBlockPacketList = buildPacketList(true);
                     FakeBlock.getConsole().info("Loaded wall '" + getName() + "' successfully");
                 } else {
                     FakeBlock.getConsole().warning("Wall '" + getName() + "' is configured wrong, the world cannot be different");
@@ -118,18 +122,25 @@ public class IDWall extends WallObject {
         config.set(getName() + ".location1", getLocation1());
         config.set(getName() + ".location2", getLocation2());
 
-        getMaterialMap().keySet().forEach(location -> {
+        fakeBlockDataHashmap.keySet().forEach(location -> {
             String locationAsKey = location.getWorld().getName()
                     + "," + location.getBlockX() + ","
                     + location.getBlockY() + "," + location.getBlockZ();
 
-            Material material = getMaterialMap().getOrDefault(location, Material.AIR);
+            FakeBlockData fakeBlockData = fakeBlockDataHashmap.get(location);
+            Material material;
+            byte dataByte;
+            if (fakeBlockData == null) {
+                material = Material.AIR;
+                dataByte = 0;
+            } else {
+                material = fakeBlockData.getMaterial();
+                dataByte = fakeBlockData.getData();
+            }
 
             if (material == Material.AIR) return;
 
             String materialString = material.toString();
-            byte dataByte = blockDataMap.get(location);
-
             String saveString = materialString + ":" + dataByte;
 
             config.set(getName() + ".material-data." + locationAsKey, saveString);
@@ -138,9 +149,70 @@ public class IDWall extends WallObject {
         plugin.saveConfig();
     }
 
-    private HashMap<Location, Byte> loadDataMap() {
-        HashMap<Location, Byte> dataMap = new HashMap<>();
-        getBlocksInBetween().forEach(location -> dataMap.put(location, location.getBlock().getData()));
+    private HashMap<Location, FakeBlockData> buildDataMapFromWorld() {
+        HashMap<Location, FakeBlockData> dataMap = new HashMap<>();
+        getBlocksInBetween().forEach(location -> dataMap.put(location, new FakeBlockData(location)));
         return dataMap;
+    }
+
+    /**
+     * Method to build the packets required for sending the blocks
+     *
+     * @param fake whether or not you want the real or fake blocks
+     * @return list of PacketContainer ready to send to player
+     */
+    protected List<PacketContainer> buildPacketList(boolean fake) {
+        List<PacketContainer> fakeBlockPackets = new ArrayList<>();
+
+        getSortedChunkMap().keySet().forEach(chunkMapKey -> {
+            PacketContainer fakeChunk = new PacketContainer(PacketType.Play.Server.MULTI_BLOCK_CHANGE);
+            ChunkCoordIntPair chunkCoordIntPair = new ChunkCoordIntPair(chunkMapKey.getX(),
+                    chunkMapKey.getZ());
+            List<Location> locationList = getSortedChunkMap().get(chunkMapKey);
+            MultiBlockChangeInfo[] blockChangeInfo = new MultiBlockChangeInfo[locationList.size()];
+
+            int i = 0;
+            for (Location location : locationList) {
+                Material material = null;
+                byte data = 0;
+                if (fake) {
+                    FakeBlockData fakeBlockData = fakeBlockDataHashmap.get(location);
+                    if (fakeBlockData != null) {
+                        material = fakeBlockData.getMaterial();
+                        data = fakeBlockData.getData();
+                    }
+                } else {
+                    Block block = location.getBlock();
+                    material = block.getType();
+                    data = block.getData();
+                }
+                if (material != null) {
+                    blockChangeInfo[i] = new MultiBlockChangeInfo(location, WrappedBlockData.createData(material, data));
+                    i++;
+                }
+            }
+
+            fakeChunk.getChunkCoordIntPairs().write(0, chunkCoordIntPair);
+            fakeChunk.getMultiBlockChangeInfoArrays().write(0, blockChangeInfo);
+
+            fakeBlockPackets.add(fakeChunk);
+        });
+
+        return fakeBlockPackets;
+    }
+
+    @Override
+    protected void restoreOriginalBlocks() {
+        getBlocksInBetween().forEach(location -> {
+            FakeBlockData fakeBlockData = fakeBlockDataHashmap.get(location);
+            Block block = location.getBlock();
+
+            if (fakeBlockData != null) {
+                block.setType(fakeBlockData.getMaterial());
+                block.setData(fakeBlockData.getData());
+            } else {
+                block.setType(Material.AIR);
+            }
+        });
     }
 }
