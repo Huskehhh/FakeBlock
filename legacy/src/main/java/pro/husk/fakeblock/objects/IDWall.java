@@ -173,7 +173,7 @@ public class IDWall extends WallObject {
 
             int i = 0;
             for (Location location : locationList) {
-                Material material = null;
+                Material material = Material.AIR;
                 byte data = 0;
                 if (fake) {
                     FakeBlockData fakeBlockData = fakeBlockDataHashmap.get(location);
