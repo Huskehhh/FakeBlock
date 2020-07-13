@@ -75,7 +75,6 @@ public class MaterialWall extends WallObject {
             Location location2 = config.getLocation(getName() + ".location2");
 
             if (location1 != null && location2 != null) {
-
                 if (location1.getWorld() == location2.getWorld()) {
                     setLocation1(location1);
                     setLocation2(location2);
@@ -83,6 +82,8 @@ public class MaterialWall extends WallObject {
                     ConfigurationSection configurationSection = config.getConfigurationSection(getName() + ".material-data");
 
                     if (configurationSection == null) return;
+
+                    fakeBlockDataHashMap = new HashMap<>();
 
                     configurationSection.getKeys(false).forEach(key -> {
                         String[] split = key.split(",");
@@ -159,7 +160,7 @@ public class MaterialWall extends WallObject {
 
             int i = 0;
             for (Location location : locationList) {
-                BlockData blockData;
+                BlockData blockData = dummyData;
                 if (fake) {
                     blockData = fakeBlockDataHashMap.getOrDefault(location, dummyData);
                 } else {
