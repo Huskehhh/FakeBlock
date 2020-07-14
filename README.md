@@ -19,7 +19,7 @@ To create a fake block selection, use the command
 The selection requires you to create a cuboid selection (similar to WorldEdit, select the two diagonal corners). Once this is complete, the plugin will replace the selection with AIR, and instead send "fake" blocks.
 
 Players WITH the permission
-``fakeblock.admin`` OR ``fakeblock.<name>`` will be sent these "fake" blocks. This is different to v1, where it is inversed.
+``fakeblock.<name>`` will be sent these "fake" blocks. This is different to v1, where it is inversed.
 
 ## Deletion
 To delete a wall (and restore it's previous state), use ``/fakeblock delete <name>`` (Be careful, large selections will cause lag. Ideally set this up without players online)
