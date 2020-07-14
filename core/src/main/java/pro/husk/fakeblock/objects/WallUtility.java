@@ -46,8 +46,7 @@ public final class WallUtility {
      */
     public void processWall(Player player, int delay, boolean ignorePermission) {
         getNearbyFakeBlocks(player.getLocation()).thenAcceptAsync(walls -> walls.forEach(wall -> {
-            if (player.hasPermission("fakeblock.admin") ||
-                    player.hasPermission("fakeblock." + wall.getName()) || ignorePermission) {
+            if (player.hasPermission("fakeblock." + wall.getName()) || ignorePermission) {
                 sendFakeBlocks(wall, player, delay);
             }
         }));
