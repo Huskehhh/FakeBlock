@@ -94,11 +94,11 @@ public final class LuckPermsHelper {
                 Player player = plugin.getServer().getPlayer(uuid);
 
                 if (player != null) {
-                    if (node.hasExpired() || !node.getValue()) {
-                        utility.processWall(player, 0, false);
-                    } else {
+                    if (!node.getValue()) {
                         utility.getNearbyFakeBlocks(player.getLocation()).thenAccept(wallObjects ->
                                 wallObjects.forEach(wallObject -> wallObject.sendRealBlocks(player)));
+                    } else {
+                        utility.processWall(player, 0, false);
                     }
                 }
             });
