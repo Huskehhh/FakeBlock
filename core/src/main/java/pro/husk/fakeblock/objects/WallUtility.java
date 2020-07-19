@@ -39,7 +39,7 @@ public final class WallUtility {
     }
 
     /**
-     * Process check of player location near the wall async, and if they are close, send wall sync
+     * Process check of player location near the wall async, and if they are close, send fake blocks
      *
      * @param player to check
      * @param delay  on sending blocks
@@ -47,20 +47,25 @@ public final class WallUtility {
     public void processWall(Player player, int delay, boolean ignorePermission) {
         getNearbyFakeBlocks(player.getLocation()).thenAcceptAsync(walls -> walls.forEach(wall -> {
             if (player.hasPermission("fakeblock." + wall.getName()) || ignorePermission) {
-                sendFakeBlocks(wall, player, delay);
+                wall.sendFakeBlocks(player, delay);
             }
         }));
     }
 
     /**
-     * Little helper method to render wall to player on delay
+     * Process check of player location near the wall async, and if they are close, send either the real or fake blocks
+     * Used for LuckPerms hook
      *
-     * @param wall   to render
-     * @param player to render wall for
-     * @param delay  on rendering (used for logging in)
+     * @param player to check
      */
-    private void sendFakeBlocks(WallObject wall, Player player, int delay) {
-        wall.sendFakeBlocks(player, delay);
+    public void processWallConditions(Player player) {
+        getNearbyFakeBlocks(player.getLocation()).thenAcceptAsync(walls -> walls.forEach(wall -> {
+            if (!player.hasPermission("fakeblock." + wall.getName())) {
+                wall.sendRealBlocks(player);
+            } else {
+                wall.sendFakeBlocks(player, 0);
+            }
+        }));
     }
 
     /**

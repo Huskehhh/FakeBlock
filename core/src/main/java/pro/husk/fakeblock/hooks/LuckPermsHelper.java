@@ -87,19 +87,15 @@ public final class LuckPermsHelper {
 
         if (node.getType() == NodeType.PERMISSION &&
                 node.getKey().contains("fakeblock.") &&
-                holder.getIdentifier().getType().equals("user")) {
+                holder.getIdentifier().getType().equals("user")
+                && !node.getKey().equalsIgnoreCase("fakeblock.admin")) {
             plugin.getServer().getScheduler().runTask(plugin, () -> {
 
                 UUID uuid = UUID.fromString(holder.getIdentifier().getName());
                 Player player = plugin.getServer().getPlayer(uuid);
 
                 if (player != null) {
-                    if (!node.getValue()) {
-                        utility.getNearbyFakeBlocks(player.getLocation()).thenAccept(wallObjects ->
-                                wallObjects.forEach(wallObject -> wallObject.sendRealBlocks(player)));
-                    } else {
-                        utility.processWall(player, 0, false);
-                    }
+                    utility.processWallConditions(player);
                 }
             });
         }
