@@ -22,14 +22,14 @@ public final class WallUtility {
             List<WallObject> nearby = new ArrayList<>();
 
             for (WallObject wallObject : WallObject.getWallObjectList()) {
-
+                if (nearby.contains(wallObject)) continue;
                 if (playerLocation.getWorld() != wallObject.getLocation1().getWorld()) break;
 
                 for (Location location : wallObject.getBlocksInBetween()) {
-                    int playerDistanceToWall = (int) playerLocation.distanceSquared(location);
-                    int distanceToCheck = (int) (wallObject.getDistanceBetweenPoints() + 500) - playerDistanceToWall;
+                    double playerDistanceToWall = playerLocation.distance(location);
+                    double distanceToCheck = (Bukkit.getViewDistance() * 15) + wallObject.getDistanceBetweenPoints();
 
-                    if (playerDistanceToWall <= distanceToCheck && !nearby.contains(wallObject)) {
+                    if (playerDistanceToWall <= distanceToCheck) {
                         nearby.add(wallObject);
                     }
                 }

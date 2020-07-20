@@ -46,6 +46,8 @@ public abstract class WallObject {
     @Getter
     protected boolean loadingData;
 
+    private double distanceBetweenPoints;
+
     /**
      * Constructor
      *
@@ -86,7 +88,11 @@ public abstract class WallObject {
      * @return distanceBetweenPoints
      */
     public double getDistanceBetweenPoints() {
-        return getLocation1().distanceSquared(getLocation2());
+        // Lazy load, then cache
+        if (distanceBetweenPoints == 0) {
+            distanceBetweenPoints = getLocation1().distance(getLocation2());
+        }
+        return distanceBetweenPoints;
     }
 
     /**

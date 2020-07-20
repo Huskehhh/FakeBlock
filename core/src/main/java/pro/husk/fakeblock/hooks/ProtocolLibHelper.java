@@ -48,7 +48,7 @@ public class ProtocolLibHelper {
     }
 
     private static void handlePacketEvent(PacketEvent event) {
-        FakeBlock.getWallUtility().processWall(event.getPlayer(), 1, false);
+        FakeBlock.getWallUtility().processWall(event.getPlayer(), 0, false);
     }
 
     public static void closeSubscriptions() {
