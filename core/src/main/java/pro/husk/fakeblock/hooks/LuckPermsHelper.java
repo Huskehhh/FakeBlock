@@ -7,9 +7,7 @@ import net.luckperms.api.event.node.NodeAddEvent;
 import net.luckperms.api.event.node.NodeRemoveEvent;
 import net.luckperms.api.event.user.track.UserDemoteEvent;
 import net.luckperms.api.event.user.track.UserPromoteEvent;
-import net.luckperms.api.model.PermissionHolder;
 import net.luckperms.api.node.Node;
-import net.luckperms.api.node.NodeType;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -45,7 +43,7 @@ public final class LuckPermsHelper {
      * @param event NodeAddEvent
      */
     private static void onNodeAdd(NodeAddEvent event) {
-        handleNodeEvents(event.getNode(), event.getTarget());
+        handleNodeEvents(event.getNode());
     }
 
     /**
@@ -54,7 +52,7 @@ public final class LuckPermsHelper {
      * @param event NodeRemoveEvent
      */
     private static void onNodeRemove(NodeRemoveEvent event) {
-        handleNodeEvents(event.getNode(), event.getTarget());
+        handleNodeEvents(event.getNode());
     }
 
     /**
@@ -63,7 +61,7 @@ public final class LuckPermsHelper {
      * @param event UserPromoteEvent
      */
     private static void onUserPromote(UserPromoteEvent event) {
-        FakeBlock.getWallUtility().queueProcessAllPlayers();
+        handlePromoteAndDemote(event.getUser().getUniqueId());
     }
 
     /**
@@ -72,32 +70,27 @@ public final class LuckPermsHelper {
      * @param event UserDemoteEvent
      */
     private static void onUserDemote(UserDemoteEvent event) {
-        FakeBlock.getWallUtility().queueProcessAllPlayers();
+        handlePromoteAndDemote(event.getUser().getUniqueId());
     }
 
     /**
      * Little utility method to handle processing individual node changes
      *
-     * @param node   that changed
-     * @param holder target of the change
+     * @param node that changed
      */
-    private static void handleNodeEvents(Node node, PermissionHolder holder) {
-        FakeBlock plugin = FakeBlock.getPlugin();
+    private static void handleNodeEvents(Node node) {
         WallUtility utility = FakeBlock.getWallUtility();
+        if (node.getKey().contains("fakeblock.") &&
+                !node.getKey().equalsIgnoreCase("fakeblock.admin")) {
+            Bukkit.getOnlinePlayers().forEach(utility::processWallConditions);
+        }
+    }
 
-        if (node.getType() == NodeType.PERMISSION &&
-                node.getKey().contains("fakeblock.") &&
-                holder.getIdentifier().getType().equals("user")
-                && !node.getKey().equalsIgnoreCase("fakeblock.admin")) {
-            plugin.getServer().getScheduler().runTask(plugin, () -> {
-
-                UUID uuid = UUID.fromString(holder.getIdentifier().getName());
-                Player player = plugin.getServer().getPlayer(uuid);
-
-                if (player != null) {
-                    utility.processWallConditions(player);
-                }
-            });
+    private static void handlePromoteAndDemote(UUID uuid) {
+        WallUtility utility = FakeBlock.getWallUtility();
+        Player player = Bukkit.getPlayer(uuid);
+        if (player != null) {
+            utility.processWallConditions(player);
         }
     }
 }

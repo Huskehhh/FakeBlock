@@ -3,7 +3,6 @@ package pro.husk.fakeblock.objects;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import pro.husk.fakeblock.FakeBlock;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,14 +21,14 @@ public final class WallUtility {
             List<WallObject> nearby = new ArrayList<>();
 
             for (WallObject wallObject : WallObject.getWallObjectList()) {
-                if (nearby.contains(wallObject)) continue;
                 if (playerLocation.getWorld() != wallObject.getLocation1().getWorld()) break;
 
                 for (Location location : wallObject.getBlocksInBetween()) {
                     double playerDistanceToWall = playerLocation.distance(location);
                     double distanceToCheck = (Bukkit.getViewDistance() * 15) + wallObject.getDistanceBetweenPoints();
 
-                    if (playerDistanceToWall <= distanceToCheck) {
+                    if (playerDistanceToWall <= distanceToCheck
+                            && !nearby.contains(wallObject)) {
                         nearby.add(wallObject);
                     }
                 }
@@ -66,13 +65,5 @@ public final class WallUtility {
                 wall.sendFakeBlocks(player, 0);
             }
         }));
-    }
-
-    /**
-     * Little utility helper method to queue all players to be re-checked for permission
-     */
-    public void queueProcessAllPlayers() {
-        FakeBlock.newChain().sync(() -> Bukkit.getOnlinePlayers().forEach(player ->
-                processWall(player, 0, false))).execute();
     }
 }
