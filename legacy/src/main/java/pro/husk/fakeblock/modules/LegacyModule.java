@@ -15,7 +15,9 @@ public class LegacyModule implements FakeBlockModuleHandler {
      */
     @Override
     public void loadWalls() {
-        FakeBlock.getPlugin().getConfig().getKeys(false).forEach(key -> new IDWall(key).loadWall());
+        FakeBlock.getPlugin().getConfig().getKeys(false).forEach(key -> {
+            if (!key.equalsIgnoreCase("inverse-permission-check")) new IDWall(key).loadWall();
+        });
     }
 
     /**

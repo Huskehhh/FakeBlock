@@ -5,3 +5,8 @@
 # |                       https://github.com/Huskehhh/FakeBlock                                  | #
 # |                                                                                              | #
 # +----------------------------------------------------------------------------------------------+ #
+
+# This setting inverts the permission checking
+# false: users WITH permission will see the fake wall
+# true: users WITHOUT permission will see the fake wall
+inverse-permission-check: false

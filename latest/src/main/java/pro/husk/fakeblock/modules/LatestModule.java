@@ -15,7 +15,9 @@ public class LatestModule implements FakeBlockModuleHandler {
      */
     @Override
     public void loadWalls() {
-        FakeBlock.getPlugin().getConfig().getKeys(false).forEach(key -> new MaterialWall(key).loadWall());
+        FakeBlock.getPlugin().getConfig().getKeys(false).forEach(key -> {
+            if (!key.equalsIgnoreCase("inverse-permission-check")) new MaterialWall(key).loadWall();
+        });
     }
 
     /**

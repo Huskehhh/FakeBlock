@@ -10,6 +10,12 @@ import java.util.concurrent.CompletableFuture;
 
 public final class WallUtility {
 
+    private final boolean inverse;
+
+    public WallUtility(boolean inverse) {
+        this.inverse = inverse;
+    }
+
     /**
      * Method for checking if a location is close to wall
      *
@@ -45,7 +51,12 @@ public final class WallUtility {
      */
     public void processWall(Player player, int delay, boolean ignorePermission) {
         getNearbyFakeBlocks(player.getLocation()).thenAcceptAsync(walls -> walls.forEach(wall -> {
-            if (player.hasPermission("fakeblock." + wall.getName()) || ignorePermission) {
+            if (ignorePermission) wall.sendFakeBlocks(player, 0);
+
+            boolean hasWallPerm = player.hasPermission("fakeblock." + wall.getName());
+            if (inverse && !hasWallPerm) {
+                wall.sendFakeBlocks(player, delay);
+            } else if (!inverse && hasWallPerm) {
                 wall.sendFakeBlocks(player, delay);
             }
         }));
@@ -59,10 +70,19 @@ public final class WallUtility {
      */
     public void processWallConditions(Player player) {
         getNearbyFakeBlocks(player.getLocation()).thenAcceptAsync(walls -> walls.forEach(wall -> {
-            if (!player.hasPermission("fakeblock." + wall.getName())) {
-                wall.sendRealBlocks(player);
+            boolean hasWallPerm = player.hasPermission("fakeblock." + wall.getName());
+            if (inverse) {
+                if (hasWallPerm) {
+                    wall.sendRealBlocks(player);
+                } else {
+                    wall.sendFakeBlocks(player, 0);
+                }
             } else {
-                wall.sendFakeBlocks(player, 0);
+                if (hasWallPerm) {
+                    wall.sendFakeBlocks(player, 0);
+                } else {
+                    wall.sendRealBlocks(player);
+                }
             }
         }));
     }

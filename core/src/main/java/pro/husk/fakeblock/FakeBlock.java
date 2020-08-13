@@ -46,7 +46,6 @@ public class FakeBlock extends JavaPlugin {
     public void onEnable() {
         plugin = this;
         taskChainFactory = BukkitTaskChainFactory.create(this);
-        wallUtility = new WallUtility();
         console = getLogger();
 
         if (getServer().getPluginManager().getPlugin("ProtocolLib") != null) {
@@ -61,6 +60,9 @@ public class FakeBlock extends JavaPlugin {
 
             saveDefaultConfig();
             setupLanguageFile();
+
+            boolean inversePermissionCheck = getConfig().getBoolean("inverse-permission-check", false);
+            wallUtility = new WallUtility(inversePermissionCheck);
 
             // Load walls of child class
             ServiceLoader<FakeBlockModuleHandler> loader =
