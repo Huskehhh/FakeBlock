@@ -26,26 +26,22 @@ public abstract class WallObject {
     private final String name;
 
     @Getter
+    protected List<PacketContainer> fakeBlockPacketList;
+
+    @Getter
     @Setter
     protected List<Location> blocksInBetween;
 
     @Getter
     protected HashMap<Chunk, List<Location>> sortedChunkMap;
-
     @Getter
-    protected List<PacketContainer> fakeBlockPacketList;
-
+    protected boolean loadingData;
     @Getter
     @Setter
     private Location location1;
-
     @Getter
     @Setter
     private Location location2;
-
-    @Getter
-    protected boolean loadingData;
-
     private double distanceBetweenPoints;
 
     /**
@@ -133,6 +129,10 @@ public abstract class WallObject {
         }
     }
 
+
+    protected abstract List<PacketContainer> buildPacketList(boolean fake);
+
+
     protected HashMap<Chunk, List<Location>> loadSortedChunkMap() {
         HashMap<Chunk, List<Location>> sortedChunkMap = new HashMap<>();
         getBlocksInBetween().forEach(location -> {
@@ -174,8 +174,6 @@ public abstract class WallObject {
 
         return locations;
     }
-
-    abstract List<PacketContainer> buildPacketList(boolean fake);
 
     /**
      * Method to remove all blocks in selection

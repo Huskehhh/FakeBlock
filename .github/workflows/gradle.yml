@@ -2,9 +2,9 @@ name: Java CI with Gradle
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, dev ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, dev ]
 
 jobs:
   build:
@@ -17,10 +17,19 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
       - name: Build with Gradle
         run: gradle clean build
       - run: mkdir staging && cp latest/build/libs/FakeBlock-l*.jar staging
       - run: cp legacy/build/libs/FakeBlock-l*.jar staging
+      - run: cp intermediate/build/libs/FakeBlock-i*.jar staging
       - uses: actions/upload-artifact@v1
         with:
           name: FakeBlock

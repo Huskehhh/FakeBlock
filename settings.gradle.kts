@@ -1,2 +1,2 @@
 rootProject.name = "FakeBlock"
-include("core", "latest", "legacy")
+include("core", "latest", "intermediate", "legacy", "common")

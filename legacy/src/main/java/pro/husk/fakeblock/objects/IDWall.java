@@ -13,13 +13,19 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import pro.husk.fakeblock.FakeBlock;
+import pro.husk.fakeblock.hooks.ProtocolLibHelper;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class IDWall extends WallObject {
+
+    @Getter
+    protected List<PacketContainer> fakeBlockPacketList;
 
     @Getter
     private HashMap<Location, FakeBlockData> fakeBlockDataHashmap;
@@ -147,6 +153,35 @@ public class IDWall extends WallObject {
         });
 
         plugin.saveConfig();
+    }
+
+    @Override
+    public void sendFakeBlocks(Player player, int delay) {
+        if (!loadingData) {
+            Bukkit.getScheduler().runTaskLaterAsynchronously(FakeBlock.getPlugin(), () -> fakeBlockPacketList.forEach(packetContainer -> {
+                try {
+                    ProtocolLibHelper.getProtocolManager().sendServerPacket(player, packetContainer);
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            }), delay * 20);
+        }
+    }
+
+    @Override
+    public void sendRealBlocks(Player player) {
+        if (!loadingData) {
+            FakeBlock.newChain().async(() -> {
+                List<PacketContainer> realPackets = buildPacketList(false);
+                realPackets.forEach(packetContainer -> {
+                    try {
+                        ProtocolLibHelper.getProtocolManager().sendServerPacket(player, packetContainer);
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
+                    }
+                });
+            }).execute();
+        }
     }
 
     private HashMap<Location, FakeBlockData> buildDataMapFromWorld() {

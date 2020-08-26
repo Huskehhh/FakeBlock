@@ -8,7 +8,8 @@ These fake blocks are indistinguishable from real blocks and prevent players fro
 First of all, download and install [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/)
 
 Once that's complete, download and install FakeBlock
-- Latest for 1.13 and onwards
+- Latest for 1.16.2+
+- Intermediate for 1.13 -> 1.16.1
 - Legacy for 1.7 -> 1.12
 
 ## Creation

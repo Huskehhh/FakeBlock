@@ -5,10 +5,10 @@ import pro.husk.fakeblock.FakeBlock;
 import pro.husk.fakeblock.FakeBlockModuleHandler;
 import pro.husk.fakeblock.listener.CommonSelectionListener;
 import pro.husk.fakeblock.objects.Config;
-import pro.husk.fakeblock.objects.LatestMaterialWall;
+import pro.husk.fakeblock.objects.IntermediateMaterialWall;
 import pro.husk.fakeblock.objects.WallObject;
 
-public class LatestModule implements FakeBlockModuleHandler {
+public class IntermediateModule implements FakeBlockModuleHandler {
 
     /**
      * Method to load walls from config
@@ -16,7 +16,7 @@ public class LatestModule implements FakeBlockModuleHandler {
     @Override
     public void loadWalls() {
         FakeBlock.getPlugin().getConfig().getKeys(false).forEach(key -> {
-            if (!key.equalsIgnoreCase("inverse-permission-check")) new LatestMaterialWall(key).loadWall();
+            if (!key.equalsIgnoreCase("inverse-permission-check")) new IntermediateMaterialWall(key).loadWall();
         });
     }
 
@@ -28,7 +28,7 @@ public class LatestModule implements FakeBlockModuleHandler {
      */
     @Override
     public WallObject loadWall(Config config) {
-        return new LatestMaterialWall(config.getWallName(), config.getLocation1(), config.getLocation2());
+        return new IntermediateMaterialWall(config.getWallName(), config.getLocation1(), config.getLocation2());
     }
 
     @Override

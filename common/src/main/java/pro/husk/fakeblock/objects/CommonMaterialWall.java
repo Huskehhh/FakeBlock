@@ -1,10 +1,6 @@
 package pro.husk.fakeblock.objects;
 
-import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.wrappers.ChunkCoordIntPair;
-import com.comphenix.protocol.wrappers.MultiBlockChangeInfo;
-import com.comphenix.protocol.wrappers.WrappedBlockData;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -16,11 +12,10 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import pro.husk.fakeblock.FakeBlock;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class MaterialWall extends WallObject {
+public abstract class CommonMaterialWall extends WallObject {
 
     @Getter
     protected HashMap<Location, BlockData> fakeBlockDataHashMap;
@@ -30,7 +25,7 @@ public class MaterialWall extends WallObject {
      *
      * @param name of wall
      */
-    public MaterialWall(String name) {
+    public CommonMaterialWall(String name) {
         super(name);
     }
 
@@ -41,7 +36,7 @@ public class MaterialWall extends WallObject {
      * @param location1 bound 1
      * @param location2 bound 2
      */
-    public MaterialWall(String name, Location location1, Location location2) {
+    public CommonMaterialWall(String name, Location location1, Location location2) {
         this(name);
 
         setLocation1(location1);
@@ -146,38 +141,7 @@ public class MaterialWall extends WallObject {
      * @param fake whether or not you want the real or fake blocks
      * @return list of PacketContainer ready to send to player
      */
-    protected List<PacketContainer> buildPacketList(boolean fake) {
-        List<PacketContainer> fakeBlockPackets = new ArrayList<>();
-
-        BlockData dummyData = Material.AIR.createBlockData();
-
-        getSortedChunkMap().keySet().forEach(chunkMapKey -> {
-            PacketContainer fakeChunk = new PacketContainer(PacketType.Play.Server.MULTI_BLOCK_CHANGE);
-            ChunkCoordIntPair chunkCoordIntPair = new ChunkCoordIntPair(chunkMapKey.getX(),
-                    chunkMapKey.getZ());
-            List<Location> locationList = getSortedChunkMap().get(chunkMapKey);
-            MultiBlockChangeInfo[] blockChangeInfo = new MultiBlockChangeInfo[locationList.size()];
-
-            int i = 0;
-            for (Location location : locationList) {
-                BlockData blockData = dummyData;
-                if (fake) {
-                    blockData = fakeBlockDataHashMap.getOrDefault(location, dummyData);
-                } else {
-                    blockData = location.getBlock().getBlockData();
-                }
-                blockChangeInfo[i] = new MultiBlockChangeInfo(location, WrappedBlockData.createData(blockData));
-                i++;
-            }
-
-            fakeChunk.getChunkCoordIntPairs().write(0, chunkCoordIntPair);
-            fakeChunk.getMultiBlockChangeInfoArrays().write(0, blockChangeInfo);
-
-            fakeBlockPackets.add(fakeChunk);
-        });
-
-        return fakeBlockPackets;
-    }
+    protected abstract List<PacketContainer> buildPacketList(boolean fake);
 
     /**
      * Method to prepare material map and remove the world blocks, replacing with "fake"

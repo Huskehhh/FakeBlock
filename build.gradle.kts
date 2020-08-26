@@ -41,11 +41,16 @@ subprojects {
             name = "Aikar repo"
             url = uri("https://repo.aikar.co/content/groups/aikar/")
         }
+
+        maven {
+            name = "husK repo"
+            url = uri("https://maven.husk.pro/repository/maven-public/")
+        }
     }
 
     dependencies {
         implementation("co.aikar:taskchain-bukkit:3.7.2")
-        compileOnly("com.comphenix.protocol:ProtocolLib:4.5.0")
+        compileOnly("com.comphenix.protocol:ProtocolLib:4.6.0")
         compileOnly("org.projectlombok:lombok:1.18.12")
         annotationProcessor("org.projectlombok:lombok:1.18.12")
     }

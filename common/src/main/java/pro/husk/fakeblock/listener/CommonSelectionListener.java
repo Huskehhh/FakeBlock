@@ -13,7 +13,7 @@ import pro.husk.fakeblock.objects.WallObject;
 
 import java.util.concurrent.CompletableFuture;
 
-public class LatestSelectionListener implements Listener {
+public class CommonSelectionListener implements Listener {
 
     /**
      * Listener for FakeBlock bound selection

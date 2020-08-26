@@ -7,7 +7,7 @@ commands:
   fakeblock:
     description: Shows all available commands
     usage: /fakeblock
-    aliases: [fb]
+    aliases: [ fb ]
 api-version: 1.13
-depend: [ProtocolLib]
-softdepend: [Multiverse-Core, LuckPerms]
+depend: [ ProtocolLib ]
+softdepend: [ Multiverse-Core, LuckPerms ]

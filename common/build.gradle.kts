@@ -10,13 +10,12 @@ java {
 
 dependencies {
     implementation(project(":core"))
-    implementation(project(":common"))
-    compileOnly("org.spigotmc:spigot-api:1.16.2-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT")
 }
 
 tasks {
     withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
-        archiveFileName.set("FakeBlock-latest-" + project.version + ".jar")
+        archiveFileName.set("FakeBlock-common-" + project.version + ".jar")
         relocate("co.aikar.taskchain", "pro.husk.fakeblock.taskchain")
     }
 
