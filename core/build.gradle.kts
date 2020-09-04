@@ -11,6 +11,7 @@ java {
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT")
     compileOnly("net.luckperms:api:5.1")
+    compileOnly("net.md-5:bungeecord-chat:1.16-R0.3")
 }
 
 tasks {
