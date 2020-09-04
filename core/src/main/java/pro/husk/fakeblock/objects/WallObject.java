@@ -34,18 +34,21 @@ public abstract class WallObject {
 
     @Getter
     protected HashMap<Chunk, List<Location>> sortedChunkMap;
+
     @Getter
     protected boolean loadingData;
+
     @Getter
     @Setter
     private Location location1;
+
     @Getter
     @Setter
     private Location location2;
     private double distanceBetweenPoints;
 
     /**
-     * Constructor
+     * Default constructor
      *
      * @param name of wall
      */
@@ -129,10 +132,17 @@ public abstract class WallObject {
         }
     }
 
-
+    /**
+     * Abstract method used in order to build ProtocolLib's PacketContainers in a list
+     * @param fake whether or not to create fake/real packets
+     * @return List of PacketContainer
+     */
     protected abstract List<PacketContainer> buildPacketList(boolean fake);
 
-
+    /**
+     * Method to load a map of chunks with their respective locations of fake blocks
+     * @return sorted map
+     */
     protected HashMap<Chunk, List<Location>> loadSortedChunkMap() {
         HashMap<Chunk, List<Location>> sortedChunkMap = new HashMap<>();
         getBlocksInBetween().forEach(location -> {
@@ -182,6 +192,9 @@ public abstract class WallObject {
         getBlocksInBetween().forEach(location -> location.getBlock().setType(Material.AIR));
     }
 
+    /**
+     *
+     */
     abstract void restoreOriginalBlocks();
 
     /**

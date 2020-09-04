@@ -8,26 +8,46 @@ import org.bukkit.Location;
 
 import java.util.ArrayList;
 
-class MultiBlockChange {
+public class MultiBlockChange {
 
     private final ArrayList<Location> locationList;
     private final ArrayList<WrappedBlockData> blockDataList;
 
+    /**
+     * Constructor to create a new MultiBlockChange
+     */
     protected MultiBlockChange() {
         this.locationList = new ArrayList<>();
         this.blockDataList = new ArrayList<>();
     }
 
-    // logic taken from PlayerChunk - thanks Paper for the simplification!
+    /**
+     * Method to turn a location into a short ready for the MultiBlockChange packet
+     * logic taken from PlayerChunk - thanks Paper for the simplification!
+     *
+     * @param location location to convert
+     * @return short of Location with padding
+     */
     private static short locToShort(Location location) {
         return (short) ((location.getBlockX() & 15) << 8 | (location.getBlockZ() & 15) << 4 | location.getBlockY() & 15);
     }
 
+    /**
+     * Method to add block data at the location given to the list of changes in the packet
+     *
+     * @param wrappedBlockData block data of the new block state
+     * @param location         location of the block change
+     */
     public void addBlockDataAtLocation(WrappedBlockData wrappedBlockData, Location location) {
         locationList.add(location);
         blockDataList.add(wrappedBlockData);
     }
 
+    /**
+     * Method to turn MultiBlockChange into a PacketContainer
+     *
+     * @return PacketContainer of the current MultiBlockChange instance
+     */
     public PacketContainer build() {
         PacketContainer packet = new PacketContainer(PacketType.Play.Server.MULTI_BLOCK_CHANGE);
 
