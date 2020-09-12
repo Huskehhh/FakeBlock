@@ -11,7 +11,7 @@ java {
 dependencies {
     implementation(project(":core"))
     implementation(project(":common"))
-    compileOnly("org.spigotmc:spigot-api:1.16.2-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.16.3-R0.1-SNAPSHOT")
 }
 
 tasks {
