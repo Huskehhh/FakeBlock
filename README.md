@@ -32,7 +32,8 @@ Optionally depends on [LuckPerms](https://luckperms.net/) to update wall visibil
 
 ## Note: Version 1 configurations are NOT compatible with version 2
 
-## [Download latest (requires Github Account)](https://github.com/Huskehhh/FakeBlock/actions)
+## [Download latest build(s)](https://ci.husk.pro/)
+## [Alternate Download of latest build(s) (requires Github Account)](https://github.com/Huskehhh/FakeBlock/actions)
 ## [Spigot Resource Page](https://www.spigotmc.org/resources/fakeblock.12830/)
 
 ## Compiling from source

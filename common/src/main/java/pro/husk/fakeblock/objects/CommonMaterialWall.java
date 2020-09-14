@@ -118,12 +118,11 @@ public abstract class CommonMaterialWall extends WallObject {
         config.set(getName() + ".location1", getLocation1());
         config.set(getName() + ".location2", getLocation2());
 
-        fakeBlockDataHashMap.keySet().forEach(location -> {
+        fakeBlockDataHashMap.forEach((location, blockData) -> {
             String locationAsKey = location.getWorld().getName()
                     + "," + location.getBlockX() + ","
                     + location.getBlockY() + "," + location.getBlockZ();
 
-            BlockData blockData = fakeBlockDataHashMap.get(location);
             if (blockData != null) {
                 String blockDataString = blockData.getAsString();
                 config.set(getName() + ".material-data." + locationAsKey, blockDataString);

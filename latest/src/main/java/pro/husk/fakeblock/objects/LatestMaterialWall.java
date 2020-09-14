@@ -58,9 +58,8 @@ public class LatestMaterialWall extends CommonMaterialWall {
             multiBlockChange.addBlockDataAtLocation(WrappedBlockData.createData(blockData), location);
         }
 
-        handler.getMultiBlockChangeHashMap().values().forEach(multiBlockChange -> {
-            fakeBlockPackets.add(multiBlockChange.build());
-        });
+        handler.getMultiBlockChangeHashMap().values().forEach(multiBlockChange ->
+                fakeBlockPackets.add(multiBlockChange.build()));
 
         return fakeBlockPackets;
     }
