@@ -45,11 +45,10 @@ public class IntermediateMaterialWall extends CommonMaterialWall {
 
         BlockData dummyData = Material.AIR.createBlockData();
 
-        getSortedChunkMap().keySet().forEach(chunkMapKey -> {
+        loadSortedChunkMap().forEach((chunkMapKey, locationList) -> {
             PacketContainer fakeChunk = new PacketContainer(PacketType.Play.Server.MULTI_BLOCK_CHANGE);
             ChunkCoordIntPair chunkCoordIntPair = new ChunkCoordIntPair(chunkMapKey.getX(),
                     chunkMapKey.getZ());
-            List<Location> locationList = getSortedChunkMap().get(chunkMapKey);
             MultiBlockChangeInfo[] blockChangeInfo = new MultiBlockChangeInfo[locationList.size()];
 
             int i = 0;

@@ -50,7 +50,6 @@ public abstract class CommonMaterialWall extends WallObject {
                 })
                 .sync(this::removeOriginalBlocks)
                 .async(() -> {
-                    this.sortedChunkMap = loadSortedChunkMap();
                     this.fakeBlockPacketList = buildPacketList(true);
                     this.realBlockPacketList = buildPacketList(false);
                     this.loadingData = false;
@@ -99,7 +98,6 @@ public abstract class CommonMaterialWall extends WallObject {
 
                 // Load all data to cache
                 this.blocksInBetween = loadBlocksInBetween();
-                this.sortedChunkMap = loadSortedChunkMap();
                 this.fakeBlockPacketList = buildPacketList(true);
                 this.realBlockPacketList = buildPacketList(false);
                 this.loadingData = false;

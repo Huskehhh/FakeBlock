@@ -36,9 +36,6 @@ public abstract class WallObject {
     protected List<Location> blocksInBetween;
 
     @Getter
-    protected HashMap<Chunk, List<Location>> sortedChunkMap;
-
-    @Getter
     protected boolean loadingData;
 
     @Getter
@@ -141,22 +138,6 @@ public abstract class WallObject {
     protected abstract List<PacketContainer> buildPacketList(boolean fake);
 
     /**
-     * Method to load a map of chunks with their respective locations of fake blocks
-     *
-     * @return sorted map
-     */
-    protected HashMap<Chunk, List<Location>> loadSortedChunkMap() {
-        HashMap<Chunk, List<Location>> sortedChunkMap = new HashMap<>();
-        getBlocksInBetween().forEach(location -> {
-            Chunk chunk = location.getChunk();
-            List<Location> locationList = sortedChunkMap.getOrDefault(chunk, new ArrayList<>());
-            locationList.add(location);
-            sortedChunkMap.put(chunk, locationList);
-        });
-        return sortedChunkMap;
-    }
-
-    /**
      * Method to load all locations between the two points
      *
      * @return list of Location
@@ -223,5 +204,23 @@ public abstract class WallObject {
 
         removeFromConfig();
         wallObjectList.remove(this);
+    }
+
+    /**
+     * Method to load a map of chunks with their respective locations of fake blocks
+     * <p>
+     * Used for intermediate and legacy
+     *
+     * @return sorted map
+     */
+    protected HashMap<Chunk, List<Location>> loadSortedChunkMap() {
+        HashMap<Chunk, List<Location>> sortedChunkMap = new HashMap<>();
+        getBlocksInBetween().forEach(location -> {
+            Chunk chunk = location.getChunk();
+            List<Location> locationList = sortedChunkMap.getOrDefault(chunk, new ArrayList<>());
+            locationList.add(location);
+            sortedChunkMap.put(chunk, locationList);
+        });
+        return sortedChunkMap;
     }
 }

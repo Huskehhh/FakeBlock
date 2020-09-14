@@ -13,11 +13,8 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 import pro.husk.fakeblock.FakeBlock;
-import pro.husk.fakeblock.hooks.ProtocolLibHelper;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,7 +53,6 @@ public class IDWall extends WallObject {
             this.blocksInBetween = loadBlocksInBetween();
             this.fakeBlockDataHashmap = buildDataMapFromWorld();
         }).sync(this::removeOriginalBlocks).async(() -> {
-            this.sortedChunkMap = loadSortedChunkMap();
             this.fakeBlockPacketList = buildPacketList(true);
             saveWall();
         }).execute();
@@ -108,7 +104,6 @@ public class IDWall extends WallObject {
 
                     // Load all data to cache
                     this.blocksInBetween = loadBlocksInBetween();
-                    this.sortedChunkMap = loadSortedChunkMap();
                     this.fakeBlockPacketList = buildPacketList(true);
                     FakeBlock.getConsole().info("Loaded wall '" + getName() + "' successfully");
                 } else {
@@ -155,32 +150,6 @@ public class IDWall extends WallObject {
         plugin.saveConfig();
     }
 
-    @Override
-    public void sendFakeBlocks(Player player, int delay) {
-        if (!loadingData) {
-            Bukkit.getScheduler().runTaskLaterAsynchronously(FakeBlock.getPlugin(), () -> fakeBlockPacketList.forEach(packetContainer -> {
-                try {
-                    ProtocolLibHelper.getProtocolManager().sendServerPacket(player, packetContainer);
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-            }), delay * 20);
-        }
-    }
-
-    @Override
-    public void sendRealBlocks(Player player) {
-        if (!loadingData) {
-            FakeBlock.newChain().async(() -> realBlockPacketList.forEach(packetContainer -> {
-                try {
-                    ProtocolLibHelper.getProtocolManager().sendServerPacket(player, packetContainer);
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-            })).execute();
-        }
-    }
-
     private HashMap<Location, FakeBlockData> buildDataMapFromWorld() {
         HashMap<Location, FakeBlockData> dataMap = new HashMap<>();
         getBlocksInBetween().forEach(location -> dataMap.put(location, new FakeBlockData(location)));
@@ -196,11 +165,10 @@ public class IDWall extends WallObject {
     protected List<PacketContainer> buildPacketList(boolean fake) {
         List<PacketContainer> fakeBlockPackets = new ArrayList<>();
 
-        getSortedChunkMap().keySet().forEach(chunkMapKey -> {
+        loadSortedChunkMap().forEach((chunkMapKey, locationList) -> {
             PacketContainer fakeChunk = new PacketContainer(PacketType.Play.Server.MULTI_BLOCK_CHANGE);
             ChunkCoordIntPair chunkCoordIntPair = new ChunkCoordIntPair(chunkMapKey.getX(),
                     chunkMapKey.getZ());
-            List<Location> locationList = getSortedChunkMap().get(chunkMapKey);
             MultiBlockChangeInfo[] blockChangeInfo = new MultiBlockChangeInfo[locationList.size()];
 
             int i = 0;
