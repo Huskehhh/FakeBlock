@@ -29,6 +29,9 @@ public abstract class WallObject {
     protected List<PacketContainer> fakeBlockPacketList;
 
     @Getter
+    protected List<PacketContainer> realBlockPacketList;
+
+    @Getter
     @Setter
     protected List<Location> blocksInBetween;
 
@@ -119,21 +122,19 @@ public abstract class WallObject {
      */
     public void sendRealBlocks(Player player) {
         if (!loadingData) {
-            FakeBlock.newChain().async(() -> {
-                List<PacketContainer> realPackets = buildPacketList(false);
-                realPackets.forEach(packetContainer -> {
-                    try {
-                        ProtocolLibHelper.getProtocolManager().sendServerPacket(player, packetContainer);
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
-                });
-            }).execute();
+            FakeBlock.newChain().async(() -> realBlockPacketList.forEach(packetContainer -> {
+                try {
+                    ProtocolLibHelper.getProtocolManager().sendServerPacket(player, packetContainer);
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            })).execute();
         }
     }
 
     /**
      * Abstract method used in order to build ProtocolLib's PacketContainers in a list
+     *
      * @param fake whether or not to create fake/real packets
      * @return List of PacketContainer
      */
@@ -141,6 +142,7 @@ public abstract class WallObject {
 
     /**
      * Method to load a map of chunks with their respective locations of fake blocks
+     *
      * @return sorted map
      */
     protected HashMap<Chunk, List<Location>> loadSortedChunkMap() {

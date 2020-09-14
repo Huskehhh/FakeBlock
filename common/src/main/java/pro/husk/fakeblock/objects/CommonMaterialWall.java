@@ -52,6 +52,7 @@ public abstract class CommonMaterialWall extends WallObject {
                 .async(() -> {
                     this.sortedChunkMap = loadSortedChunkMap();
                     this.fakeBlockPacketList = buildPacketList(true);
+                    this.realBlockPacketList = buildPacketList(false);
                     this.loadingData = false;
                     saveWall();
                 }).execute();
@@ -100,6 +101,7 @@ public abstract class CommonMaterialWall extends WallObject {
                 this.blocksInBetween = loadBlocksInBetween();
                 this.sortedChunkMap = loadSortedChunkMap();
                 this.fakeBlockPacketList = buildPacketList(true);
+                this.realBlockPacketList = buildPacketList(false);
                 this.loadingData = false;
                 FakeBlock.getConsole().info("Loaded wall '" + getName() + "' successfully");
             } else {

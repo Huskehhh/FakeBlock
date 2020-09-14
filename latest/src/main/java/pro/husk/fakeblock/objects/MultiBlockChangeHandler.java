@@ -19,15 +19,15 @@ public class MultiBlockChangeHandler {
 
     /**
      * Method to get or create a MultiBlockChange instance given a BlockPosition (location)
-     * @param blockPosition location of the change
+     *
      * @return MultiBlockChange instance, whether currently existing or new
      */
-    public MultiBlockChange getOrCreate(BlockPosition blockPosition) {
-        MultiBlockChange multiBlockChange = multiBlockChangeHashMap.get(blockPosition);
+    public MultiBlockChange getOrCreate(BlockPosition position) {
+        MultiBlockChange multiBlockChange = multiBlockChangeHashMap.get(position);
 
         if (multiBlockChange == null) {
             multiBlockChange = new MultiBlockChange();
-            multiBlockChangeHashMap.put(blockPosition, multiBlockChange);
+            multiBlockChangeHashMap.put(position, multiBlockChange);
         }
 
         return multiBlockChange;

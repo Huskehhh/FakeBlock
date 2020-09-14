@@ -40,31 +40,27 @@ public class LatestMaterialWall extends CommonMaterialWall {
      */
     protected List<PacketContainer> buildPacketList(boolean fake) {
         List<PacketContainer> fakeBlockPackets = new ArrayList<>();
+
         MultiBlockChangeHandler handler = new MultiBlockChangeHandler();
+        for (Location location : getBlocksInBetween()) {
+            BlockPosition blockPosition =
+                    new BlockPosition(location.getChunk().getX(), location.getBlockY() >> 4, location.getChunk().getZ());
 
-        getSortedChunkMap().keySet().forEach(chunkMapKey -> {
-            List<Location> locationList = getSortedChunkMap().get(chunkMapKey);
+            MultiBlockChange multiBlockChange = handler.getOrCreate(blockPosition);
+            BlockData blockData;
 
-            for (Location location : locationList) {
-                BlockPosition blockPosition =
-                        new BlockPosition(location.getBlockX(), location.getBlockY(), location.getBlockZ());
-
-                MultiBlockChange multiBlockChange = handler.getOrCreate(blockPosition);
-                BlockData blockData;
-
-                if (fake) {
-                    blockData = fakeBlockDataHashMap.getOrDefault(location, Material.AIR.createBlockData());
-                } else {
-                    blockData = location.getBlock().getBlockData();
-                }
-
-                multiBlockChange.addBlockDataAtLocation(WrappedBlockData.createData(blockData), location);
+            if (fake) {
+                blockData = fakeBlockDataHashMap.getOrDefault(location, Material.AIR.createBlockData());
+            } else {
+                blockData = location.getBlock().getBlockData();
             }
-        });
 
-        // Build all and add to list
-        handler.getMultiBlockChangeHashMap().values().forEach(multiBlockChange ->
-                fakeBlockPackets.add(multiBlockChange.build()));
+            multiBlockChange.addBlockDataAtLocation(WrappedBlockData.createData(blockData), location);
+        }
+
+        handler.getMultiBlockChangeHashMap().values().forEach(multiBlockChange -> {
+            fakeBlockPackets.add(multiBlockChange.build());
+        });
 
         return fakeBlockPackets;
     }

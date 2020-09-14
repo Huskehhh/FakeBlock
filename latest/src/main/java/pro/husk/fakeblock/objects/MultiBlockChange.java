@@ -60,7 +60,7 @@ public class MultiBlockChange {
         }
 
         Location location = locationList.get(0);
-        packet.getSectionPositions().writeSafely(0, new BlockPosition(location.getChunk().getX(), location.getBlockY() / 16, location.getChunk().getZ()));
+        packet.getSectionPositions().writeSafely(0, new BlockPosition(location.getChunk().getX(), location.getBlockY() >> 4, location.getChunk().getZ()));
         packet.getShortArrays().writeSafely(0, shortArray);
         packet.getBlockDataArrays().writeSafely(0, blockDataArray);
 

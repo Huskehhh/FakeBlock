@@ -171,16 +171,13 @@ public class IDWall extends WallObject {
     @Override
     public void sendRealBlocks(Player player) {
         if (!loadingData) {
-            FakeBlock.newChain().async(() -> {
-                List<PacketContainer> realPackets = buildPacketList(false);
-                realPackets.forEach(packetContainer -> {
-                    try {
-                        ProtocolLibHelper.getProtocolManager().sendServerPacket(player, packetContainer);
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
-                });
-            }).execute();
+            FakeBlock.newChain().async(() -> realBlockPacketList.forEach(packetContainer -> {
+                try {
+                    ProtocolLibHelper.getProtocolManager().sendServerPacket(player, packetContainer);
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            })).execute();
         }
     }
 
