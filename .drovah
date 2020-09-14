@@ -1,0 +1,6 @@
+[build]
+commands = ["gradle clean build"]
+
+[archive]
+files = ["latest/build/libs/FakeBlock-", "intermediate/build/libs/FakeBlock-", "legacy/build/libs/FakeBlock-"]
+append_buildnumber = true
