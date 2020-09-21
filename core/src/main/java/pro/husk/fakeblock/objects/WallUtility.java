@@ -86,4 +86,36 @@ public final class WallUtility {
             }
         }));
     }
+
+    /**
+     * Helper method to check if a location is between any wall
+     * Used for block place and block break checks
+     * Time complexity of O(n) with n being the number of walls
+     * This is used instead of just checking if the WallObject blocksInBetween contains(location) because
+     * There is a near always guarantee that number of blocksInBetween > amount of wall objects
+     * Therefore is faster to call this method
+     *
+     * @param targetLocation location to check
+     * @return true if the location is in a wall, false if not
+     */
+    public boolean locationIsInsideWall(Location targetLocation) {
+        for (WallObject wallObject : WallObject.getWallObjectList()) {
+            Location inAreaLocation1 = wallObject.getLocation1();
+            Location inAreaLocation2 = wallObject.getLocation2();
+            if (targetLocation.getWorld() == inAreaLocation1.getWorld()) {
+                if ((targetLocation.getBlockX() >= inAreaLocation1.getBlockX() && targetLocation.getBlockX() <= inAreaLocation2.getBlockX())
+                        || (targetLocation.getBlockX() <= inAreaLocation1.getBlockX() && targetLocation.getBlockX() >= inAreaLocation2.getBlockX())) {
+                    if ((targetLocation.getBlockZ() >= inAreaLocation1.getBlockZ() && targetLocation.getBlockZ() <= inAreaLocation2.getBlockZ())
+                            || (targetLocation.getBlockZ() <= inAreaLocation1.getBlockZ() && targetLocation.getBlockZ() >= inAreaLocation2.getBlockZ())) {
+                        if (targetLocation.getBlockY() >= inAreaLocation1.getBlockY() && targetLocation.getBlockY() <= inAreaLocation2.getBlockY()
+                                || (targetLocation.getBlockY() <= inAreaLocation1.getBlockY() && targetLocation.getBlockY() >= inAreaLocation2.getBlockY())) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
 }
