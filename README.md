@@ -1,5 +1,6 @@
-# FakeBlock ![Java CI with Gradle](https://github.com/Huskehhh/FakeBlock/workflows/Java%20CI%20with%20Gradle/badge.svg)
+# FakeBlock
 
+![Java CI with Gradle](https://github.com/Huskehhh/FakeBlock/workflows/Java%20CI%20with%20Gradle/badge.svg)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/a3a1e78960f243a79d3c585e9d09819f)](https://app.codacy.com/manual/Huskehhh/FakeBlock?utm_source=github.com&utm_medium=referral&utm_content=Huskehhh/FakeBlock&utm_campaign=Badge_Grade_Dashboard)
 
 This versatile plugin allows you to create fake blocks that exist for some players and do not exist for others!
