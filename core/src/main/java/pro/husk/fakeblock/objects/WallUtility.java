@@ -1,14 +1,22 @@
 package pro.husk.fakeblock.objects;
 
+import net.jodah.expiringmap.ExpiringMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 public final class WallUtility {
+
+    private final Map<UUID, List<WallObject>> nearbyCache = ExpiringMap.builder()
+            .expiration(5, TimeUnit.SECONDS)
+            .build();
 
     private final boolean inverse;
 
@@ -18,27 +26,45 @@ public final class WallUtility {
 
     /**
      * Method for checking if a location is close to wall
+     * Method time complexity is O(n) with n being number of walls
+     * Uses an ExpiringMap to reduce calls of users who are quite some distance away
      *
-     * @param playerLocation to check
+     * @param player to check
      * @return null if not, wallObject if they are
      */
-    public CompletableFuture<List<WallObject>> getNearbyFakeBlocks(Location playerLocation) {
+    public CompletableFuture<List<WallObject>> getNearbyFakeBlocks(Player player) {
         return CompletableFuture.supplyAsync(() -> {
-            List<WallObject> nearby = new ArrayList<>();
+            Location playerLocation = player.getLocation();
+            List<WallObject> nearby = nearbyCache.getOrDefault(player.getUniqueId(), new ArrayList<>());
+
+            // Return cached
+            if (nearby.size() != 0) return nearby;
+
+            boolean shouldCache = true;
 
             for (WallObject wallObject : WallObject.getWallObjectList()) {
                 if (playerLocation.getWorld() != wallObject.getLocation1().getWorld()) break;
 
-                for (Location location : wallObject.getBlocksInBetween()) {
-                    double playerDistanceToWall = playerLocation.distance(location);
-                    double distanceToCheck = (Bukkit.getViewDistance() * 15) + wallObject.getDistanceBetweenPoints();
+                double playerDistanceToWall1 = playerLocation.distance(wallObject.getLocation1());
+                double playerDistanceToWall2 = playerLocation.distance(wallObject.getLocation2());
+                double distanceToCheck = (Bukkit.getViewDistance() * 15) + wallObject.getDistanceBetweenPoints();
 
-                    if (playerDistanceToWall <= distanceToCheck
-                            && !nearby.contains(wallObject)) {
-                        nearby.add(wallObject);
-                    }
+                // If the player is close, then don't cache the result!
+                if (playerDistanceToWall1 < 30 || playerDistanceToWall2 < 30) {
+                    shouldCache = false;
+                }
+
+                if (playerDistanceToWall1 <= distanceToCheck
+                        || playerDistanceToWall2 <= distanceToCheck
+                        && !nearby.contains(wallObject)) {
+                    nearby.add(wallObject);
                 }
             }
+
+            if (shouldCache) {
+                nearbyCache.put(player.getUniqueId(), nearby);
+            }
+
             return nearby;
         });
     }
@@ -50,7 +76,7 @@ public final class WallUtility {
      * @param delay  on sending blocks
      */
     public void processWall(Player player, int delay, boolean ignorePermission) {
-        getNearbyFakeBlocks(player.getLocation()).thenAcceptAsync(walls -> walls.forEach(wall -> {
+        getNearbyFakeBlocks(player).thenAcceptAsync(walls -> walls.forEach(wall -> {
             if (ignorePermission) wall.sendFakeBlocks(player, 0);
 
             boolean hasWallPerm = player.hasPermission("fakeblock." + wall.getName());
@@ -69,7 +95,7 @@ public final class WallUtility {
      * @param player to check
      */
     public void processWallConditions(Player player) {
-        getNearbyFakeBlocks(player.getLocation()).thenAcceptAsync(walls -> walls.forEach(wall -> {
+        getNearbyFakeBlocks(player).thenAcceptAsync(walls -> walls.forEach(wall -> {
             boolean hasWallPerm = player.hasPermission("fakeblock." + wall.getName());
             if (inverse) {
                 if (hasWallPerm) {
