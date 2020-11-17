@@ -15,8 +15,13 @@ import pro.husk.fakeblock.hooks.ProtocolLibHelper;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 
+/**
+ * Core Wall data object, outlines a structure which is then implemented to version-specific objects
+ */
 public abstract class WallObject {
 
     @Getter
@@ -25,16 +30,28 @@ public abstract class WallObject {
     @Getter
     private final String name;
 
+    /**
+     * Provides access to the cached List of fake PacketContainers
+     */
     @Getter
     protected List<PacketContainer> fakeBlockPacketList;
 
+    /**
+     * Provides access to the cached list of real PacketContainers
+     */
     @Getter
     protected List<PacketContainer> realBlockPacketList;
 
+    /**
+     * Provides access to the List of Location's in-between location1 and location2
+     */
     @Getter
     @Setter
     protected List<Location> blocksInBetween;
 
+    /**
+     * Provides access to the current state of the WallObject's loading
+     */
     @Getter
     protected boolean loadingData;
 
@@ -45,7 +62,10 @@ public abstract class WallObject {
     @Getter
     @Setter
     private Location location2;
+
     private double distanceBetweenPoints;
+
+    private final HashSet<UUID> usersToDisplayFor = new HashSet<>();
 
     /**
      * Default constructor
@@ -80,6 +100,13 @@ public abstract class WallObject {
      * Method to save wall to config
      */
     public abstract void saveWall();
+
+    /**
+     * Simple setter method use for setting the data map directly for non-persistent walls
+     *
+     * @param fakeBlockDataHashMap data map for non-persistent wall
+     */
+    public abstract void setFakeBlockDataHashMap(HashMap<Location, FakeBlockData> fakeBlockDataHashMap);
 
     /**
      * Gets distance between the two location points
@@ -176,7 +203,7 @@ public abstract class WallObject {
     }
 
     /**
-     *
+     * Method to restore the original blocks
      */
     abstract void restoreOriginalBlocks();
 
@@ -208,7 +235,6 @@ public abstract class WallObject {
 
     /**
      * Method to load a map of chunks with their respective locations of fake blocks
-     * <p>
      * Used for intermediate and legacy
      *
      * @return sorted map
@@ -222,5 +248,65 @@ public abstract class WallObject {
             sortedChunkMap.put(chunk, locationList);
         });
         return sortedChunkMap;
+    }
+
+    /**
+     * Method to get the users who are going to be shown the wall
+     * DO NOT USE THIS TO EDIT WHO WILL SEE THE WALL, instead use below methods!
+     *
+     * @return HashSet of UUID of the users who will see the walL
+     */
+    public HashSet<UUID> getUsersToDisplayFor() {
+        return usersToDisplayFor;
+    }
+
+    /**
+     * Helper method to add user to display the wall for
+     *
+     * @param player to display for
+     */
+    public void addUserToDisplayFor(Player player) {
+        usersToDisplayFor.add(player.getUniqueId());
+        FakeBlock.getWallUtility().processWall(player, 0, false);
+    }
+
+    /**
+     * Helper method to remove user to display the wall for
+     *
+     * @param player to display for
+     */
+    public void removeUserToDisplayFor(Player player) {
+        usersToDisplayFor.remove(player.getUniqueId());
+        FakeBlock.getWallUtility().processWall(player, 0, false);
+    }
+
+    /**
+     * Creates a non persistent wall through code
+     *
+     * @param fakeBlockDataHashMap data to create the wall with
+     * @param location1            first corner of the wall
+     * @param location2            second location of the corner
+     * @return WallObject created
+     */
+    public WallObject createNonPersistentWall(HashMap<Location, FakeBlockData> fakeBlockDataHashMap,
+                                              Location location1, Location location2) {
+        this.loadingData = true;
+
+        this.setLocation1(location1);
+        this.setLocation2(location2);
+
+        FakeBlock.newChain()
+                .async(() -> {
+                    this.setFakeBlockDataHashMap(fakeBlockDataHashMap);
+                    this.blocksInBetween.addAll(fakeBlockDataHashMap.keySet());
+                })
+                .async(() -> {
+                    this.fakeBlockPacketList = this.buildPacketList(true);
+                    this.realBlockPacketList = this.buildPacketList(false);
+                    this.loadingData = false;
+                })
+                .execute();
+
+        return this;
     }
 }

@@ -9,6 +9,9 @@ import com.comphenix.protocol.events.PacketEvent;
 import lombok.Getter;
 import pro.husk.fakeblock.FakeBlock;
 
+/**
+ * Helper class to interact with ProtocolLib events
+ */
 public class ProtocolLibHelper {
 
     @Getter
@@ -47,10 +50,18 @@ public class ProtocolLibHelper {
                 });
     }
 
+    /**
+     * Broad wrapper to handle any PacketEvent
+     *
+     * @param event ProtocolLib PacketEvent
+     */
     private static void handlePacketEvent(PacketEvent event) {
         FakeBlock.getWallUtility().processWall(event.getPlayer(), 0, false);
     }
 
+    /**
+     * Close all subscriptions to ProtocolLib events
+     */
     public static void closeSubscriptions() {
         protocolManager.removePacketListeners(FakeBlock.getPlugin());
     }

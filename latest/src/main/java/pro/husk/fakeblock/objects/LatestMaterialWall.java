@@ -5,7 +5,6 @@ import com.comphenix.protocol.wrappers.BlockPosition;
 import com.comphenix.protocol.wrappers.WrappedBlockData;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.data.BlockData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,15 +46,15 @@ public class LatestMaterialWall extends CommonMaterialWall {
                     new BlockPosition(location.getChunk().getX(), location.getBlockY() >> 4, location.getChunk().getZ());
 
             MultiBlockChange multiBlockChange = handler.getOrCreate(blockPosition);
-            BlockData blockData;
+            FakeBlockData blockData;
 
             if (fake) {
-                blockData = fakeBlockDataHashMap.getOrDefault(location, Material.AIR.createBlockData());
+                blockData = fakeBlockDataHashMap.getOrDefault(location, new FakeBlockData(Material.AIR.createBlockData()));
             } else {
-                blockData = location.getBlock().getBlockData();
+                blockData = new FakeBlockData(location.getBlock().getBlockData());
             }
 
-            multiBlockChange.addBlockDataAtLocation(WrappedBlockData.createData(blockData), location);
+            multiBlockChange.addBlockDataAtLocation(WrappedBlockData.createData(blockData.getBlockData()), location);
         }
 
         handler.getMultiBlockChangeHashMap().values().forEach(multiBlockChange ->

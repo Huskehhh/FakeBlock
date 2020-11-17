@@ -8,6 +8,9 @@ import pro.husk.fakeblock.objects.Config;
 import pro.husk.fakeblock.objects.IDWall;
 import pro.husk.fakeblock.objects.WallObject;
 
+/**
+ * Module for legacy versions of Minecraft
+ */
 public class LegacyModule implements FakeBlockModuleHandler {
 
     /**

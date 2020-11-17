@@ -23,12 +23,12 @@ public class LegacySelectionListener implements Listener {
     public void playerSelect(PlayerInteractEvent event) {
         Player player = event.getPlayer();
 
-        if (Config.isSelecting(player.getName())) {
+        if (Config.isSelecting(player.getUniqueId())) {
             Block block = event.getClickedBlock();
 
             if (block == null) return;
 
-            Config config = Config.getCurrentConfigurations().get(player.getName());
+            Config config = Config.getCurrentConfigurations().get(player.getUniqueId());
 
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                 player.sendMessage(Language.getPrefix() + " " + Language.getLocationSaved());

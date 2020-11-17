@@ -7,7 +7,6 @@ import com.comphenix.protocol.wrappers.MultiBlockChangeInfo;
 import com.comphenix.protocol.wrappers.WrappedBlockData;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.data.BlockData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +42,7 @@ public class IntermediateMaterialWall extends CommonMaterialWall {
     protected List<PacketContainer> buildPacketList(boolean fake) {
         List<PacketContainer> fakeBlockPackets = new ArrayList<>();
 
-        BlockData dummyData = Material.AIR.createBlockData();
+        FakeBlockData dummyData = new FakeBlockData(Material.AIR.createBlockData());
 
         loadSortedChunkMap().forEach((chunkMapKey, locationList) -> {
             PacketContainer fakeChunk = new PacketContainer(PacketType.Play.Server.MULTI_BLOCK_CHANGE);
@@ -53,13 +52,13 @@ public class IntermediateMaterialWall extends CommonMaterialWall {
 
             int i = 0;
             for (Location location : locationList) {
-                BlockData blockData;
+                FakeBlockData blockData;
                 if (fake) {
                     blockData = fakeBlockDataHashMap.getOrDefault(location, dummyData);
                 } else {
-                    blockData = location.getBlock().getBlockData();
+                    blockData = new FakeBlockData(location.getBlock().getBlockData());
                 }
-                blockChangeInfo[i] = new MultiBlockChangeInfo(location, WrappedBlockData.createData(blockData));
+                blockChangeInfo[i] = new MultiBlockChangeInfo(location, WrappedBlockData.createData(blockData.getBlockData()));
                 i++;
             }
 

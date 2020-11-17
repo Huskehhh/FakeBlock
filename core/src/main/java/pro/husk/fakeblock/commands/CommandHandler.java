@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Primary command handler for the FakeBlock command
+ */
 public class CommandHandler implements CommandExecutor {
 
     private static final List<UUID> toggledPlayers = new ArrayList<>();
@@ -132,7 +135,7 @@ public class CommandHandler implements CommandExecutor {
         if (commandSender instanceof Player) {
             Player player = (Player) commandSender;
 
-            new Config(player.getName(), wallName);
+            new Config(player.getUniqueId(), wallName);
 
             player.sendMessage(fakeBlockTitle + " " + Language.getWallsSelection());
         }

@@ -8,6 +8,9 @@ import pro.husk.fakeblock.objects.WallObject;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class to handle tab completion of the FakeBlock command
+ */
 public class TabCompleteHandler implements TabCompleter {
 
     /**

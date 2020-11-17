@@ -5,6 +5,9 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import pro.husk.fakeblock.FakeBlock;
 
+/**
+ * Language class, providing access to alter all user facing messages
+ */
 public class Language {
 
     @Getter

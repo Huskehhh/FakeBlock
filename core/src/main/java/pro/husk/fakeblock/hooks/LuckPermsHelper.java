@@ -18,10 +18,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Helper class to interact with LuckPerms events
+ */
 public final class LuckPermsHelper {
 
     private static final List<EventSubscription<? extends LuckPermsEvent>> subscriptions = new ArrayList<>();
 
+    /**
+     * Subscribe to LuckPerms events
+     */
     public static void setupLuckPermsHelper() {
         RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
         if (provider != null) {
@@ -33,6 +39,9 @@ public final class LuckPermsHelper {
         }
     }
 
+    /**
+     * Closes all subscriptions to LuckPerms events
+     */
     public static void closeSubscriptions() {
         subscriptions.forEach(EventSubscription::close);
     }

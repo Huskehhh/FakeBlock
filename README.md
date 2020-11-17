@@ -47,3 +47,17 @@ This project now uses Gradle!
 ```gradlew.bat build``` for Windows
 
 Artifacts can be found in their respective build/libs/ folder!
+
+## Maven repo
+If you are planning to hook into FakeBlock, you can find the artifacts here:
+
+Repo URL: ``https://maven.husk.pro/repository/maven-public/``
+
+Example pom:
+```xml
+<dependency>
+  <groupId>pro.husk</groupId>
+  <artifactId>fakeblock</artifactId>
+  <version>2.0.2-SNAPSHOT</version>
+</dependency>
+```

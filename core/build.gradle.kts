@@ -1,11 +1,15 @@
 plugins {
-    id("com.github.johnrengelman.shadow") version "5.1.0"
+    id("com.github.johnrengelman.shadow") version "6.0.0"
     id("java")
+    id("maven-publish")
 }
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
+
+    withJavadocJar()
+    withSourcesJar()
 }
 
 dependencies {
@@ -28,6 +32,33 @@ tasks {
     processResources {
         filesMatching("plugin.yml") {
             expand(project.properties)
+        }
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            groupId = "pro.husk"
+            artifactId = "fakeblock"
+            version = project.property("version").toString()
+
+            from(components["java"])
+        }
+    }
+
+    repositories {
+        maven {
+            url = uri("https://maven.husk.pro/repository/maven-public/")
+
+            credentials {
+                username = "slave"
+                password = if (project.hasProperty("repoPass")) {
+                    project.property("repoPass").toString()
+                } else {
+                    ""
+                }
+            }
         }
     }
 }

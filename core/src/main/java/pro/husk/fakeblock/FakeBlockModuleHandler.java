@@ -3,6 +3,9 @@ package pro.husk.fakeblock;
 import pro.husk.fakeblock.objects.Config;
 import pro.husk.fakeblock.objects.WallObject;
 
+/**
+ * Module handler to abstract the loading of WallObjects to version specific implementations
+ */
 public interface FakeBlockModuleHandler {
 
     /**
@@ -18,5 +21,8 @@ public interface FakeBlockModuleHandler {
      */
     WallObject loadWall(Config config);
 
+    /**
+     * Register listeners for module
+     */
     void registerListeners();
 }

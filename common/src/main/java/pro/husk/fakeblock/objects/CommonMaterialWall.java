@@ -2,12 +2,12 @@ package pro.husk.fakeblock.objects;
 
 import com.comphenix.protocol.events.PacketContainer;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import pro.husk.fakeblock.FakeBlock;
@@ -18,7 +18,8 @@ import java.util.List;
 public abstract class CommonMaterialWall extends WallObject {
 
     @Getter
-    protected HashMap<Location, BlockData> fakeBlockDataHashMap;
+    @Setter
+    protected HashMap<Location, FakeBlockData> fakeBlockDataHashMap;
 
     /**
      * Constructor for walls loaded from config
@@ -91,8 +92,7 @@ public abstract class CommonMaterialWall extends WallObject {
                     String blockDataString = configurationSection.getString(key);
 
                     if (blockDataString != null) {
-                        BlockData blockData = Bukkit.createBlockData(blockDataString);
-                        fakeBlockDataHashMap.put(built, blockData);
+                        fakeBlockDataHashMap.put(built, new FakeBlockData(Bukkit.createBlockData(blockDataString)));
                     }
                 });
 
@@ -123,8 +123,8 @@ public abstract class CommonMaterialWall extends WallObject {
                     + "," + location.getBlockX() + ","
                     + location.getBlockY() + "," + location.getBlockZ();
 
-            if (blockData != null) {
-                String blockDataString = blockData.getAsString();
+            if (blockData != null && blockData.getBlockData() != null) {
+                String blockDataString = blockData.getBlockData().getAsString();
                 config.set(getName() + ".material-data." + locationAsKey, blockDataString);
             }
         });
@@ -143,12 +143,12 @@ public abstract class CommonMaterialWall extends WallObject {
     /**
      * Method to prepare material map and remove the world blocks, replacing with "fake"
      */
-    protected HashMap<Location, BlockData> loadFakeBlockDataHashMap() {
-        HashMap<Location, BlockData> fakeBlockDataHashMap = new HashMap<>();
+    protected HashMap<Location, FakeBlockData> loadFakeBlockDataHashMap() {
+        HashMap<Location, FakeBlockData> fakeBlockDataHashMap = new HashMap<>();
         getBlocksInBetween().forEach(location -> {
             Block block = location.getBlock();
             if (block.getType() != Material.AIR) {
-                fakeBlockDataHashMap.put(location, block.getBlockData());
+                fakeBlockDataHashMap.put(location, new FakeBlockData(block.getBlockData()));
             }
         });
         return fakeBlockDataHashMap;
@@ -158,13 +158,13 @@ public abstract class CommonMaterialWall extends WallObject {
     protected void restoreOriginalBlocks() {
         getBlocksInBetween().forEach(location -> {
             Block block = location.getBlock();
-            BlockData blockData = fakeBlockDataHashMap.get(location);
+            FakeBlockData fakeBlockData = fakeBlockDataHashMap.get(location);
 
-            if (blockData == null) {
+            if (fakeBlockData == null || fakeBlockData.getBlockData() == null) {
                 block.setType(Material.AIR);
             } else {
-                block.setType(blockData.getMaterial());
-                block.setBlockData(blockData);
+                block.setType(fakeBlockData.getBlockData().getMaterial());
+                block.setBlockData(fakeBlockData.getBlockData());
             }
         });
     }

@@ -20,6 +20,11 @@ import java.io.IOException;
 import java.util.ServiceLoader;
 import java.util.logging.Logger;
 
+/**
+ * Entry point for the FakeBlock plugin
+ *
+ * @author Jordyn Newnham
+ */
 public class FakeBlock extends JavaPlugin {
 
     @Getter
@@ -39,10 +44,20 @@ public class FakeBlock extends JavaPlugin {
 
     private static TaskChainFactory taskChainFactory;
 
+    /**
+     * Returns a new TaskChain
+     *
+     * @param <T> generic type
+     * @return new TaskChain of type T
+     */
     public static <T> TaskChain<T> newChain() {
         return taskChainFactory.newChain();
     }
 
+    /**
+     * Method to setup data on plugin load
+     */
+    @Override
     public void onEnable() {
         plugin = this;
         taskChainFactory = BukkitTaskChainFactory.create(this);
@@ -120,11 +135,18 @@ public class FakeBlock extends JavaPlugin {
         Language.loadValues();
     }
 
+    /**
+     * Reload all configurations from file
+     */
     public void reloadConfigs() {
         reloadConfig();
         setupLanguageFile();
     }
 
+    /**
+     * Method to cleanup plugin data on server shutdown
+     */
+    @Override
     public void onDisable() {
         getServer().getScheduler().cancelTasks(this);
         LuckPermsHelper.closeSubscriptions();

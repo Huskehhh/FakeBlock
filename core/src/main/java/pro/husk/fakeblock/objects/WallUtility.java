@@ -12,6 +12,9 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Utility class for Walls, utilised for on the fly handling of FakeBlock visibility functionality
+ */
 public final class WallUtility {
 
     private final Map<UUID, List<WallObject>> nearbyCache = ExpiringMap.builder()
@@ -20,6 +23,11 @@ public final class WallUtility {
 
     private final boolean inverse;
 
+    /**
+     * Constructor of WallUtility
+     *
+     * @param inverse whether or not to inverse permission checks
+     */
     public WallUtility(boolean inverse) {
         this.inverse = inverse;
     }
@@ -72,12 +80,23 @@ public final class WallUtility {
     /**
      * Process check of player location near the wall async, and if they are close, send fake blocks
      *
-     * @param player to check
-     * @param delay  on sending blocks
+     * @param player           to check
+     * @param delay            on sending blocks
+     * @param ignorePermission whether or not to ignore whether or not the player has permission
      */
     public void processWall(Player player, int delay, boolean ignorePermission) {
         getNearbyFakeBlocks(player).thenAcceptAsync(walls -> walls.forEach(wall -> {
-            if (ignorePermission) wall.sendFakeBlocks(player, 0);
+            if (ignorePermission) {
+                wall.sendFakeBlocks(player, 0);
+                return;
+            }
+
+            // If the wall is a temporary wall, send them the fake blocks and only the fake blocks.
+            // This will mean that this is handled by the external plugin rather than FakeBlock
+            if (wall.getUsersToDisplayFor().contains(player.getUniqueId())) {
+                wall.sendFakeBlocks(player, delay);
+                return;
+            }
 
             boolean hasWallPerm = player.hasPermission("fakeblock." + wall.getName());
             if (inverse && !hasWallPerm) {
@@ -118,7 +137,7 @@ public final class WallUtility {
      * Used for block place and block break checks
      * Time complexity of O(n) with n being the number of walls
      * This is used instead of just checking if the WallObject blocksInBetween contains(location) because
-     * There is a near always guarantee that number of blocksInBetween > amount of wall objects
+     * There is a near always guarantee that number of blocksInBetween is greater than amount of wall objects
      * Therefore is faster to call this method
      *
      * @param targetLocation location to check

@@ -6,6 +6,7 @@ import com.comphenix.protocol.wrappers.ChunkCoordIntPair;
 import com.comphenix.protocol.wrappers.MultiBlockChangeInfo;
 import com.comphenix.protocol.wrappers.WrappedBlockData;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -19,13 +20,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * WallObject implementation for legacy versions of Minecraft that utilise int ID and byte data values
+ */
 public class IDWall extends WallObject {
 
     @Getter
     protected List<PacketContainer> fakeBlockPacketList;
 
     @Getter
-    private HashMap<Location, FakeBlockData> fakeBlockDataHashmap;
+    @Setter
+    private HashMap<Location, FakeBlockData> fakeBlockDataHashMap;
 
     /**
      * Constructor for walls loaded from config
@@ -51,9 +56,10 @@ public class IDWall extends WallObject {
 
         FakeBlock.newChain().async(() -> {
             this.blocksInBetween = loadBlocksInBetween();
-            this.fakeBlockDataHashmap = buildDataMapFromWorld();
+            this.fakeBlockDataHashMap = buildDataMapFromWorld();
         }).sync(this::removeOriginalBlocks).async(() -> {
             this.fakeBlockPacketList = buildPacketList(true);
+            this.realBlockPacketList = buildPacketList(false);
             saveWall();
         }).execute();
     }
@@ -74,7 +80,7 @@ public class IDWall extends WallObject {
                     setLocation1(location1);
                     setLocation2(location2);
 
-                    this.fakeBlockDataHashmap = new HashMap<>();
+                    this.fakeBlockDataHashMap = new HashMap<>();
 
                     ConfigurationSection materialSection = config.getConfigurationSection(getName() + ".material-data");
 
@@ -98,13 +104,14 @@ public class IDWall extends WallObject {
 
                         if (materialString != null) {
                             Material material = Material.getMaterial(materialString);
-                            fakeBlockDataHashmap.put(built, new FakeBlockData(material, blockData));
+                            fakeBlockDataHashMap.put(built, new FakeBlockData(material, blockData));
                         }
                     });
 
                     // Load all data to cache
                     this.blocksInBetween = loadBlocksInBetween();
                     this.fakeBlockPacketList = buildPacketList(true);
+                    this.realBlockPacketList = buildPacketList(false);
                     FakeBlock.getConsole().info("Loaded wall '" + getName() + "' successfully");
                 } else {
                     FakeBlock.getConsole().warning("Wall '" + getName() + "' is configured wrong, the world cannot be different");
@@ -123,12 +130,12 @@ public class IDWall extends WallObject {
         config.set(getName() + ".location1", getLocation1());
         config.set(getName() + ".location2", getLocation2());
 
-        fakeBlockDataHashmap.keySet().forEach(location -> {
+        fakeBlockDataHashMap.keySet().forEach(location -> {
             String locationAsKey = location.getWorld().getName()
                     + "," + location.getBlockX() + ","
                     + location.getBlockY() + "," + location.getBlockZ();
 
-            FakeBlockData fakeBlockData = fakeBlockDataHashmap.get(location);
+            FakeBlockData fakeBlockData = fakeBlockDataHashMap.get(location);
             Material material;
             byte dataByte;
             if (fakeBlockData == null) {
@@ -152,7 +159,8 @@ public class IDWall extends WallObject {
 
     private HashMap<Location, FakeBlockData> buildDataMapFromWorld() {
         HashMap<Location, FakeBlockData> dataMap = new HashMap<>();
-        getBlocksInBetween().forEach(location -> dataMap.put(location, new FakeBlockData(location)));
+        getBlocksInBetween().forEach(location -> dataMap.put(location,
+                new FakeBlockData(location.getBlock().getType(), location.getBlock().getData())));
         return dataMap;
     }
 
@@ -176,7 +184,7 @@ public class IDWall extends WallObject {
                 Material material = Material.AIR;
                 byte data = 0;
                 if (fake) {
-                    FakeBlockData fakeBlockData = fakeBlockDataHashmap.get(location);
+                    FakeBlockData fakeBlockData = fakeBlockDataHashMap.get(location);
                     if (fakeBlockData != null) {
                         material = fakeBlockData.getMaterial();
                         data = fakeBlockData.getData();
@@ -204,7 +212,7 @@ public class IDWall extends WallObject {
     @Override
     protected void restoreOriginalBlocks() {
         getBlocksInBetween().forEach(location -> {
-            FakeBlockData fakeBlockData = fakeBlockDataHashmap.get(location);
+            FakeBlockData fakeBlockData = fakeBlockDataHashMap.get(location);
             Block block = location.getBlock();
 
             if (fakeBlockData != null) {
