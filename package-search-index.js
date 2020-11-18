@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"pro.husk.fakeblock"},{"l":"pro.husk.fakeblock.commands"},{"l":"pro.husk.fakeblock.hooks"},{"l":"pro.husk.fakeblock.listener"},{"l":"pro.husk.fakeblock.listeners"},{"l":"pro.husk.fakeblock.modules"},{"l":"pro.husk.fakeblock.objects"}];updateSearchResults();
