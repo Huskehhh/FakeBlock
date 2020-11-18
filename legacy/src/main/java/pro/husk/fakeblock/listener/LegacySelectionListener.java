@@ -33,10 +33,10 @@ public class LegacySelectionListener implements Listener {
             Config config = Config.getCurrentConfigurations().get(player.getUniqueId());
 
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                player.sendMessage(Language.colourise(language.getPrefix() + " " + language.getLocationSaved()));
+                player.sendMessage(language.getPrefix() + " " + language.getLocationSaved());
                 config.setLocation2(block.getLocation());
             } else if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-                player.sendMessage(Language.colourise(language.getPrefix() + " " + language.getLocationSaved()));
+                player.sendMessage(language.getPrefix() + " " + language.getLocationSaved());
                 config.setLocation1(block.getLocation());
             }
 
@@ -47,7 +47,7 @@ public class LegacySelectionListener implements Listener {
                         .thenAccept(loadedWallList -> {
                             wallObject.setBlocksInBetween(loadedWallList);
                             config.remove();
-                            player.sendMessage(Language.colourise(language.getPrefix() + " " + language.getWallsSelectionComplete()));
+                            player.sendMessage(language.getPrefix() + " " + language.getWallsSelectionComplete());
                         });
             }
 

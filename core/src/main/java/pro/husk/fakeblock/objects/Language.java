@@ -4,12 +4,13 @@ import lombok.Getter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import pro.husk.configannotations.BukkitConfigHandler;
+import pro.husk.configannotations.PostLoadAction;
 import pro.husk.configannotations.Value;
 
 /**
  * Language class, providing access to alter all user facing messages
  */
-public class Language extends BukkitConfigHandler {
+public class Language extends BukkitConfigHandler implements PostLoadAction {
 
     @Getter
     @Value("prefix")
@@ -52,13 +53,26 @@ public class Language extends BukkitConfigHandler {
         loadFromConfig();
     }
 
+    @Override
+    public PostLoadAction getPostLoadAction() {
+        return this;
+    }
+
+    @Override
+    public Object acceptAndReturn(Object object) {
+        if (object instanceof String) {
+            return colourise((String) object);
+        }
+        return object;
+    }
+
     /**
      * Helper method to colourise a string with a combination of both hex and legacy chat colours
      *
      * @param input string to colourise
      * @return colourised string
      */
-    public static String colourise(String input) {
+    private static String colourise(String input) {
         while (input.contains("#")) {
             int index = input.indexOf("#");
             if (index != 0 && input.charAt(index - 1) == '&') {

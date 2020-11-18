@@ -35,7 +35,7 @@ public class CommandHandler extends BaseCommand {
     @Default
     @CommandPermission("fakeblock.admin")
     public void help(CommandSender commandSender) {
-        commandSender.sendMessage(Language.colourise(ChatColor.GREEN + " --------- " + ChatColor.AQUA + language.getPrefix() + ChatColor.GREEN + " Help --------- "));
+        commandSender.sendMessage(ChatColor.GREEN + " --------- " + ChatColor.AQUA + language.getPrefix() + ChatColor.GREEN + " Help --------- ");
         commandSender.sendMessage(ChatColor.GREEN + "/fakeblock | Aliases: /fakeblock, /fb");
         commandSender.sendMessage(ChatColor.GREEN + "/fakeblock create <wall name> <material name> | Creates a wall under specified name with given material");
         commandSender.sendMessage(ChatColor.GREEN + "/fakeblock delete <wall name> | Deletes wall");
@@ -52,7 +52,7 @@ public class CommandHandler extends BaseCommand {
         WallObject wallObject = WallObject.getByName(wallName);
         if (wallObject != null) {
             wallObject.delete();
-            commandSender.sendMessage(Language.colourise(language.getPrefix() + " " + language.getWallDeleted()));
+            commandSender.sendMessage(language.getPrefix() + " " + language.getWallDeleted());
         }
     }
 
@@ -61,20 +61,20 @@ public class CommandHandler extends BaseCommand {
     public void reload(CommandSender commandSender) {
         FakeBlock.getPlugin().reloadConfigs();
         WallObject.getWallObjectList().forEach(WallObject::loadWall);
-        commandSender.sendMessage(Language.colourise(language.getPrefix() + " " + language.getWallsReloaded()));
+        commandSender.sendMessage(language.getPrefix() + " " + language.getWallsReloaded());
     }
 
     @Subcommand("create")
     @CommandPermission("fakeblock.admin")
     public void create(Player player, String wallName) {
         new Config(player.getUniqueId(), wallName);
-        player.sendMessage(Language.colourise(language.getPrefix() + " " + language.getWallsSelection()));
+        player.sendMessage(language.getPrefix() + " " + language.getWallsSelection());
     }
 
     @Subcommand("list")
     @CommandPermission("fakeblock.admin")
     public void list(CommandSender commandSender) {
-        commandSender.sendMessage(Language.colourise(language.getPrefix() + ChatColor.GOLD + " Walls"));
+        commandSender.sendMessage(language.getPrefix() + ChatColor.GOLD + " Walls");
         WallObject.getWallObjectList().forEach(wallObject ->
                 commandSender.sendMessage(ChatColor.GRAY + " - " + ChatColor.GREEN + wallObject.getName()));
     }
@@ -94,9 +94,9 @@ public class CommandHandler extends BaseCommand {
                 toggledPlayers.add(target.getUniqueId());
             }
 
-            commandSender.sendMessage(Language.colourise(language.getPrefix() + " " + language.getWallsToggled()));
+            commandSender.sendMessage(language.getPrefix() + " " + language.getWallsToggled());
         } else {
-            commandSender.sendMessage(Language.colourise(language.getPrefix() + " " + language.getCantFindPlayer()));
+            commandSender.sendMessage(language.getPrefix() + " " + language.getCantFindPlayer());
         }
     }
 }
