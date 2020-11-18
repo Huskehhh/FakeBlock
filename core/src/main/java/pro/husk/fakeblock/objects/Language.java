@@ -1,61 +1,55 @@
 package pro.husk.fakeblock.objects;
 
 import lombok.Getter;
-import net.md_5.bungee.api.ChatColor;
-import org.bukkit.configuration.file.YamlConfiguration;
-import pro.husk.fakeblock.FakeBlock;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
+import pro.husk.configannotations.BukkitConfigHandler;
+import pro.husk.configannotations.Value;
 
 /**
  * Language class, providing access to alter all user facing messages
  */
-public class Language {
+public class Language extends BukkitConfigHandler {
 
     @Getter
-    private static String prefix;
+    @Value("prefix")
+    private String prefix;
 
     @Getter
-    private static String noPermission;
+    @Value("no-permission")
+    private String noPermission;
 
     @Getter
-    private static String wrongArgumentLength;
+    @Value("walls-reloaded")
+    private String wallsReloaded;
 
     @Getter
-    private static String wallsReloaded;
+    @Value("wall-deleted")
+    private String wallDeleted;
 
     @Getter
-    private static String wallDeleted;
+    @Value("walls-selection")
+    private String wallsSelection;
 
     @Getter
-    private static String wallsSelection;
+    @Value("walls-selection-complete")
+    private String wallsSelectionComplete;
 
     @Getter
-    private static String wallsSelectionComplete;
+    @Value("walls-selection-location-saved")
+    private String locationSaved;
 
     @Getter
-    private static String locationSaved;
+    @Value("walls-toggled")
+    private String wallsToggled;
 
     @Getter
-    private static String wallsToggled;
+    @Value("cant-find-player")
+    private String cantFindPlayer;
 
-    @Getter
-    private static String cantFindPlayer;
-
-    /**
-     * Method used to load all values into memory to minimise I/O
-     */
-    public static void loadValues() {
-        YamlConfiguration language = FakeBlock.getLanguage();
-
-        prefix = colourise(language.getString("prefix"));
-        noPermission = colourise(language.getString("no-permission"));
-        wrongArgumentLength = colourise(language.getString("invalid-argument-length"));
-        wallDeleted = colourise(language.getString("wall-deleted"));
-        wallsReloaded = colourise(language.getString("walls-reloaded"));
-        wallsSelection = colourise(language.getString("walls-selection"));
-        wallsSelectionComplete = colourise(language.getString("walls-selection-complete"));
-        locationSaved = colourise(language.getString("walls-selection-location-saved"));
-        wallsToggled = colourise(language.getString("walls-toggled"));
-        cantFindPlayer = colourise(language.getString("cant-find-player"));
+    public Language(JavaPlugin plugin, FileConfiguration configuration) {
+        super(plugin, configuration);
+        loadFromConfig();
     }
 
     /**
@@ -71,7 +65,7 @@ public class Language {
                 String hexSubstring = input.substring(index - 1, index + 7).replaceAll("&", "");
 
                 try {
-                    ChatColor transformed = ChatColor.of(hexSubstring);
+                    net.md_5.bungee.api.ChatColor transformed = net.md_5.bungee.api.ChatColor.of(hexSubstring);
                     // Apply transformation to original string
                     input = input.replaceAll("&" + hexSubstring, transformed + "");
                 } catch (IllegalArgumentException ignored) {
@@ -83,6 +77,6 @@ public class Language {
         }
 
         // Apply legacy transformations at end
-        return ChatColor.translateAlternateColorCodes('&', input);
+        return net.md_5.bungee.api.ChatColor.translateAlternateColorCodes('&', input);
     }
 }

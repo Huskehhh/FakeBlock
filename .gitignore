@@ -71,3 +71,5 @@ pip-log.txt
 */build/
 /.gradle/
 build/
+
+.factorypath

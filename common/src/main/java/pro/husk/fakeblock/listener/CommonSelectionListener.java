@@ -7,6 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import pro.husk.fakeblock.FakeBlock;
 import pro.husk.fakeblock.objects.Config;
 import pro.husk.fakeblock.objects.Language;
 import pro.husk.fakeblock.objects.WallObject;
@@ -22,6 +23,7 @@ public class CommonSelectionListener implements Listener {
      */
     @EventHandler
     public void playerSelect(PlayerInteractEvent event) {
+        Language language = FakeBlock.getLanguage();
         Player player = event.getPlayer();
 
         if (Config.isSelecting(player.getUniqueId())) {
@@ -33,10 +35,10 @@ public class CommonSelectionListener implements Listener {
             Config config = Config.getCurrentConfigurations().get(player.getUniqueId());
 
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                player.sendMessage(Language.getPrefix() + " " + Language.getLocationSaved());
+                player.sendMessage(Language.colourise(language.getPrefix() + " " + language.getLocationSaved()));
                 config.setLocation2(block.getLocation());
             } else if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-                player.sendMessage(Language.getPrefix() + " " + Language.getLocationSaved());
+                player.sendMessage(Language.colourise(language.getPrefix() + " " + language.getLocationSaved()));
                 config.setLocation1(block.getLocation());
             }
 
@@ -47,7 +49,7 @@ public class CommonSelectionListener implements Listener {
                         .thenAccept(loadedWallList -> {
                             wallObject.setBlocksInBetween(loadedWallList);
                             config.remove();
-                            player.sendMessage(Language.getPrefix() + " " + Language.getWallsSelectionComplete());
+                            player.sendMessage(Language.colourise(language.getPrefix() + " " + language.getWallsSelectionComplete()));
                         });
             }
 
