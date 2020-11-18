@@ -59,7 +59,9 @@ This project now uses Gradle!
 
 Artifacts can be found in their respective build/libs/ folder!
 
-## Maven repo
+## Developers
+
+### [Javadoc](https://huskehhh.github.io/FakeBlock/)
 
 If you are planning to hook into FakeBlock, you will need to add the repository, as well as the dependency.
 
@@ -99,4 +101,4 @@ latestMaterialWall.loadBlocksInBetween().forEach(location -> fakeBlockDataHashMa
 latestMaterialWall.createNonPersistentWall(fakeBlockDataHashMap, location1, location2);
 ```
 
-If you have any further questions feel free to reach out, or create an issue and I'll try help to the best of my ability!
+If you have any further questions feel free to reach out, or create an issue!
