@@ -6,7 +6,6 @@ import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
 import lombok.Getter;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import pro.husk.fakeblock.commands.CommandHandler;
 import pro.husk.fakeblock.hooks.LuckPermsHelper;
@@ -70,9 +69,8 @@ public class FakeBlock extends JavaPlugin {
         taskChainFactory = BukkitTaskChainFactory.create(this);
         console = getLogger();
 
-        PluginManager pluginManager = getServer().getPluginManager();
-        if (pluginManager.getPlugin("ProtocolLib") != null) {
-            pluginManager.registerEvents(new FakeBlockListener(), plugin);
+        if (checkPlugin("ProtocolLib")) {
+            getServer().getPluginManager().registerEvents(new FakeBlockListener(), plugin);
 
             saveDefaultConfig();
             setupLanguageFile();
@@ -108,7 +106,7 @@ public class FakeBlock extends JavaPlugin {
             ProtocolLibHelper.addPacketListener();
 
             // LuckPerms hook
-            if (pluginManager.getPlugin("LuckPerms") != null) {
+            if (checkPlugin("LuckPerms")) {
                 LuckPermsHelper.setupLuckPermsHelper();
             } else {
                 console.warning("LuckPerms not detected, FakeBlock will be unable to listen for permission node changes");
@@ -159,13 +157,27 @@ public class FakeBlock extends JavaPlugin {
     }
 
     /**
+     * Checks to see if a plugin is installed on the server
+     *
+     * @param pluginName to check
+     * @return true if exists, false if not
+     */
+    private boolean checkPlugin(String pluginName) {
+        return getServer().getPluginManager().getPlugin(pluginName) != null;
+    }
+
+    /**
      * Method to cleanup plugin data on server shutdown
      */
     @Override
     public void onDisable() {
         getServer().getScheduler().cancelTasks(this);
-        LuckPermsHelper.closeSubscriptions();
         ProtocolLibHelper.closeSubscriptions();
+
+        if (checkPlugin("LuckPerms")) {
+            LuckPermsHelper.closeSubscriptions();
+        }
+
         manager.unregisterCommands();
     }
 }
