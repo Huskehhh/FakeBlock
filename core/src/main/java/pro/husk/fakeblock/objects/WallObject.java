@@ -298,9 +298,7 @@ public abstract class WallObject {
         FakeBlock.newChain()
                 .async(() -> {
                     this.setFakeBlockDataHashMap(fakeBlockDataHashMap);
-                    this.blocksInBetween.addAll(fakeBlockDataHashMap.keySet());
-                })
-                .async(() -> {
+                    this.blocksInBetween = new ArrayList<>(fakeBlockDataHashMap.keySet());
                     this.fakeBlockPacketList = this.buildPacketList(true);
                     this.realBlockPacketList = this.buildPacketList(false);
                     this.loadingData = false;

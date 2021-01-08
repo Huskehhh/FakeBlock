@@ -51,13 +51,11 @@ Optionally depends on [LuckPerms](https://luckperms.net/) to update wall visibil
 
 ## Compiling from source
 
-This project now uses Gradle!
+This project uses Maven!
 
-```./gradlew build``` for Unix based systems
+```mvn package``` or ```mvn install``` if you want it in your local maven repo
 
-```gradlew.bat build``` for Windows
-
-Artifacts can be found in their respective build/libs/ folder!
+Artifacts can be found in their respective ``target`` folders!
 
 ## Developers
 
