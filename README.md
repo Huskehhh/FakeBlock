@@ -90,13 +90,15 @@ LatestMaterialWall latestMaterialWallPersistent = new LatestMaterialWall("some_p
 
 // Non-persistent example
 LatestMaterialWall latestMaterialWall = new LatestMaterialWall("some_non_persistent_wall");
+latestMaterialWall.setLocation1(location1);
+latestMaterialWall.setLocation2(location2);
 
 // For example, build map of Location -> FakeBlockData.. This example uses the world data, however, you might want to load from a schematic or something.
 HashMap<Location, FakeBlockData> fakeBlockDataHashMap = new HashMap<>();
 latestMaterialWall.loadBlocksInBetween().forEach(location -> fakeBlockDataHashMap.put(location, new FakeBlockData(location.getBlock().getBlockData())));
 
 // Finally create the non persistent wall
-latestMaterialWall.createNonPersistentWall(fakeBlockDataHashMap, location1, location2);
+latestMaterialWall.createNonPersistentWall(fakeBlockDataHashMap);
 ```
 
 If you have any further questions feel free to reach out, or create an issue!

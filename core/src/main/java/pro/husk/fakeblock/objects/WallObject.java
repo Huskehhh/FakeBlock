@@ -284,17 +284,10 @@ public abstract class WallObject {
      * Creates a non persistent wall through code
      *
      * @param fakeBlockDataHashMap data to create the wall with
-     * @param location1            first corner of the wall
-     * @param location2            second location of the corner
      * @return WallObject created
      */
-    public WallObject createNonPersistentWall(HashMap<Location, FakeBlockData> fakeBlockDataHashMap,
-                                              Location location1, Location location2) {
+    public WallObject createNonPersistentWall(HashMap<Location, FakeBlockData> fakeBlockDataHashMap) {
         this.loadingData = true;
-
-        this.setLocation1(location1);
-        this.setLocation2(location2);
-
         FakeBlock.newChain()
                 .async(() -> {
                     this.setFakeBlockDataHashMap(fakeBlockDataHashMap);
@@ -304,7 +297,6 @@ public abstract class WallObject {
                     this.loadingData = false;
                 })
                 .execute();
-
         return this;
     }
 }
