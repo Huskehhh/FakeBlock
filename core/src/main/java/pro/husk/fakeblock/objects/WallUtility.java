@@ -93,8 +93,11 @@ public final class WallUtility {
 
             // If the wall is a temporary wall, send them the fake blocks and only the fake blocks.
             // This will mean that this is handled by the external plugin rather than FakeBlock
-            if (wall.getUsersToDisplayFor().contains(player.getUniqueId())) {
-                wall.sendFakeBlocks(player, delay);
+            if (wall.getUserDisplayMap().containsKey(player.getUniqueId())) {
+                boolean shouldSee = wall.getUserDisplayMap().get(player.getUniqueId());
+                if (shouldSee) {
+                    wall.sendFakeBlocks(player, delay);
+                }
                 return;
             }
 

@@ -15,7 +15,6 @@ import pro.husk.fakeblock.hooks.ProtocolLibHelper;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -65,7 +64,7 @@ public abstract class WallObject {
 
     private double distanceBetweenPoints;
 
-    private final HashSet<UUID> usersToDisplayFor = new HashSet<>();
+    private final HashMap<UUID, Boolean> userDisplayMap = new HashMap<>();
 
     /**
      * Default constructor
@@ -256,18 +255,19 @@ public abstract class WallObject {
      *
      * @return HashSet of UUID of the users who will see the walL
      */
-    public HashSet<UUID> getUsersToDisplayFor() {
-        return usersToDisplayFor;
+    public HashMap<UUID, Boolean> getUserDisplayMap() {
+        return userDisplayMap;
     }
 
     /**
      * Helper method to add user to display the wall for
      *
      * @param player to display for
+     * @param shouldSee true if they should see the wall, false if they shouldn't
      */
-    public void addUserToDisplayFor(Player player) {
-        usersToDisplayFor.add(player.getUniqueId());
-        FakeBlock.getWallUtility().processWall(player, 0, false);
+    public void forceVisibilityFor(Player player, boolean shouldSee) {
+        userDisplayMap.put(player.getUniqueId(), shouldSee);
+        FakeBlock.getWallUtility().processWall(player, 1, false);
     }
 
     /**
@@ -275,9 +275,9 @@ public abstract class WallObject {
      *
      * @param player to display for
      */
-    public void removeUserToDisplayFor(Player player) {
-        usersToDisplayFor.remove(player.getUniqueId());
-        FakeBlock.getWallUtility().processWall(player, 0, false);
+    public void forceVisibilityRemoveFor(Player player) {
+        userDisplayMap.remove(player.getUniqueId());
+        FakeBlock.getWallUtility().processWall(player, 1, false);
     }
 
     /**
